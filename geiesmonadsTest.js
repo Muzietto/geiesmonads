@@ -26,7 +26,7 @@ YAHOO.GEIESMONADS.test.oTestMMAO = new YAHOO.tool.TestCase({
 		
 		//var maybeString = Monad.maybe.unit(3).bind(maybeStringToIntAndReverse);
 		
-		var coffee = Monad.maybe.createZZZ('coffee');
+		var coffee = Monad.maybe.create('coffee');
 		Assert.areEqual('coffee', coffee());
 		
 		var moreCoffee = coffee.bind(mMore);		
