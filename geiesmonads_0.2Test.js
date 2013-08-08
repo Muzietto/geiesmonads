@@ -156,34 +156,29 @@ YAHOO.GEIESMONADS.test.oTestStateMonadLooseMethods = new YAHOO.tool.TestCase({
 	name : "TestStateMonadLooseMethods",
 	testStateMonadLooseMethods : function() {
 	
-		var ma = identityUnit('aaa');
-		// here is a famb!!!!
-		var more = function (a){
-			return identityUnit('more ' + a);
+		var monad = myStateMonad;
+		
+		// already a famb - no need for lifting
+		var more = function(value){
+			return function(state){
+				return {value:'more '+ value,state:state};
+			};
 		}
-		var mb = identityBind(ma, more);
-		Assert.areEqual('more aaa', identityFlatten(mb));
-		
-		// chaining
-		var mMore = function(ma){
-			return identityBind(ma, more);
-		};
-		Assert.areEqual('more aaa', identityFlatten(mMore(ma)));
-		
-		var more0 = identityLift(more)(ma);
-		Assert.areEqual('more aaa', identityFlatten(more0));
-		
-		var more_more1 = identityBind(identityBind(ma,more),more);
-		var more_more2 = identityBind(identityLift(more)(ma),more);
-		
-		var more_more3 = identityLift(more)(identityLift(more)(ma));
-		//var more_more4 = identityLift(more)(more)(ma);
-		
-		Assert.areEqual('more more aaa',identityFlatten(more_more1));		
-		Assert.areEqual('more more aaa',identityFlatten(more_more2));
-		Assert.areEqual('more more aaa',identityFlatten(more_more3));
-		//Assert.areEqual('more more aaa',identityFlatten(more_more4));
 
+		// already a famb - no need for lifting
+		var addSugar = function(value){
+			return function(state){
+				return {value:value,state:state+1};
+			};
+		}
+
+		var ma = monad.unit('coffee');
+
+		var mb = monad.bind(ma, more);
+		Assert.areEqual('more coffee', mb(0).value);
+		
+		var mc = monad.bind(mb, addSugar);
+		Assert.areEqual(1, mc(0).state);
 	}
 });
 
