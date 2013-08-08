@@ -187,28 +187,24 @@ YAHOO.GEIESMONADS.test.oTestStateMonad = new YAHOO.tool.TestCase({
 	testMonadicLawsForStateMonad : function() {
 	
 		var monad = myStateMonad;
-
-		var a = 'aaa';
-		var b = null;
-		var ma = monad.unit(a);
-		var mb = monad.unit(b);
 		
-		var fab = function(value){
-			return (typeof value === 'string')?value.length:'zz'+value;
-		};
-		
-		//var famb = monad.unit(fab); // cazzata! unit opera su valori, non su funzioni!!!!!		
-		var famb = function(x){return monad.unit(fab(x));};
-		var fbma = function(value){
-			return monad.unit((typeof value === 'string')?value.length:'zz'+value);
+		// already a famb - no need for lifting
+		var more = function(value){
+			return function(state){
+				return {value:'more '+ value,state:state};
+			};
 		}
-		
-		Assert.areEqual(3,fab(a));
-		Assert.areEqual('zz3',fab(3));
-		
-		var unitFab = monad.unit(fab); // cazzata! unit opera su valori, non su funzioni!!!!!		
-		var unitFabA = unitFab(a);
-		// Assert.areEqual('', monad.flatten(unitFabA));
+
+		// already a famb - no need for lifting
+		var addSugar = function(value){
+			return function(state){
+				return {value:value,state:state+1};
+			};
+		}
+
+		var ma = monad.unit('coffee');
+
+		var mb = monad.bind(ma, more);
 		
 		// zeroeth law --> m map f = m bind unit(f(x))
 		// SOSPESO IN ATTESA DEL MAP PER STATE MONAD
@@ -218,12 +214,19 @@ YAHOO.GEIESMONADS.test.oTestStateMonad = new YAHOO.tool.TestCase({
 		
 		// first law --> m bind unit = m
 		var firstLawLeft = monad.bind(ma,monad.unit);
-		Assert.areEqual(monad.flatten(firstLawLeft),monad.flatten(ma));
+		var firstLawRight = ma;
+		Assert.areEqual(firstLawLeft(0).value,firstLawRight(0).value);
+		Assert.areEqual(firstLawLeft(0).state,firstLawRight(0).state);
 		
+		var a = 'coffee';
+		var famb = more;
 		// second law --> unit(x) bind famb = famb(x)
 		var secondLawLeft = monad.bind(monad.unit(a),famb);
-		Assert.areEqual(monad.flatten(secondLawLeft),monad.flatten(famb(a)));
+		var secondLawRight = famb(a);
+		Assert.areEqual(secondLawLeft(0).value,secondLawRight(0).value);
+		Assert.areEqual(secondLawLeft(0).state,secondLawRight(0).state);
 		
+		var fbma = addSugar;
 		// third law --> (m bind g) bind f = m bind (g(x) bind f)
 		var mBindFbma = monad.bind(mb,fbma);
 		var fbmaXBindFamb = monad.bind(fbma(mb),famb)
@@ -233,8 +236,8 @@ YAHOO.GEIESMONADS.test.oTestStateMonad = new YAHOO.tool.TestCase({
 		var f = famb
 		var thirdLawLeft = monad.bind(monad.bind(m,g),f);
 		var thirdLawRight = monad.bind(m,function(x){return monad.bind(g(x),f)})
-		Assert.areEqual(monad.flatten(thirdLawLeft),monad.flatten(thirdLawRight));
-		
+		Assert.areEqual(thirdLawLeft(0).value,thirdLawRight(0).value);
+		Assert.areEqual(thirdLawLeft(0).state,thirdLawRight(0).state);
 		
 	}
 });
