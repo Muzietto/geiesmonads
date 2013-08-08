@@ -4,19 +4,14 @@ var Monad = {
 };
 
 var myMaybeMonad = function() {
-	var unit = function(value){
-		return function(){
-			return value;
-		};
-	};
-	
 	var map = function(ma, fab){
 		return unit(fab(flatten(ma)));
 	};
 	
-	var flatten = function(ma){
-		if (ma()) {
-			return ma();
+	var flatten = function(){
+		// grandissima FIGATA!!!!
+		if (this()) {
+			return this();
 		} else {
 			return function(){};
 		}
@@ -24,33 +19,40 @@ var myMaybeMonad = function() {
 	
 	// famb(flatten(ma)) --> mb
 	var bind = function(famb){
-		// grande FIGATA!!!!
-		return create(famb(flatten(this))());
+		// grande FIGATA!!!! runs in the context of the monad...
+		return unit(famb(flatten.apply(this))());
 	};
 	
-	var instanceOf = function(type){
-		return 'Maybe';
+	var instanceOf = function(){
+		return 'maybe';
 	};
 	
-	create = function(value,famb){
+	var unit = function(value){
 		var result = function(){
 			return value;
 		};
-		result.bind = myMaybeMonad.bind;
-		result.flatten = myMaybeMonad.flatten;
-		result.unit = myMaybeMonad.unit;
-		result.instanceOf = myMaybeMonad.instanceOf;
-		result.map = myMaybeMonad.map;
+		result.bind = bind;
+		result.flatten = flatten;
+		result.unit = unit;
+		result.instanceOf = instanceOf;
+		result.map = map;
 		return result;
-	}
+	};
+	
+	// fab --> famb
+	var lift = function(fab){
+		return function(x) {
+			return unit(fab(x));
+		};
+	};
 
 	return {
 		unit: unit,
+		lift: lift,
 		map: map,
 		flatten: flatten,
 		instanceOf: instanceOf,
-		bind: bind,
-		create: create
+		bind: bind
 	};
 }();
 

@@ -6,35 +6,22 @@ YAHOO.GEIESMONADS.test.oTestMMAO = new YAHOO.tool.TestCase({
 	name : "TestMaybeAsObject",
 	testMaybeMonadAsObject : function() {
 	
-		// builds a famb from a fab
-		var famb = function(fab) { 
-			return function(x) {
-				return Monad.maybe.unit(fab(x));};};
-		
-		var fabStringToIntAndReverse = function(value){
-			return (typeof value === 'string') ? value.length : 'str'+value;
-		};
-		
+		var coffee = Monad.maybe.unit('coffee');
+		Assert.areEqual('coffee', coffee());
+
 		var more = function(value){
 			return 'more ' + value;
 		};
 		
-		var mMore = famb(more);
+		var mMore = Monad.maybe.lift(more);
 		
 		// Maybe.unit(new Person(“marco”, 123)).bind(new LookupPersonId())
 		//	.bind(new LookupAccount()).bind(new LookupBalance()).bind(new CheckOverdraft());
-		
-		//var maybeString = Monad.maybe.unit(3).bind(maybeStringToIntAndReverse);
-		
-		var coffee = Monad.maybe.create('coffee');
-		Assert.areEqual('coffee', coffee());
-		
 		var moreCoffee = coffee.bind(mMore);		
 		Assert.areEqual('more coffee',moreCoffee());
 		
 		var moreMoreCoffee = coffee.bind(mMore).bind(mMore).bind(mMore).bind(mMore).bind(mMore);
-		Assert.areEqual('more more more more more coffee',moreMoreCoffee());
-		
+		Assert.areEqual('more more more more more coffee',moreMoreCoffee());		
 	}
 });
 
