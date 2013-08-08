@@ -20,13 +20,8 @@ YAHOO.GEIESMONADS.test.oTestMMAO = new YAHOO.tool.TestCase({
 		var moreCoffee = coffee.bind(mMore);		
 		Assert.areEqual('more coffee',moreCoffee());
 		
-		// HERE'S THE JAVASCRIPT CHAINING!!!!
 		var moreMoreCoffee = coffee.bind(mMore).bind(mMore).bind(mMore).bind(mMore).bind(mMore);
 		Assert.areEqual('more more more more more coffee',moreMoreCoffee());		
-
-		// ...and here's the sugar
-		var moreSweetCoffee = coffee(mMore)(mMore)(mMore)(mMore)(mMore)(mMore)(mMore);
-		Assert.areEqual('more more more more more more more coffee',moreSweetCoffee());		
 	}
 });
 
