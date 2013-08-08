@@ -210,7 +210,6 @@ YAHOO.util.Event
 
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite = new YAHOO.tool.TestSuite(
 					"YUI Test Suite for GEIESMONADS");
-/*
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 					.add(YAHOO.GEIESMONADS.test.oTestIdentityMonad);
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
@@ -219,7 +218,6 @@ YAHOO.util.Event
 					.add(YAHOO.GEIESMONADS.test.oTestYYY);
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 					.add(YAHOO.GEIESMONADS.test.oTestXXX);
-					*/
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 					.add(YAHOO.GEIESMONADS.test.oTestMMAO);
 
