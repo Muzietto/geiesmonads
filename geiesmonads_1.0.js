@@ -28,8 +28,13 @@ var myMaybeMonad = function() {
 	};
 	
 	var unit = function(value){
-		var result = function(){
-			return value;
+		var result = function(possibleBindingFunction){
+			if (possibleBindingFunction) { // synt sugar
+				return bind.apply(result,[possibleBindingFunction]);
+			}
+			else {
+				return value;
+			}
 		};
 		result.bind = bind;
 		result.flatten = flatten;
