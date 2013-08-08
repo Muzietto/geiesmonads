@@ -152,6 +152,98 @@ YAHOO.GEIESMONADS.test.oTestMaybeMonad = new YAHOO.tool.TestCase({
 	}
 });
 
+YAHOO.GEIESMONADS.test.oTestStateMonadLooseMethods = new YAHOO.tool.TestCase({
+	name : "TestStateMonadLooseMethods",
+	testStateMonadLooseMethods : function() {
+	
+		var ma = identityUnit('aaa');
+		// here is a famb!!!!
+		var more = function (a){
+			return identityUnit('more ' + a);
+		}
+		var mb = identityBind(ma, more);
+		Assert.areEqual('more aaa', identityFlatten(mb));
+		
+		// chaining
+		var mMore = function(ma){
+			return identityBind(ma, more);
+		};
+		Assert.areEqual('more aaa', identityFlatten(mMore(ma)));
+		
+		var more0 = identityLift(more)(ma);
+		Assert.areEqual('more aaa', identityFlatten(more0));
+		
+		var more_more1 = identityBind(identityBind(ma,more),more);
+		var more_more2 = identityBind(identityLift(more)(ma),more);
+		
+		var more_more3 = identityLift(more)(identityLift(more)(ma));
+		//var more_more4 = identityLift(more)(more)(ma);
+		
+		Assert.areEqual('more more aaa',identityFlatten(more_more1));		
+		Assert.areEqual('more more aaa',identityFlatten(more_more2));
+		Assert.areEqual('more more aaa',identityFlatten(more_more3));
+		//Assert.areEqual('more more aaa',identityFlatten(more_more4));
+
+	}
+});
+
+YAHOO.GEIESMONADS.test.oTestStateMonad = new YAHOO.tool.TestCase({
+	name : "TestStateMonad",
+	testMonadicLawsForStateMonad : function() {
+	
+		var monad = myStateMonad;
+
+		var a = 'aaa';
+		var b = null;
+		var ma = monad.unit(a);
+		var mb = monad.unit(b);
+		
+		var fab = function(value){
+			return (typeof value === 'string')?value.length:'zz'+value;
+		};
+		
+		//var famb = monad.unit(fab); // cazzata! unit opera su valori, non su funzioni!!!!!		
+		var famb = function(x){return monad.unit(fab(x));};
+		var fbma = function(value){
+			return monad.unit((typeof value === 'string')?value.length:'zz'+value);
+		}
+		
+		Assert.areEqual(3,fab(a));
+		Assert.areEqual('zz3',fab(3));
+		
+		var unitFab = monad.unit(fab); // cazzata! unit opera su valori, non su funzioni!!!!!		
+		var unitFabA = unitFab(a);
+		// Assert.areEqual('', monad.flatten(unitFabA));
+		
+		// zeroeth law --> m map f = m bind unit(f(x))
+		// SOSPESO IN ATTESA DEL MAP PER STATE MONAD
+		//var zeroethLawLeft = monad.map(ma,fab);
+		//var zeroethLawRight = monad.bind(ma,function(x){return monad.unit(fab(x))});
+		//Assert.areEqual(monad.flatten(zeroethLawLeft),monad.flatten(zeroethLawRight));
+		
+		// first law --> m bind unit = m
+		var firstLawLeft = monad.bind(ma,monad.unit);
+		Assert.areEqual(monad.flatten(firstLawLeft),monad.flatten(ma));
+		
+		// second law --> unit(x) bind famb = famb(x)
+		var secondLawLeft = monad.bind(monad.unit(a),famb);
+		Assert.areEqual(monad.flatten(secondLawLeft),monad.flatten(famb(a)));
+		
+		// third law --> (m bind g) bind f = m bind (g(x) bind f)
+		var mBindFbma = monad.bind(mb,fbma);
+		var fbmaXBindFamb = monad.bind(fbma(mb),famb)
+
+		var m = mb;
+		var g = fbma;
+		var f = famb
+		var thirdLawLeft = monad.bind(monad.bind(m,g),f);
+		var thirdLawRight = monad.bind(m,function(x){return monad.bind(g(x),f)})
+		Assert.areEqual(monad.flatten(thirdLawLeft),monad.flatten(thirdLawRight));
+		
+		
+	}
+});
+
 YAHOO.GEIESMONADS.test.oTestYYY = new YAHOO.tool.TestCase({
 	name : "TestYYY",
 	testIdentityMonadAsModule : function() {
@@ -210,6 +302,10 @@ YAHOO.util.Event
 
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite = new YAHOO.tool.TestSuite(
 					"YUI Test Suite for GEIESMONADS");
+			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
+					.add(YAHOO.GEIESMONADS.test.oTestStateMonadLooseMethods);
+			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
+					.add(YAHOO.GEIESMONADS.test.oTestStateMonad);
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 					.add(YAHOO.GEIESMONADS.test.oTestIdentityMonad);
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite

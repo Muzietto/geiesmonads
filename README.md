@@ -1,4 +1,4 @@
-geiesmonads - RELEASE 0.1
+geiesmonads - RELEASE 1.0
 ===========
 Crisp clear Javascript monads.
 

@@ -6,6 +6,46 @@ Object.create = function(prot) {
 	return F();
 }
 
+var Monad = {
+	identity: null,
+	maybe: null,
+	state: null
+};
+
+var myStateMonad = function() {
+	var unit = function(aValue){
+		return function(aState) {
+			return {value:aValue,state:aState};
+		}
+	};
+	
+	var flatten = function(ma) {
+		return function(state){
+			return (ma(state));
+		};
+	};
+	
+	var bind = function(ma, famb){
+	return function(newState){
+			var a = flatten(ma)(newState);
+			return famb(a.value)(a.state);
+		}
+	};
+	
+	var instanceOf = function(){
+		return 'state';
+	};
+	
+	return {
+		unit: unit,
+		flatten: flatten,
+		instanceOf: instanceOf,
+		bind: bind
+	};
+}();
+
+Monad.state = myStateMonad;
+
 // identity monad
 var identityUnit = function(value) {
 	return function(){ return value;}
@@ -24,12 +64,6 @@ var identityLift = function(famb){
 	return function(ma){
 		return identityBind(ma, famb);
 	};
-};
-
-var Monad = {
-	identity: null,
-	maybe: null,
-	state: null
 };
 
 var myIdentityMonad = function() {
@@ -52,7 +86,7 @@ var myIdentityMonad = function() {
 	};
 	
 	var instanceOf = function(){
-		return 'Identity';
+		return 'identity';
 	};
 	
 	return {
@@ -90,7 +124,7 @@ var myMaybeMonad = function() {
 	};
 	
 	var instanceOf = function(){
-		return 'Maybe';
+		return 'maybe';
 	};
 	
 	return {
@@ -128,7 +162,7 @@ var myChainableMaybeMonad = function() {
 	};
 	
 	var instanceOf = function(type){
-		return 'Maybe';
+		return 'maybe';
 	};
 	
 	return {
