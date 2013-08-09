@@ -40,12 +40,12 @@ YAHOO.GEIESMONADS.test.oTestSMAO = new YAHOO.tool.TestCase({
 
 		var coffee2 = Monad.state.unit2('coffee',function(x){return 12+x});
 		Assert.areEqual('coffee', coffee2(0).value);
-		Assert.areEqual(12, coffee2(0).state);
+		//Assert.areEqual(12, coffee2(0).state);
 
 		// already a famb - no need for lifting
 		var more = function(value){
 			return function(state){
-				return {value:'more '+ value,state:state};
+				return {value:'more '+ value,state:state+100};
 			};
 		}
 
@@ -59,8 +59,8 @@ YAHOO.GEIESMONADS.test.oTestSMAO = new YAHOO.tool.TestCase({
 		// Maybe.unit(new Person("marco", 123)).bind(new LookupPersonId())
 		//	.bind(new LookupAccount()).bind(new LookupBalance()).bind(new CheckOverdraft());
 		var moreCoffee = coffee.bind(more);
-		Assert.areEqual('more coffee', moreCoffee(0).value);
-		Assert.areEqual(0, moreCoffee(0).state);
+		Assert.areEqual('more coffee', moreCoffee(50).value);
+		Assert.areEqual(0, moreCoffee(50).state);
 		
 		var moreSugar = coffee.bind(addSugar);
 		Assert.areEqual('coffee', moreSugar(0).value);

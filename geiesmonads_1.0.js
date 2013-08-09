@@ -64,6 +64,7 @@ var myMaybeMonad = function() {
 Monad.maybe = myMaybeMonad;
 
 var myStateMonad = function() {
+
 	var unit = function(value){
 		var result = function(state) {
 			return {value:value,state:state};
@@ -74,10 +75,10 @@ var myStateMonad = function() {
 		result.bind = bind;
 		return result;
 	};
-	
+	// stateFun = famb(a.value)
 	var unit2 = function(value,stateFun){
 		var result = function(state) {
-			return {value:value,state:stateFun(state)};
+			return {value:value,state:stateFun(state).state};
 		};
 		result.unit = unit;
 		result.flatten = flatten;
@@ -100,7 +101,7 @@ var myStateMonad = function() {
 			// grande FIGATA!!!! flatten will run in the context of the monad...
 			//var a = flatten.apply(self)(newState);
 			var a = self(newState);
-			return unit2(famb(a.value)(a.state).value,famb(a.value))(famb(a.value));
+			return unit2(famb(a.value)(a.state).value,famb(a.value));
 		}
 	};
 	
