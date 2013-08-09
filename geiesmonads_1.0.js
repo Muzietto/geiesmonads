@@ -28,8 +28,13 @@ var myMaybeMonad = function() {
 	};
 	
 	var unit = function(value){
-		var result = function(){
-			return value;
+		var result = function(possibleBindingFunction){
+			if (possibleBindingFunction) { // synt sugar
+				return bind.apply(result,[possibleBindingFunction]);
+			}
+			else {
+				return value;
+			}
 		};
 		result.bind = bind;
 		result.flatten = flatten;
@@ -57,3 +62,59 @@ var myMaybeMonad = function() {
 }();
 
 Monad.maybe = myMaybeMonad;
+
+var myStateMonad = function() {
+	var unit = function(value){
+		var result = function(state) {
+			return {value:value,state:state};
+		};
+		result.unit = unit;
+		result.flatten = flatten;
+		result.instanceOf = instanceOf;
+		result.bind = bind;
+		return result;
+	};
+	
+	var unit2 = function(value,stateFun){
+		var result = function(state) {
+			return {value:value,state:stateFun(state)};
+		};
+		result.unit = unit;
+		result.flatten = flatten;
+		result.instanceOf = instanceOf;
+		result.bind = bind;
+		return result;
+	};
+	
+	var flatten = function() {
+		return function(state){
+			// grandissima FIGATA!!!!
+			return (this(state));
+		};
+	};
+	
+	// famb(flatten(this(newState)).value)(flatten(this(newState)).state) --> mb
+	var bind = function(famb){
+		var self = this;
+		return function(newState){
+			// grande FIGATA!!!! flatten will run in the context of the monad...
+			//var a = flatten.apply(self)(newState);
+			var a = self(newState);
+			return unit2(famb(a.value)(a.state).value,famb(a.value))(famb(a.value));
+		}
+	};
+	
+	var instanceOf = function(){
+		return 'state';
+	};
+	
+	return {
+		unit: unit,
+		unit2: unit2,
+		flatten: flatten,
+		instanceOf: instanceOf,
+		bind: bind
+	};
+}();
+
+Monad.state = myStateMonad;

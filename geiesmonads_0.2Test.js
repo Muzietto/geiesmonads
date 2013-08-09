@@ -211,13 +211,13 @@ YAHOO.GEIESMONADS.test.oTestStateMonad = new YAHOO.tool.TestCase({
 		//var zeroethLawLeft = monad.map(ma,fab);
 		//var zeroethLawRight = monad.bind(ma,function(x){return monad.unit(fab(x))});
 		//Assert.areEqual(monad.flatten(zeroethLawLeft),monad.flatten(zeroethLawRight));
-		
+
 		// first law --> m bind unit = m
 		var firstLawLeft = monad.bind(ma,monad.unit);
 		var firstLawRight = ma;
 		Assert.areEqual(firstLawLeft(0).value,firstLawRight(0).value);
 		Assert.areEqual(firstLawLeft(0).state,firstLawRight(0).state);
-		
+
 		var a = 'coffee';
 		var famb = more;
 		// second law --> unit(x) bind famb = famb(x)
@@ -225,11 +225,9 @@ YAHOO.GEIESMONADS.test.oTestStateMonad = new YAHOO.tool.TestCase({
 		var secondLawRight = famb(a);
 		Assert.areEqual(secondLawLeft(0).value,secondLawRight(0).value);
 		Assert.areEqual(secondLawLeft(0).state,secondLawRight(0).state);
-		
+
 		var fbma = addSugar;
 		// third law --> (m bind g) bind f = m bind (g(x) bind f)
-		var mBindFbma = monad.bind(mb,fbma);
-		var fbmaXBindFamb = monad.bind(fbma(mb),famb)
 
 		var m = mb;
 		var g = fbma;
