@@ -178,6 +178,7 @@ YAHOO.GEIESMONADS.test.oTestStateMonadLooseMethods = new YAHOO.tool.TestCase({
 		Assert.areEqual('more coffee', mb(0).value);
 		
 		var mc = monad.bind(mb, addSugar);
+		Assert.areEqual('more coffee', mc(0).value);
 		Assert.areEqual(1, mc(0).state);
 	}
 });

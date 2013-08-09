@@ -20,7 +20,12 @@ var myMaybeMonad = function() {
 	// famb(flatten(ma)) --> mb
 	var bind = function(famb){
 		// grande FIGATA!!!! runs in the context of the monad...
-		return unit(famb(flatten.apply(this))());
+		return unit(famb(flatten.apply(this)))();
+	};
+	
+	var bindXXX = function(famb){
+		var ZZZ = flatten.apply(this);
+		return unit(famb(ZZZ))();
 	};
 	
 	var instanceOf = function(){
@@ -94,15 +99,19 @@ var myStateMonad = function() {
 		};
 	};
 	
+	// famb(flatten(ma)) --> mb
+	var bindXXX = function(famb){
+		// grande FIGATA!!!! runs in the context of the monad...
+		return unit(famb(flatten.apply(this))());
+	};
+	
 	// famb(flatten(this(newState)).value)(flatten(this(newState)).state) --> mb
 	var bind = function(famb){
 		var self = this;
 		return function(newState){
-			// grande FIGATA!!!! flatten will run in the context of the monad...
-			//var a = flatten.apply(self)(newState);
 			var a = self(newState);
-			return unit2(famb(a.value)(a.state).value,famb(a.value));
-		}
+			return unit2(famb(a.value)(a.state).value,famb(a.value))(newState);
+		};
 	};
 	
 	var instanceOf = function(){
