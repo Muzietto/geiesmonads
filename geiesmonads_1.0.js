@@ -73,16 +73,16 @@ var myStateMonad = function() {
 	var unit = function(valueOrMonad,famb){
 		var result;
 		// famb(monad(newState).value)(monad(newState).state) --> mb
-		if (famb) {
+		if (famb) { // invocation from bind
 			result = function(newState){
 				var a = valueOrMonad(newState);
 				var mb = famb(a.value)(a.state);
 				return {value:mb.value,state:mb.state};
 			};
-		} else {
+		} else { // proper value given
 			result = function (state) {
 				return {value:valueOrMonad,state:state};
-			};
+			};			
 		}
 		result.unit = unit;
 		result.flatten = flatten;

@@ -63,15 +63,16 @@ YAHOO.GEIESMONADS.test.oTestSMAO = new YAHOO.tool.TestCase({
 		Assert.areEqual(1, moreSugar(0).state);
 		
 		var moreSweetCoffee = coffee.bind(more).bind(addSugar);
-		Assert.areEqual(1, moreSweetCoffee(0).state);
 		Assert.areEqual('more coffee', moreSweetCoffee(0).value);
+		Assert.areEqual(1, moreSweetCoffee(0).state);
 		
 		var sweetMoreCoffee = coffee.bind(addSugar).bind(more);
-		Assert.areEqual(1, sweetMoreCoffee(0).state);
 		Assert.areEqual('more coffee', sweetMoreCoffee(0).value);
+		Assert.areEqual(1, sweetMoreCoffee(0).state);
 		
-		var moreMoreCoffee = coffee.bind(more).bind(more).bind(more).bind(more).bind(more);
-		Assert.areEqual('more more more more more coffee',moreMoreCoffee(0).value);		
+		var moreSweetMoreSweetCoffee1 = coffee.bind(more).bind(addSugar).bind(more).bind(addSugar);
+		Assert.areEqual('more more coffee',moreSweetMoreSweetCoffee1(0).value);
+		Assert.areEqual(2, moreSweetMoreSweetCoffee1(0).state);
 	}
 });
 
