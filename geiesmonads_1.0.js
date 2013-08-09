@@ -70,21 +70,20 @@ Monad.maybe = myMaybeMonad;
 
 var myStateMonad = function() {
 
-	var unit = function(value){
-		var result = function(state) {
-			return {value:value,state:state};
-		};
-		result.unit = unit;
-		result.flatten = flatten;
-		result.instanceOf = instanceOf;
-		result.bind = bind;
-		return result;
-	};
-	// stateFun = famb(a.value)
-	var unit2 = function(value,stateFun){
-		var result = function(state) {
-			return {value:value,state:stateFun(state).state};
-		};
+	var unit = function(valueOrMonad,famb){
+		var result;
+		// famb(monad(newState).value)(monad(newState).state) --> mb
+		if (famb) {
+			result = function(newState){
+				var a = valueOrMonad(newState);
+				var mb = famb(a.value)(a.state);
+				return {value:mb.value,state:mb.state};
+			};
+		} else {
+			result = function (state) {
+				return {value:valueOrMonad,state:state};
+			};
+		}
 		result.unit = unit;
 		result.flatten = flatten;
 		result.instanceOf = instanceOf;
@@ -99,19 +98,9 @@ var myStateMonad = function() {
 		};
 	};
 	
-	// famb(flatten(ma)) --> mb
-	var bindXXX = function(famb){
-		// grande FIGATA!!!! runs in the context of the monad...
-		return unit(famb(flatten.apply(this))());
-	};
-	
-	// famb(flatten(this(newState)).value)(flatten(this(newState)).state) --> mb
+	// famb(this(newState).value)(this(newState).state) --> mb
 	var bind = function(famb){
-		var self = this;
-		return function(newState){
-			var a = self(newState);
-			return unit2(famb(a.value)(a.state).value,famb(a.value))(newState);
-		};
+		return unit(this,famb);
 	};
 	
 	var instanceOf = function(){
@@ -120,7 +109,6 @@ var myStateMonad = function() {
 	
 	return {
 		unit: unit,
-		unit2: unit2,
 		flatten: flatten,
 		instanceOf: instanceOf,
 		bind: bind
