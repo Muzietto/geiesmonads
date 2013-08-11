@@ -79,11 +79,11 @@ var myStateMonad = function() {
 	var unit = function(valueOrMonad,famb){
 		var result;
 		// famb(monad(newState).value)(monad(newState).state) --> mb
-		if (famb) { // invocation from bind
+		if (famb) { // invocation from bind --> valueOrMonad = self
 			result = function(newState){
 				var a = valueOrMonad(newState);
 				var mb = famb(a.value)(a.state);
-				return {value:mb.value,state:mb.state};
+				return mb;
 			};
 		} else { // proper value given
 			result = function (state) {
@@ -95,6 +95,13 @@ var myStateMonad = function() {
 		result.instanceOf = instanceOf;
 		result.bind = bind;
 		return result;
+	};
+
+	// ea: =>a
+	var apply = function(ea) {
+		return function(state) {
+			return {value:ea,state:state}
+		};
 	};
 	
 	var flatten = function() {
@@ -131,6 +138,7 @@ var myStateMonad = function() {
 	
 	return {
 		unit: unit,
+		apply: apply,
 		map: map,
 		flatten: flatten,
 		instanceOf: instanceOf,

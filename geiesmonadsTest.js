@@ -12,6 +12,39 @@ YAHOO.namespace('GEIESMONADS.test');
 
 var Assert = YAHOO.util.Assert;
 
+YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
+	name : "TestStateMonadAsIOMonad",
+	testStateMonadAsIOMonad : function() {
+	
+		// famb versions
+		var putString_ref = function(value) {
+			return function(state) {
+				return {value: alert(value),state: state};
+			};
+		};
+		var getString_ref = function(value) {
+			return function(state) {
+				return {value: prompt('?'),state: state};
+			};
+		};
+		
+		// full-fledged StateMonad versions
+		var putString = function(value) {
+			return Monad.state.unit(alert(value));
+		};
+		var getString = function() {
+			return Monad.state.unit(prompt('?'));
+		};
+		
+		var askThenInputThenGreet = putString('what is your name?').bind(
+			function(x){ return getString(x);}).bind(
+			function(x){ return putString('Ciao ' + x);}
+			);
+
+		askThenInputThenGreet(0);	
+	}
+});
+
 YAHOO.GEIESMONADS.test.oTestMMAO = new YAHOO.tool.TestCase({
 	name : "TestMaybeMonadAsObject",
 	testMaybeMonadAsObject : function() {
@@ -91,6 +124,9 @@ YAHOO.util.Event
 
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite = new YAHOO.tool.TestSuite(
 					"YUI Test Suite for GEIESMONADS");
+
+			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
+				.add(YAHOO.GEIESMONADS.test.oTestSMAIOM);
 
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 				.add(YAHOO.GEIESMONADS.test.oTestMMAO);
