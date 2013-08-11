@@ -1,4 +1,17 @@
-// http://jabberwocky.eu/2012/11/02/monads-for-dummies/
+/*
+	GEIESMONADS - JS monads
+	Author: Marco Faustinelli (contacts@faustinelli.net)
+	Web: http://faustinelli.net/
+	     http://faustinelli.wordpress.com/
+	Version: 0.2 (myChainableMaybeMonad)
+
+	The MIT License - Copyright (c) 2013 Geiesmonads Project	
+*/
+
+/*
+	Everything else except myChainableMaybeMonad credited to:
+	http://jabberwocky.eu/2012/11/02/monads-for-dummies/
+*/
 
 Object.create = function(prot) {
 	function F(){};
@@ -19,10 +32,24 @@ var myStateMonad = function() {
 		}
 	};
 	
+	// returns a couple {value,state}
 	var flatten = function(ma) {
 		return function(state){
 			return (ma(state));
 		};
+	};
+	
+	/* NB - flatten could also mean: given a monad
+	   M: s-> (v,s) return a f:v -> s -> (v,s) 
+	   ...but how exactly? 
+	*/
+	
+	var map = function(ma,fab) {
+		var famb = function(x) {
+			return unit(fab(x));
+		};
+		// bind(famb):mb
+		return bind(ma,famb);
 	};
 	
 	var bind = function(ma, famb){
@@ -39,6 +66,7 @@ var myStateMonad = function() {
 	return {
 		unit: unit,
 		flatten: flatten,
+		map: map,
 		instanceOf: instanceOf,
 		bind: bind
 	};

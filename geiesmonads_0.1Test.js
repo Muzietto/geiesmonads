@@ -1,3 +1,5 @@
+// http://igstan.ro/posts/2011-05-02-understanding-monads-with-javascript.html
+
 YAHOO.namespace('GEIESMONADS.test');
 
 var Assert = YAHOO.util.Assert;

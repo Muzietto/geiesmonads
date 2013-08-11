@@ -1,10 +1,25 @@
+/*
+	GEIESMONADS - JS monads
+	Author: Marco Faustinelli (contacts@faustinelli.net)
+	Web: http://faustinelli.net/
+	     http://faustinelli.wordpress.com/
+	Version: 0.2 (myChainableMaybeMonad)
+
+	The MIT License - Copyright (c) 2013 Geiesmonads Project	
+*/
+
+/*
+	Everything else except myChainableMaybeMonad credited to:
+	http://jabberwocky.eu/2012/11/02/monads-for-dummies/
+*/
+
 YAHOO.namespace('GEIESMONADS.test');
 
 var Assert = YAHOO.util.Assert;
 
 YAHOO.GEIESMONADS.test.oTestMMAO = new YAHOO.tool.TestCase({
-	name : "TestMaybeAsObject",
-	testMaybeMonadAsObject : function() {
+	name : "TestChainableMaybeMonadAsObject",
+	testChainableMaybeMonadAsObject : function() {
 	
 		// builds a famb from a fab
 		var famb = function(fab) { 
@@ -203,15 +218,18 @@ YAHOO.GEIESMONADS.test.oTestStateMonad = new YAHOO.tool.TestCase({
 			};
 		}
 
-		var ma = monad.unit('coffee');
+		var fab = function(value){
+			return (typeof value === 'string') ? value.length : 'zz'+value;
+		};
 
+		var ma = monad.unit('coffee');
 		var mb = monad.bind(ma, more);
-		
+				
 		// zeroeth law --> m map f = m bind unit(f(x))
-		// SOSPESO IN ATTESA DEL MAP PER STATE MONAD
-		//var zeroethLawLeft = monad.map(ma,fab);
-		//var zeroethLawRight = monad.bind(ma,function(x){return monad.unit(fab(x))});
-		//Assert.areEqual(monad.flatten(zeroethLawLeft),monad.flatten(zeroethLawRight));
+		var zeroethLawLeft = monad.map(ma,fab);
+		var zeroethLawRight = monad.bind(ma,function(x){return monad.unit(fab(x))});
+		Assert.areEqual(zeroethLawLeft(0).value,zeroethLawRight(0).value,'zeroeth law value');
+		Assert.areEqual(zeroethLawLeft(0).state,zeroethLawRight(0).state,'zeroeth law state');
 
 		// first law --> m bind unit = m
 		var firstLawLeft = monad.bind(ma,monad.unit);

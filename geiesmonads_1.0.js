@@ -1,11 +1,39 @@
+/*
+	GEIESMONADS - JS monads
+	Author: Marco Faustinelli (contacts@faustinelli.net)
+	Web: http://faustinelli.net/
+	     http://faustinelli.wordpress.com/
+	Version: 1.0
+
+	The MIT License - Copyright (c) 2013 Geiesmonads Project
+*/
+
 var Monad = {
 	maybe: null,
 	state: null
 };
 
 var myMaybeMonad = function() {
-	var map = function(ma, fab){
-		return unit(fab(flatten(ma)));
+
+	var unit = function(value){
+		var result = function(possibleBindingFunction){
+			if (possibleBindingFunction) { // synt sugar
+				return bind.apply(result,[possibleBindingFunction]);
+			}
+			else {
+				return value;
+			}
+		};
+		result.bind = bind;
+		result.flatten = flatten;
+		result.unit = unit;
+		result.instanceOf = instanceOf;
+		result.map = map;
+		return result;
+	};
+	
+	var map = function(fab){
+		return bind(lift(fab));
 	};
 	
 	var flatten = function(){
@@ -23,30 +51,8 @@ var myMaybeMonad = function() {
 		return unit(famb(flatten.apply(this)))();
 	};
 	
-	var bindXXX = function(famb){
-		var ZZZ = flatten.apply(this);
-		return unit(famb(ZZZ))();
-	};
-	
 	var instanceOf = function(){
 		return 'maybe';
-	};
-	
-	var unit = function(value){
-		var result = function(possibleBindingFunction){
-			if (possibleBindingFunction) { // synt sugar
-				return bind.apply(result,[possibleBindingFunction]);
-			}
-			else {
-				return value;
-			}
-		};
-		result.bind = bind;
-		result.flatten = flatten;
-		result.unit = unit;
-		result.instanceOf = instanceOf;
-		result.map = map;
-		return result;
 	};
 	
 	// fab --> famb
@@ -98,6 +104,22 @@ var myStateMonad = function() {
 		};
 	};
 	
+	/* NB - flatten could also mean: given a monad
+	   M: s-> (v,s) return a f:v -> s -> (v,s) 
+	   ...but how exactly? 
+	*/
+	
+	var map = function(fab){
+		return bind(lift(fab));
+	};
+	
+	// fab --> famb
+	var lift = function(fab){
+		return function(x) {
+			return unit(fab(x));
+		};
+	};
+
 	// famb(this(newState).value)(this(newState).state) --> mb
 	var bind = function(famb){
 		return unit(this,famb);
@@ -109,6 +131,7 @@ var myStateMonad = function() {
 	
 	return {
 		unit: unit,
+		map: map,
 		flatten: flatten,
 		instanceOf: instanceOf,
 		bind: bind

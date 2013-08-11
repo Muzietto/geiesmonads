@@ -1,3 +1,13 @@
+/*
+	GEIESMONADS - JS monads
+	Author: Marco Faustinelli (contacts@faustinelli.net)
+	Web: http://faustinelli.net/
+	     http://faustinelli.wordpress.com/
+	Version: 1.0
+
+	The MIT License - Copyright (c) 2013 Geiesmonads Project
+*/
+
 YAHOO.namespace('GEIESMONADS.test');
 
 var Assert = YAHOO.util.Assert;
