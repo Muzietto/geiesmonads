@@ -73,13 +73,24 @@ YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
 		
 		try{
 			// uncomment to run
-			promptThenCheckThenGreet(0);
+			//promptThenCheckThenGreet(0);
 		} catch (e) {
 			Assert.areEqual('not welcome-pippo',e.message);
 		}
 		
-		
+		// this is an errorHandler, an :exception -> state monad
+		var kickAway = function(exc){
+			return putString('go away-' + exc.message);
+		}
 
+		var promptThenCheckThenGreetOrKick = nullState()
+		.bind(function(x){return getString('what is your name? NB - pippo is not welcome');})
+		.filter(function(x){return (x!='pippo')},'not welcome')
+		.bind(function(x){return putString('welcome '+x)})
+		.onError(kickAway);
+		
+		// uncomment to run
+		//promptThenCheckThenGreetOrKick(0);
 	}
 });
 

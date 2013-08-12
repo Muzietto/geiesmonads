@@ -94,6 +94,7 @@ var myStateMonad = function() {
 		result.flatten = flatten;
 		result.map = map;
 		result.filter = filter;
+		result.onError = onError;
 		result.instanceOf = instanceOf;
 		result.bind = bind;
 		return result;
@@ -154,11 +155,28 @@ var myStateMonad = function() {
 		return this.bind(iff);
 	};
 	
+	// errorHandler must be a :exception -> state monad
+	var executor = function(monad,errorHandler){
+		return function(state){
+			try {
+				return monad(state);
+			} catch (exception){
+				return errorHandler(exception)(state);
+			}
+		};
+	};
+	
+	var onError = function(errorHandler){
+		return executor(this,errorHandler);
+	};
+	
 	return {
 		unit: unit,
 		apply: apply,
 		lift: lift,
 		fail: fail,
+		executor: executor,
+		onError: onError,
 		map: map,
 		flatten: flatten,
 		instanceOf: instanceOf,
