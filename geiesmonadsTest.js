@@ -29,19 +29,57 @@ YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
 		};
 		
 		// full-fledged StateMonad versions
+		/*
 		var putString = function(value) {
 			return Monad.state.unit(alert(value));
+		};		
+		var getString = function(msg) {
+			return Monad.state.unit(prompt((msg)?msg:'?'));
 		};
-		var getString = function() {
-			return Monad.state.unit(prompt('?'));
+		*/
+		
+		// mind-blowing lifts --> monads ARE famb's actually
+		var putString = Monad.state.lift(alert);
+		var getString = Monad.state.lift(prompt);
+
+		// null state aka start
+		var nullState = function(){
+			return Monad.state.unit(function(x){return x});
 		};
 		
-		var askThenInputThenGreet = putString('what is your name?').bind(
+		var askThenInputThenGreet = nullState().bind(
+			function(x){ return putString('what is your name?')}).bind(
 			function(x){ return getString(x);}).bind(
 			function(x){ return putString('Ciao ' + x);}
 			);
 
-		askThenInputThenGreet(0);	
+		// uncomment to run
+		//askThenInputThenGreet(0);
+		
+		var promptThenGreet = nullState().bind(
+			function(x){ return getString('what is your name?')}).bind(
+			function(x){ return putString('welcome ' + x);}
+		);
+		
+		// uncomment to run
+		//promptThenGreet(0);
+		
+		var promptThenCheckThenGreet = nullState()
+			.bind(function(x){ return getString('what is your name? NB - pippo is not welcome');})
+			// a naked filter throws real runtime exceptions
+			.filter(function(x){return (x!='pippo');},'not welcome')
+			.bind(function(x){ return putString('welcome ' + x);}
+		);
+		
+		try{
+			// uncomment to run
+			promptThenCheckThenGreet(0);
+		} catch (e) {
+			Assert.areEqual('not welcome-pippo',e.message);
+		}
+		
+		
+
 	}
 });
 

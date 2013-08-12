@@ -92,6 +92,8 @@ var myStateMonad = function() {
 		}
 		result.unit = unit;
 		result.flatten = flatten;
+		result.map = map;
+		result.filter = filter;
 		result.instanceOf = instanceOf;
 		result.bind = bind;
 		return result;
@@ -136,9 +138,27 @@ var myStateMonad = function() {
 		return 'state';
 	};
 	
+	var fail = function(value){
+		return unit(function(x){throw {message:value}}());
+	};
+	
+	// predicate: v -> boolean
+	var filter = function(predicate,msg){
+		var iff = function(v) {
+			if (predicate(v)){
+				return unit(v);
+			} else {
+				return fail(msg + '-' + v);
+			}
+		};
+		return this.bind(iff);
+	};
+	
 	return {
 		unit: unit,
 		apply: apply,
+		lift: lift,
+		fail: fail,
 		map: map,
 		flatten: flatten,
 		instanceOf: instanceOf,
