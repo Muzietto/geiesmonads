@@ -84,13 +84,13 @@ YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
 		}
 
 		var promptThenCheckThenGreetOrKick = nullState()
-		.bind(function(x){return getString('what is your name? NB - pippo is not welcome');})
-		.filter(function(x){return (x!='pippo')},'not welcome')
+		.bind(function(x){return getString('what is your name? \nNB - Jeremy is not welcome');})
+		.filter(function(x){return (x!='Jeremy')},'not welcome')
 		.bind(function(x){return putString('welcome '+x)})
 		.onError(kickAway);
 		
 		// uncomment to run
-		//promptThenCheckThenGreetOrKick(0);
+		promptThenCheckThenGreetOrKick(0);
 	}
 });
 
