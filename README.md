@@ -1,5 +1,5 @@
 geiesmonads - RELEASE 1.0
-===========
+=========================
 Crisp clear Javascript monads.
 
 We start with experiments with Identity and Maybe monad. We verify the three laws for both of them.
@@ -15,6 +15,8 @@ See file geiesmonads_1.0.js.
 Next steps are:
 - further exploration of the capabilities of the state monad
 - exploration of the connections between state monad and I/O monad
+
+I know this Javascript code is just a bunch of global stuff, but it's not meant to be used as-is in a production environment.
 
 DEBITS AND CREDITS
 ------------------
