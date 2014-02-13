@@ -28,17 +28,19 @@ YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
 			};
 		};
 		
+		// getString / putStrings are famb's. Got it?
 		// full-fledged StateMonad versions
 		/*
 		var putString = function(value) {
 			return Monad.state.unit(alert(value));
 		};		
-		var getString = function(msg) {
-			return Monad.state.unit(prompt((msg)?msg:'?'));
+		var getString = function(value) {
+			return Monad.state.unit(prompt((value)?value:'?'));
 		};
 		*/
 		
-		// mind-blowing lifts --> monads ARE famb's actually
+		// mind-blowing lifts --> alert and prompt are fab's!!!
+		// alert :String -> undefined; prompt :String -> String
 		var putString = Monad.state.lift(alert);
 		var getString = Monad.state.lift(prompt);
 

@@ -88,7 +88,7 @@ var myStateMonad = function() {
 		} else { // proper value given
 			result = function (state) {
 				return {value:valueOrMonad,state:state};
-			};			
+			};
 		}
 		result.unit = unit;
 		result.flatten = flatten;
