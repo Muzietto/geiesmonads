@@ -3,7 +3,7 @@
 	Author: Marco Faustinelli (contacts@faustinelli.net)
 	Web: http://faustinelli.net/
 	     http://faustinelli.wordpress.com/
-	Version: 1.0
+	Version: 1.9
 
 	The MIT License - Copyright (c) 2013 Geiesmonads Project
 */
@@ -76,20 +76,10 @@ Monad.maybe = myMaybeMonad;
 
 var myStateMonad = function() {
 
-	var unit = function(valueOrMonad,famb){
-		var result;
-		// famb(monad(newState).value)(monad(newState).state) --> mb
-		if (famb) { // invocation from bind --> valueOrMonad = self
-			result = function(newState){
-				var a = valueOrMonad(newState);
-				var mb = famb(a.value)(a.state);
-				return mb;
-			};
-		} else { // proper value given
-			result = function (state) {
-				return {value:valueOrMonad,state:state};
-			};
-		}
+	var unit = function(value){
+		var result = function (state) {
+				return {state:state,value:value};
+		};
 		result.unit = unit;
 		result.flatten = flatten;
 		result.map = map;
@@ -97,13 +87,23 @@ var myStateMonad = function() {
 		result.onError = onError;
 		result.instanceOf = instanceOf;
 		result.bind = bind;
+		
 		return result;
+	};
+
+	// famb(this(newState).value)(this(newState).state) --> mb
+	var bind = function(famb){
+		var that = this;
+		return function(newState) {
+			var cp = that(newState); // current pair
+			return unit(famb(cp.value)(cp.state));
+		}
 	};
 
 	// ea: =>a
 	var apply = function(ea) {
 		return function(state) {
-			return {value:ea,state:state}
+			return {state:state,value:ea}
 		};
 	};
 	
@@ -129,11 +129,6 @@ var myStateMonad = function() {
 		return function(x) {
 			return unit(fab(x));
 		};
-	};
-
-	// famb(this(newState).value)(this(newState).state) --> mb
-	var bind = function(famb){
-		return unit(this,famb);
 	};
 	
 	var instanceOf = function(){

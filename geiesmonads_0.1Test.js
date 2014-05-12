@@ -4,9 +4,9 @@ YAHOO.namespace('GEIESMONADS.test');
 
 var Assert = YAHOO.util.Assert;
 
-YAHOO.GEIESMONADS.test.oTestXXX = new YAHOO.tool.TestCase({
-	name : "TestXXX",
-	testXXX : function() {
+YAHOO.GEIESMONADS.test.oTest_2011_05_02_understanding_monads_with_javascript = new YAHOO.tool.TestCase({
+	name : "Test_2011_05_02_understanding_monads_with_javascript",
+	test_2011_05_02_understanding_monads_with_javascript : function() {
 //		Assert.isTrue(isEmpty(EMPTY))
 
 		Assert.areEqual(4, r0.state[0]);
@@ -92,7 +92,7 @@ YAHOO.util.Event
 					"YUI Test Suite for GEIESMONADS");
 
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
-					.add(YAHOO.GEIESMONADS.test.oTestXXX);
+					.add(YAHOO.GEIESMONADS.test.oTest_2011_05_02_understanding_monads_with_javascript);
 
 			var logger = new YAHOO.tool.TestLogger("testLogger_GEIESMONADS");
 			logger.hideCategory("info");

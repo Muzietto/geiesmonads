@@ -220,8 +220,8 @@ YAHOO.GEIESMONADS.test.oTestMultipleFlatmap = new YAHOO.tool.TestCase({
 		}
 		
 		var cccchain = nullState()
-			.bind(function(x){ return getStringInState('what is your first name? call it x'); })
-			.bind(function(x){ return getStringInState('what is your second name? call it y'); })
+			.bind(function(x){ return getStringInState('variable x: what is your first name?\nNB - please write x_YOURFIRSTNAME'); })
+			.bind(function(x){ return getStringInState('variable y: what is your family name?\n NB - please write y_YOURFAMILYNAME'); })
 			.bind(function(x){ return putStringFromState('welcome, '); });
 			
 		cccchain({});

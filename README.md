@@ -2,10 +2,10 @@ geiesmonads - RELEASE 1.0
 =========================
 Crisp clear Javascript monads.
 
-We start with experiments with Identity and Maybe monad. We verify the three laws for both of them.
+V0.1 - We start with experiments with Identity and Maybe monad. We verify the three laws for both of them.
 We improve on the design and create a chainable Maybe monad.
 
-We implement a state monad along the lines of 2) and 3) and verify the three laws also for that.
+V0.2 - We implement a state monad along the lines of 2) and 3) and verify the three laws also for that.
 
 ORIGINAL CONTRIBUTION
 ---------------------
@@ -13,10 +13,8 @@ The final soft spot is the implementation of a CHAINABLE STATE MONAD.
 See file geiesmonads_1.0.js.
 
 Next steps are:
-- further exploration of the capabilities of the state monad
+- further exploration of the capabilities of the state monad (V1.9)
 - exploration of the connections between state monad and I/O monad
-
-I know this Javascript code is just a bunch of global stuff, but it's not meant to be used as-is in a production environment.
 
 DEBITS AND CREDITS
 ------------------
