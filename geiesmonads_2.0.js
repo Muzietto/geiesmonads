@@ -79,13 +79,12 @@ var myStateMonad = function() {
 	var monad = function(fssa) { // State a :: s -> (s,a)
 		var result = fssa.bind({}) // clone using prototype.bind
 		;
-		result.unit = unit;
+		result.bind = bind; // overriding prototype.bind - what a pity!!!
 		result.flatten = flatten;
 		result.map = map;
 		result.filter = filter;
 		result.onError = onError;
 		result.instanceOf = instanceOf;
-		result.bind = bind; // overriding prototype.bind - what a pity!!!
 		
 		return result;
 	};
@@ -100,7 +99,7 @@ var myStateMonad = function() {
 	// famb(this(newState).value)(this(newState).state) --> mb
 	var bind = function(famb){
 		var that = this;
-		return monad(function(newState) {
+		return monad(function(newState) { // a new fssa
 			var cp = that(newState); // current pair
 			return famb(cp.value)(cp.state);
 		});

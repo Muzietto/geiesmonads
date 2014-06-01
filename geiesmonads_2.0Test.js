@@ -40,7 +40,7 @@ YAHOO.GEIESMONADS.test.oTestMultipleFlatmap = new YAHOO.tool.TestCase({
 */
 		
 		var askThenInputThenAskThenInputThenGreet = nullState()
-			.bind(function(a){ return getString('what is your first name?')
+			.bind(function(a){ return getString('TEST askThenInputThenAskThenInputThenGreet\n\nwhat is your first name?')
 				.bind(function(x){ return getString('what is your second name?')
 					.bind(function(y){ return putString('welcome, ' + x + ' ' + y)
 						//.map(function(xxx){return xxx})
@@ -51,31 +51,28 @@ YAHOO.GEIESMONADS.test.oTestMultipleFlatmap = new YAHOO.tool.TestCase({
 		
 		/* This section handles a state object that gets enriched by the user by providing strings 'key_value'
 		*/	
-		var getStringInState = function(msg) {
-			return function(state) {
+		var putKeyValuePairInState = function(msg) {
+			return Monad.state.monad(function(state) {
 				var keyValue = prompt(msg).split('_');
 				state[keyValue[0]] = keyValue[1];
-				return {value: keyValue[1],state: state}
-			}
+				return {value: keyValue[1],state: state};
+			});
 		}
 		
-		var putStringFromState = function(msg) {
-			return function(state) {
+		var getValuesFromState = function(msg) {
+			return Monad.state.monad(function(state) {
 				var undy = alert(msg + ' ' + state.x + ' ' + state.y);
-				return {value: undy,state: state}
-			}
+				return {value: undy,state: state};
+			});
 		}
 		
 		var cccchain = nullState()
-			.bind(function(x){ 
-				return getStringInState('variable x: what is your first name?\nNB - please write x_YOURFIRSTNAME'); })
-			.bind(function(x){ 
-				return getStringInState('variable y: what is your family name?\n NB - please write y_YOURFAMILYNAME'); })
-			.bind(function(x){ 
-				return putStringFromState('welcome, '); });
-			
+			.bind(function(_){ return putKeyValuePairInState('TEST update state\n\nvariable x: what is your first name?\nNB - please write x_YOURFIRSTNAME'); })
+			.bind(function(x){ return putKeyValuePairInState('ok, ' + x +'; we\' printing your first name here through the closure. But state is growing bigger. \nNow variable y: what is your family name?\nNB - please write y_YOURFAMILYNAME'); })
+			.bind(function(_){ return getValuesFromState('The state is telling us you\'re '); });
+		
 		// Uncomment to run demo
-		// cccchain({});
+		cccchain({});
 	}
 });
 

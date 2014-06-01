@@ -64,7 +64,7 @@ YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
 		);
 		
 		// uncomment to run
-		//promptThenGreet(0);
+		// promptThenGreet(0);
 		
 		var promptThenCheckThenGreet = nullState()
 			.bind(function(x){ return getString('what is your name? NB - pippo is not welcome');})
@@ -92,7 +92,7 @@ YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
 		.onError(kickAway);
 		
 		// uncomment to run
-		//promptThenCheckThenGreetOrKick(0);
+		// promptThenCheckThenGreetOrKick(0);
 	}
 });
 
@@ -202,29 +202,29 @@ YAHOO.GEIESMONADS.test.oTestMultipleFlatmap = new YAHOO.tool.TestCase({
 						//.map(function(xxx){return xxx})
 						})})});
 		
-		//askThenInputThenAskThenInputThenGreet(0);
+		// askThenInputThenAskThenInputThenGreet(0);
 	
 		var getStringInState = function(msg) {
 			return function(state) {
 				var keyValue = prompt(msg).split('_');
 				state[keyValue[0]] = keyValue[1];
-				return {value: keyValue[1],state: state}
-			}
-		}
+				return {value: keyValue[1],state: state};
+			};
+		};
 		
 		var putStringFromState = function(msg) {
 			return function(state) {
 				var undy = alert(msg + ' ' + state.x + ' ' + state.y);
-				return {value: undy,state: state}
-			}
-		}
+				return {value: undy,state: state};
+			};
+		};
 		
 		var cccchain = nullState()
-			.bind(function(x){ return getStringInState('variable x: what is your first name?\nNB - please write x_YOURFIRSTNAME'); })
-			.bind(function(x){ return getStringInState('variable y: what is your family name?\n NB - please write y_YOURFAMILYNAME'); })
-			.bind(function(x){ return putStringFromState('welcome, '); });
+			.bind(function(_){ return getStringInState('variable x: what is your first name?\nNB - please write x_YOURFIRSTNAME'); })
+			.bind(function(x){ return getStringInState('ok, ' + x +'; now variable y: what is your family name?\n NB - please write y_YOURFAMILYNAME'); })
+			.bind(function(y){ return putStringFromState('welcome, '); });
 			
-		cccchain({});
+		 cccchain({});
 	}
 });
 
