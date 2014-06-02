@@ -72,7 +72,7 @@ YAHOO.GEIESMONADS.test.oTestMultipleFlatmap = new YAHOO.tool.TestCase({
 			.bind(function(_){ return getValuesFromState('The state is telling us you\'re '); });
 		
 		// Uncomment to run demo
-		cccchain({});
+		// cccchain({});
 	}
 });
 
@@ -148,6 +148,36 @@ YAHOO.GEIESMONADS.test.oTestBeckmanMonadicLabeling = new YAHOO.tool.TestCase({
 	}
 });
 
+/* This test shows the usage of the state monad to implement imperative programming
+   cfr. http://brandon.si/code/the-state-monad-a-tutorial-for-the-confused/
+*/
+YAHOO.GEIESMONADS.test.oTestImperativeMonadProgrammingStyle = new YAHOO.tool.TestCase({
+	name : "TestImperativeMonadProgrammingStyle",
+	testImperativeMonadProgrammingStyle : function() {
+
+		var testArray = [1,2,3,4,5];
+		
+		/* do
+		 *   x <- pop
+		 *   pop
+		 *   push x
+		 */
+		var imp = ImperativeMonad.pop.bind(function(x) {
+			return ImperativeMonad.pop.bind(function(_) {
+				return ImperativeMonad.push(x);
+			});
+		});
+		
+		var result = imp(testArray); // {state:[1,2,3,5],value:undefined}
+		
+		Assert.areEqual(1, result.state[0]);
+		Assert.areEqual(2, result.state[1]);
+		Assert.areEqual(3, result.state[2]);
+		Assert.areEqual(5, result.state[3]);
+		Assert.areEqual(undefined, result.value);
+	}
+});
+
 YAHOO.util.Event
 		.onDOMReady(function() {
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite = new YAHOO.tool.TestSuite(
@@ -158,6 +188,8 @@ YAHOO.util.Event
 				.add(YAHOO.GEIESMONADS.test.oTestBeckmanManualLabeling);
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 				.add(YAHOO.GEIESMONADS.test.oTestBeckmanMonadicLabeling);
+			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
+				.add(YAHOO.GEIESMONADS.test.oTestImperativeMonadProgrammingStyle);
 			var logger = new YAHOO.tool.TestLogger("testLogger_GEIESMONADS");
 			logger.hideCategory("info");
 

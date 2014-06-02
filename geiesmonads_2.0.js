@@ -304,3 +304,39 @@ var MyTree = function(){
 		monadicLabeler:monadicLabeler
 	}
 }();
+
+/* Helper functions for the imperative programming example
+   cfr. http://brandon.si/code/the-state-monad-a-tutorial-for-the-confused/
+*/
+var ImperativeMonad = function(){
+	var push, pop
+	;
+	
+	getState = Monad.state.monad(function(state) {
+		return {state:state,value:state};
+	});
+	
+	push = function(item) {
+		return Monad.state.monad(function(state) {
+			var stateCopy
+			;
+			stateCopy = state.slice();
+			stateCopy.push(item);
+			return {state:stateCopy,value:undefined};
+		});
+	};
+	
+	pop = Monad.state.monad(function(state) {
+			var stateCopy, item
+			;
+			stateCopy = state.slice(),
+			item = stateCopy.pop();
+			return {state:stateCopy,value:item};
+		});
+	
+
+	return {
+		push:push,
+		pop:pop
+	}
+}();
