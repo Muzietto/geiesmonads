@@ -247,14 +247,14 @@ var MyTree = function(){
 		switch (tree.type()) {
 			case 'LEAF':
 				/**
-				 * updateState.bind(n -> new StateMonad(s -> {state:s,value:leaf([n,tree()])}));
+				 * updateState.bind(n -> unit(leaf([n,tree()])));
 				 *
-				 * how to express all this in do notation?
+				 * do
+				 *   n <- updateState
+				 * return leaf([n,tree()])
 				 */
 				leafSM = updateState.bind(function(n) {
-					return Monad.state.monad(function(s) {
-						return {state:s,value:leaf([n,tree()])};
-					});
+					return Monad.state.unit(leaf([n,tree()]));
 				});
 				/* SMART ALTERNATIVE using lift (since we aren't modifying state)
 				leafSM = updateState.bind(Monad.state.lift(function(n) {
@@ -266,22 +266,21 @@ var MyTree = function(){
 			case 'BRANCH':				
 				/**
 				 * do
-				 *  leftSM <- MkM(left(branch))
-				 *  rightSM <- MkM(right(branch)) 
-				 * return (Br leftSM rightSM)
+				 *  // PLB = pair-labeled branch
+				 *  leftPLB <- MkM(left(branch))
+				 *  rightPLB <- MkM(right(branch)) 
+				 * return (Br leftPLB rightPLB)
 				 *
 				 * MkM(oldLeft)
-				 * 	 .bind(leftSM -> MkM(oldRight)
-				 *		.bind(rightSM -> new StateMonad(s -> (s,branch(leftSM, rightSM)))));
+				 * 	 .bind(leftPLB -> MkM(oldRight)
+				 *		.bind(rightPLB -> unit(branch(leftPLB, rightPLB))));
 				 */
 				branchSM = monadicLabeler(left(tree))
-					.bind(function(leftSM) { return monadicLabeler(right(tree))
-						.bind(function(rightSM) {
-							return Monad.state.monad(function(state){ 
-								return {state:state,value:branch(leftSM,rightSM)}; 
-							});
+					.bind(function(leftPLB) { return monadicLabeler(right(tree))
+						.bind(function(rightPLB) {
+							return Monad.state.unit(branch(leftPLB,rightPLB));
+						});
 							// NO SMART ALTERNATIVE using lift here (why is that?)
-						})
 					});
 					
 				return branchSM;
