@@ -224,7 +224,7 @@ YAHOO.GEIESMONADS.test.oTestMultipleFlatmap = new YAHOO.tool.TestCase({
 			.bind(function(x){ return getStringInState('ok, ' + x +'; now variable y: what is your family name?\n NB - please write y_YOURFAMILYNAME'); })
 			.bind(function(y){ return putStringFromState('welcome, '); });
 			
-		 cccchain({});
+		// cccchain({});
 	}
 });
 

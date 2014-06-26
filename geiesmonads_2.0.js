@@ -16,13 +16,9 @@ var Monad = {
 var myMaybeMonad = function() {
 
 	var unit = function(value){
-		var result = function(possibleBindingFunction){
-			if (possibleBindingFunction) { // synt sugar
-				return bind.apply(result,[possibleBindingFunction]);
-			}
-			else {
-				return value;
-			}
+		var result = function(){
+			if (some(value)) return value;
+			return undefined;
 		};
 		result.bind = bind;
 		result.flatten = flatten;
@@ -30,6 +26,14 @@ var myMaybeMonad = function() {
 		result.instanceOf = instanceOf;
 		result.map = map;
 		return result;
+	};
+	
+	var some = function(value) {
+		return (typeof value !== 'undefined');
+	};
+	
+	var none = function(value) {
+		return (typeof value === 'undefined');
 	};
 	
 	var map = function(fab){
@@ -47,8 +51,8 @@ var myMaybeMonad = function() {
 	
 	// famb(flatten(ma)) --> mb
 	var bind = function(famb){
-		// grande FIGATA!!!! runs in the context of the monad...
-		return unit(famb(flatten.apply(this)))();
+		if (some(this())) return famb(this())
+		return function(){}
 	};
 	
 	var instanceOf = function(){
@@ -64,11 +68,7 @@ var myMaybeMonad = function() {
 
 	return {
 		unit: unit,
-		lift: lift,
-		map: map,
-		flatten: flatten,
-		instanceOf: instanceOf,
-		bind: bind
+		monad: unit
 	};
 }();
 
