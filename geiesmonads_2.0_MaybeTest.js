@@ -70,11 +70,44 @@ YAHOO.GEIESMONADS.test.oTestMMAO = new YAHOO.tool.TestCase({
 		}
 		
 		// alerts fire twice with different messages
-		var compositeAlert = coffee.map(myAlert).bind(mMore).map(myAlert);
-		Assert.areEqual('more coffee',compositeAlert());
+		// var compositeAlert = coffee.map(myAlert).bind(mMore).map(myAlert);
+		// Assert.areEqual('more coffee',compositeAlert());
 		
 		var noAlert = none.map(alert);
 		Assert.isUndefined(noAlert());
+	}
+});
+
+/* This test shows the labeling of a tree by using a state MAYBE monad
+*/
+YAHOO.GEIESMONADS.test.oTestStateMaybeMonadicLabelingOK = new YAHOO.tool.TestCase({
+	name : "TestStateMaybeMonadicLabelingOK",
+	testStateMaybeMonadicLabelingOK : function() {
+	
+		var testTree = MyTree.branch(
+			MyTree.leaf('a'),
+			MyTree.branch(
+				MyTree.branch(
+					MyTree.leaf('b'),
+					MyTree.leaf('c')),
+				MyTree.leaf('d')
+			)
+		); 
+		
+		var treeMonad = MyTree.monadicMaybeLabeler(testTree); 
+		var resultScp = treeMonad(0);
+		var resultLlt = resultScp.value;
+		var resultState = resultScp.state;
+		
+		Assert.areEqual(4, resultState);
+		Assert.areEqual('BRANCH', resultLlt().type());
+		Assert.areEqual('LEAF', MyTree.left(resultLlt())()().type());
+		
+		// here start the errors
+		Assert.areEqual(1, MyTree.left(MyTree.left(MyTree.right(resultLlt)))()()[0]);
+		Assert.areEqual('b', MyTree.left(MyTree.left(MyTree.right(resultLlt)))()()[1]);
+		Assert.areEqual(2, MyTree.right(MyTree.left(MyTree.right(resultLlt)))()()[0]);
+		Assert.areEqual('c', MyTree.right(MyTree.left(MyTree.right(resultLlt)))()()[1]);
 	}
 });
 
@@ -84,6 +117,9 @@ YAHOO.util.Event
 					"Second YUI Test Suite for GEIESMONADS");
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 				.add(YAHOO.GEIESMONADS.test.oTestMMAO);
+			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
+				.add(YAHOO.GEIESMONADS.test.oTestStateMaybeMonadicLabelingOK);
+				
 			var logger = new YAHOO.tool.TestLogger("testLogger_GEIESMONADS");
 			logger.hideCategory("info");
 
