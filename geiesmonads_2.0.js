@@ -13,7 +13,7 @@ var Monad = {
 	state: null
 };
 
-var myMaybeMonad = function() {
+var myMaybeMonad = (function() {
 
 	var unit = function(value){
 		var result = function(){
@@ -29,30 +29,29 @@ var myMaybeMonad = function() {
 	};
 	
 	var some = function(value) {
-		return (typeof value !== 'undefined');
+		return (value !== undefined 
+			&& value !== null
+			&& value !== NaN);
 	};
 	
 	var none = function(value) {
-		return (typeof value === 'undefined');
+		return !some(value);
 	};
 	
 	var map = function(fab){
-		return bind(lift(fab));
+		return this.bind(liftM(fab));
 	};
 	
 	var flatten = function(){
 		// grandissima FIGATA!!!!
-		if (this()) {
-			return this();
-		} else {
-			return function(){};
-		}
+		if (some(this())) return this();
+		return undefined;
 	};
 	
 	// famb(flatten(ma)) --> mb
 	var bind = function(famb){
-		if (some(this())) return famb(this())
-		return function(){}
+		if (some(this())) return famb(this());
+		return unit(undefined);
 	};
 	
 	var instanceOf = function(){
@@ -60,7 +59,7 @@ var myMaybeMonad = function() {
 	};
 	
 	// fab --> famb
-	var lift = function(fab){
+	var liftM = function(fab){
 		return function(x) {
 			return unit(fab(x));
 		};
@@ -68,9 +67,10 @@ var myMaybeMonad = function() {
 
 	return {
 		unit: unit,
-		monad: unit
+		monad: unit,
+		liftM: liftM,
 	};
-}();
+}());
 
 Monad.maybe = myMaybeMonad;
 
@@ -112,11 +112,6 @@ var myStateMonad = function() {
 			return (that(state));
 		});
 	};
-	
-	/* NB - flatten could also mean: given a monad
-	   M: s-> (s,v) return a f:v -> s -> (s,v) 
-	   ...but how exactly? 
-	*/
 	
 	var map = function(fab){
 		return bind(lift(fab));
