@@ -84,6 +84,28 @@ YAHOO.GEIESMONADS.test.oTestStateMaybeMonadicLabelingOK = new YAHOO.tool.TestCas
 	name : "TestStateMaybeMonadicLabelingOK",
 	testStateMaybeMonadicLabelingOK : function() {
 	
+		var simpleTree = MyTree.leaf('a');
+		
+		var simpleTreeMonad = MyTree.monadicMaybeLabeler(simpleTree); 
+		var simpleResultScp = simpleTreeMonad(0);
+		var simpleResultLlt = simpleResultScp.value;
+		var simpleResultState = simpleResultScp.state;
+		
+		Assert.areEqual(1, simpleResultState);
+		Assert.areEqual('LEAF', simpleResultLlt()().type());
+		Assert.areEqual('a', simpleResultLlt()()()[1]);
+		
+		var simpleTree2 = MyTree.branch(MyTree.leaf('a'),MyTree.leaf('b'));
+		
+		var simpleTreeMonad2 = MyTree.monadicMaybeLabeler(simpleTree2); 
+		var simpleResultScp2 = simpleTreeMonad2(0);
+		var simpleResultLlt2 = simpleResultScp2.value;
+		var simpleResultState2 = simpleResultScp2.state;
+		
+		Assert.areEqual(2, simpleResultState2);
+		Assert.areEqual('BRANCH', simpleResultLlt2().type());
+		Assert.areEqual('LEAF', MyTree.left(simpleResultLlt2())()().type());
+		
 		var testTree = MyTree.branch(
 			MyTree.leaf('a'),
 			MyTree.branch(
@@ -94,7 +116,7 @@ YAHOO.GEIESMONADS.test.oTestStateMaybeMonadicLabelingOK = new YAHOO.tool.TestCas
 			)
 		); 
 		
-		var treeMonad = MyTree.monadicMaybeLabeler(testTree); 
+		var treeMonad = MyTree.monadicMaybeLabeler(simpleTree); 
 		var resultScp = treeMonad(0);
 		var resultLlt = resultScp.value;
 		var resultState = resultScp.state;
