@@ -1,3 +1,11 @@
+/*
+	GEIESMONADS - JS monads
+	Author: Marco Faustinelli (contacts@faustinelli.net)
+	Web: http://faustinelli.net/
+	     http://faustinelli.wordpress.com/
+
+	The MIT License - Copyright (c) 2013/2014 Geiesmonads Project
+*/
 
 /* Define a State monad that manages errors (in a sense like Maybe): 
    if an error/problem occurs during the "do" computation, 

@@ -13,6 +13,15 @@ New with RELEASE 2.0
   comparison with manual labeling. See 4)
 - Usage of the state monad to emulate imperative programming - see 5)
 
+WORK IN PROGRESS
+----------------
+Define a State monad that manages errors (in a sense like Maybe): 
+if an error/problem occurs during the "do" computation, 
+it is signalled and propagated by >>=. 
+The error should also contain a string describing it.
+
+See files geiesmonads_StateMaybe.js and geiesmonads_stateMaybeTest.js.
+
 TRAINING
 --------
 - We start with experiments with Identity and Maybe monad. We verify the three laws for both of them.
