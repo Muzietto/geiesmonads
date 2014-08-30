@@ -316,6 +316,7 @@ var ImperativeMonad = function(){
 		return {state:state,value:state};
 	});
 	
+    // push(item) is a state monad
 	push = function(item) {
 		return Monad.state.monad(function(state) {
 			var stateCopy
@@ -326,6 +327,7 @@ var ImperativeMonad = function(){
 		});
 	};
 	
+    // stack -> (cdr stack,car stack)
 	pop = Monad.state.monad(function(state) {
 			var stateCopy, item
 			;
@@ -334,7 +336,15 @@ var ImperativeMonad = function(){
 			return {state:stateCopy,value:item};
 		});
 	
-
+    /* use these like:
+       pop.bind(x -> pop.bind(_ -> push(x)))
+       
+       which is:
+       do
+         x <- pop
+              pop
+              push x
+    */
 	return {
 		push:push,
 		pop:pop
