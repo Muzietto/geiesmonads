@@ -28,7 +28,7 @@ YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
 			};
 		};
 		
-		// getString / putStrings are famb's. Got it?
+		// getString / putString are famb's. Got it?
 		// full-fledged StateMonad versions
 		/*
 		var putString = function(value) {
@@ -116,11 +116,7 @@ YAHOO.GEIESMONADS.test.oTestMMAO = new YAHOO.tool.TestCase({
 		
 		// HERE'S THE JAVASCRIPT CHAINING!!!
 		var moreMoreCoffee = coffee.bind(mMore).bind(mMore).bind(mMore).bind(mMore).bind(mMore);
-		Assert.areEqual('more more more more more coffee',moreMoreCoffee());
-		
-		// ...and here's the sugar
-		var moreSweetCoffee = coffee(mMore)(mMore)(mMore)(mMore)(mMore)(mMore)(mMore);
-		Assert.areEqual('more more more more more more more coffee',moreSweetCoffee());
+		Assert.areEqual('more more more more more coffee',moreMoreCoffee());		
 	}
 });
 

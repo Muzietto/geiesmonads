@@ -70,7 +70,9 @@ var myMaybeMonad = (function() {
 	return {
 		unit: unit,
 		monad: unit,
-		liftM: liftM,
+        // keep lift for backward compatibility
+		lift: liftM,
+		liftM: liftM
 	};
 }());
 
