@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-		<title>GEIESMONADS_0.1 YUI</title>
+		<title>GEIESMONADS_TRAIN YUI</title>
 	
 		<!-- Required BEGIN-->
 		<script type="text/javascript" src="file:YUI/yahoo-dom-event.js"></script>
@@ -13,6 +13,7 @@
 			.info {background-color: White !important;}
 			.fail {background-color: Red;}
 			.pass {background-color: #A7CC25;}
+            .yui-skin-sam .yui-log-container { top: 10em; }
 		</style>
 		<!-- Required END-->
 		
@@ -21,17 +22,23 @@
 		
 		<!-- Code Under Testing -->
 		<script type="text/javascript" src="geiesmonads_0.1.js"></script>
+		<script type="text/javascript" src="geiesmonads_0.2.js"></script>
 		
 		<!-- Test Set -->
 		<script type="text/javascript" src="geiesmonads_0.1Test.js"></script>
+		<script type="text/javascript" src="geiesmonads_0.2Test.js"></script>
 		
 		<script>
 		</script>
 	</head>
 	<body class="yui-skin-sam">
 	
-	<p>GEIESMONADS 0.1 - This page is a complete running implementation of the code presented at
-	http://igstan.ro/posts/2011-05-02-understanding-monads-with-javascript.html</p>
+	<p>GEIESMONADS TRAINING - This page is a complete running implementation of the code presented at
+    <ul>
+	<li>http://igstan.ro/posts/2011-05-02-understanding-monads-with-javascript.html</li>
+	<li>http://jabberwocky.eu/2012/11/02/monads-for-dummies</li>
+    </ul></p>
+	<p>It features a chainable state monad, though</p>
 	
 		<div id="compact" class="yui-log" style="width: 90% !important"></div>
 		

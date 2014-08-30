@@ -182,16 +182,16 @@ YAHOO.util.Event
 		.onDOMReady(function() {
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite = new YAHOO.tool.TestSuite(
 					"Second YUI Test Suite for GEIESMONADS");
-			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
-				.add(YAHOO.GEIESMONADS.test.oTestMultipleFlatmap);
+			//YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
+			//	.add(YAHOO.GEIESMONADS.test.oTestMultipleFlatmap);
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 				.add(YAHOO.GEIESMONADS.test.oTestBeckmanManualLabeling);
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 				.add(YAHOO.GEIESMONADS.test.oTestBeckmanMonadicLabeling);
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 				.add(YAHOO.GEIESMONADS.test.oTestImperativeMonadProgrammingStyle);
-			var logger = new YAHOO.tool.TestLogger("testLogger_GEIESMONADS");
-			logger.hideCategory("info");
+			//var logger = new YAHOO.tool.TestLogger("testLogger_GEIESMONADS");
+			//logger.hideCategory("info");
 
 			YAHOO.tool.TestRunner
 					.add(YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite);
