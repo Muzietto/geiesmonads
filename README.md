@@ -2,20 +2,23 @@ geiesmonads - RELEASE 2.0
 =========================
 Crisp clear Javascript monads.
 
-New with release 2.0
+New with RELEASE 2.0
 --------------------
-Minor improvements to the maibe monad.
-Major improvements to the state monad.
-
-Implementation of monadic labeling for a binary tree and its
-comparison with manual labeling. See 4)
-Usage of state monad to emulate imperative programming - see 5)
+- Minor improvements to the maibe monad:
+  - introduction of inner functions some() and none()
+  - streamlining of the API
+- Major improvements to the state monad:
+  - monad as pure JS function - see 7)
+- Implementation of monadic labeling for a binary tree and its
+  comparison with manual labeling. See 4)
+- Usage of the state monad to emulate imperative programming - see 5)
 
 TRAINING
 --------
 - We start with experiments with Identity and Maybe monad. We verify the three laws for both of them.
 - We improve on the design and create a chainable Maybe monad.
 - We implement a state monad along the lines of 2) and 3) and verify the three laws also for that.
+See files geiesmonads_0.1.js and geiesmonads_0.2.js.
 
 ORIGINAL CONTRIBUTION
 ---------------------
@@ -46,6 +49,7 @@ I am in DEEP debt with:
 
 A bit of self-promotion:
 6) http://faustinelli.wordpress.com/2014/04/25/the-state-monad-in-java-8-eventually/
+7) http://faustinelli.wordpress.com/2014/06/01/state-monad-goes-to-js-town-and-starts-swinging/
 
 Any feedback is welcome.
 

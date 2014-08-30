@@ -167,6 +167,7 @@ var myStateMonad = function() {
 		monad:monad,
 		unit: unit,
 		lift: lift,
+		liftM: lift,
 		fail: fail,
 		executor: executor,
 		onError: onError,
