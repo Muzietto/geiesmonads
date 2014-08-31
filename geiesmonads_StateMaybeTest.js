@@ -14,9 +14,9 @@ var Assert = YAHOO.util.Assert;
 
 /* Go back to maybe and test a better implementation
 */
-YAHOO.GEIESMONADS.test.oTestMMAO = new YAHOO.tool.TestCase({
-	name : "TestChainableMaybeMonadAsObject",
-	testChainableMaybeMonadAsObject : function() {
+YAHOO.GEIESMONADS.test.oTestSMMAO = new YAHOO.tool.TestCase({
+	name : "TestChainableStateMaybeMonadAsObject",
+	testChainableStateMaybeMonadAsObject : function() {
 
 		var more = function(value) {
 			return 'more ' + value;
@@ -25,13 +25,13 @@ YAHOO.GEIESMONADS.test.oTestMMAO = new YAHOO.tool.TestCase({
 		// 1) custom built lifter
 		var famb = function(fab){
 			return function(a) {
-				return Monad.maybe.unit(fab(a));
+				return Monad.stateMaybe.unit(fab(a));
 			}
 		};
 
 		var mMore = famb(more);
 
-		var coffee = Monad.maybe.unit('coffee');
+		var coffee = Monad.stateMaybe.unit('coffee');
 		Assert.areEqual('coffee', coffee());
 
 		var moreCoffee = coffee.bind(mMore);
@@ -40,7 +40,7 @@ YAHOO.GEIESMONADS.test.oTestMMAO = new YAHOO.tool.TestCase({
 		Assert.areEqual('more coffee',moreCoffee.flatten());
 
 		// 2) using liftM
-		var mMore2 = Monad.maybe.liftM(more);
+		var mMore2 = Monad.stateMaybe.liftM(more);
 
 		var moreCoffee2 = coffee.bind(mMore2);
 
@@ -138,7 +138,7 @@ YAHOO.util.Event
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite = new YAHOO.tool.TestSuite(
 					"Second YUI Test Suite for GEIESMONADS");
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
-				.add(YAHOO.GEIESMONADS.test.oTestMMAO);
+				.add(YAHOO.GEIESMONADS.test.oTestSMMAO);
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 				.add(YAHOO.GEIESMONADS.test.oTestStateMaybeMonadicLabelingOK);
 				

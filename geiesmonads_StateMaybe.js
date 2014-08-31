@@ -10,7 +10,8 @@
 /* Define a State monad that manages errors (in a sense like Maybe): 
    if an error/problem occurs during the "do" computation, 
    it is signalled and propagated by >>=. 
-   The error should also contain a string describing it.
+   step 1) The presence of a None indicates an error has occurred
+   step 2) The error should propagate carrying a string which describes what occurred.
 */
 var myStateMaybeMonad = function() {
 
@@ -25,7 +26,7 @@ var myStateMaybeMonad = function() {
 
 	var unit = function(value){
 		var result = function (state) {
-			return {state:state,value:Monad.maybe.unit(value)};
+			return { state:state, value:Monad.maybe.unit(value) };
 		};
 		return monad(result);
 	};
@@ -33,11 +34,15 @@ var myStateMaybeMonad = function() {
 	var bind = function(fasmb){ // a -> state maybe b
 		var that = this;
 		return monad(function(newState) { // a new fssma
-			var cp = that(newState); // current pair
-			if (cp.value.is_some) return famb(cp.value())(cp.state);
-			else return monad(function(state){
-				return {state:newState,value:Monad.maybe.unit(null)};
-			});
+            try {
+			    var cp = that(newState); // current pair
+			    if (cp.value.is_some()) return fasmb(cp.value())(cp.state);
+			    else throw "got a none!!";
+            } catch (exc) {
+                return monad(function(state){
+				   return { state:newState, value:Monad.maybe.unit(null) };
+			    });
+            }
 		});
 	};
 
