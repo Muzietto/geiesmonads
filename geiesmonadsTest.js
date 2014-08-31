@@ -12,6 +12,46 @@ YAHOO.namespace('GEIESMONADS.test');
 
 var Assert = YAHOO.util.Assert;
 
+YAHOO.GEIESMONADS.test.oTestMMAO = new YAHOO.tool.TestCase({
+	name : "TestMaybeMonadAsObject",
+	testMaybeMonadAsObject : function() {
+    
+        var somme = Monad.maybe.unit('some');
+        Assert.isTrue(somme.is_some());
+        Assert.isFalse(somme.is_none());
+	
+        var nonne = Monad.maybe.unit(undefined);
+        Assert.isTrue(nonne.is_none());
+        Assert.isFalse(nonne.is_some());
+	
+        nonne = Monad.maybe.unit(null);
+        Assert.isTrue(nonne.is_none());
+        Assert.isFalse(nonne.is_some());
+	
+        nonne = Monad.maybe.unit(NaN);
+        Assert.isTrue(nonne.is_none());
+        Assert.isFalse(nonne.is_some());
+	
+		var coffee = Monad.maybe.unit('coffee');
+		Assert.areEqual('coffee', coffee());
+
+		var more = function(value){
+			return 'more ' + value;
+		};
+		
+		var mMore = Monad.maybe.lift(more);
+		
+		// Maybe.unit(new Person("marco", 123)).bind(new LookupPersonId())
+		//	.bind(new LookupAccount()).bind(new LookupBalance()).bind(new CheckOverdraft());
+		var moreCoffee = coffee.bind(mMore);		
+		Assert.areEqual('more coffee',moreCoffee());
+		
+		// HERE'S THE JAVASCRIPT CHAINING!!!
+		var moreMoreCoffee = coffee.bind(mMore).bind(mMore).bind(mMore).bind(mMore).bind(mMore);
+		Assert.areEqual('more more more more more coffee',moreMoreCoffee());		
+	}
+});
+
 YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
 	name : "TestStateMonadAsIOMonad",
 	testStateMonadAsIOMonad : function() {
@@ -93,30 +133,6 @@ YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
 		
 		// uncomment to run
 		// promptThenCheckThenGreetOrKick(0);
-	}
-});
-
-YAHOO.GEIESMONADS.test.oTestMMAO = new YAHOO.tool.TestCase({
-	name : "TestMaybeMonadAsObject",
-	testMaybeMonadAsObject : function() {
-	
-		var coffee = Monad.maybe.unit('coffee');
-		Assert.areEqual('coffee', coffee());
-
-		var more = function(value){
-			return 'more ' + value;
-		};
-		
-		var mMore = Monad.maybe.lift(more);
-		
-		// Maybe.unit(new Person("marco", 123)).bind(new LookupPersonId())
-		//	.bind(new LookupAccount()).bind(new LookupBalance()).bind(new CheckOverdraft());
-		var moreCoffee = coffee.bind(mMore);		
-		Assert.areEqual('more coffee',moreCoffee());
-		
-		// HERE'S THE JAVASCRIPT CHAINING!!!
-		var moreMoreCoffee = coffee.bind(mMore).bind(mMore).bind(mMore).bind(mMore).bind(mMore);
-		Assert.areEqual('more more more more more coffee',moreMoreCoffee());		
 	}
 });
 

@@ -20,8 +20,8 @@ var myMaybeMonad = (function() {
 			if (some(value)) return value;
 			return undefined;
 		};
-		result.is_some = some(value);
-		result.is_none = !some(value);
+		result.is_some = function(){ return some(value); };
+		result.is_none = function(){ return !some(value); };
 		result.bind = bind;
 		result.flatten = flatten;
 		result.unit = unit;
@@ -31,13 +31,9 @@ var myMaybeMonad = (function() {
 	};
 	
 	var some = function(value) {
-		return (value !== undefined 
+		return (typeof value !== "undefined" 
 			&& value !== null
-			&& value !== NaN);
-	};
-	
-	var none = function(value) {
-		return !some(value);
+			&& value === value);
 	};
 	
 	var map = function(fab){
