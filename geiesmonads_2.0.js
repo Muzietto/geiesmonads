@@ -128,6 +128,7 @@ var myStateMonad = function() {
 		return 'state';
 	};
 	
+    // this is a famb and it may be bound
 	var fail = function(value){
 		return unit(function(x){throw {message:value}}());
 	};
@@ -156,6 +157,7 @@ var myStateMonad = function() {
 	};
 	
 	var onError = function(errorHandler){
+        // this is the SM itself
 		return executor(this,errorHandler);
 	};
 	

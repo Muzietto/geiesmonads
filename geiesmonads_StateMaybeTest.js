@@ -18,9 +18,15 @@ YAHOO.GEIESMONADS.test.oTestSMMAO = new YAHOO.tool.TestCase({
 	name : "TestChainableStateMaybeMonadAsObject",
 	testChainableStateMaybeMonadAsObject : function() {
 
+        // modifies value
 		var more = function(value) {
 			return 'more ' + value;
 		};
+        
+        // modifies state - already a famb
+        var sugar = function(state) {
+            return 
+        }
 
 		// 1) custom built lifter
 		var famb = function(fab){
@@ -32,12 +38,15 @@ YAHOO.GEIESMONADS.test.oTestSMMAO = new YAHOO.tool.TestCase({
 		var mMore = famb(more);
 
 		var coffee = Monad.stateMaybe.unit('coffee');
-		Assert.areEqual('coffee', coffee());
+		Assert.areEqual('coffee', coffee('OK').value());
+		Assert.areEqual('OK', coffee('OK').state);
 
 		var moreCoffee = coffee.bind(mMore);
 
-		Assert.areEqual('more coffee',moreCoffee());
+		Assert.areEqual('more coffee',moreCoffee(0).value());
 		Assert.areEqual('more coffee',moreCoffee.flatten());
+		Assert.areEqual('coffee', coffee('OK').value());
+		Assert.areEqual('OK', coffee('OK').state);
 
 		// 2) using liftM
 		var mMore2 = Monad.stateMaybe.liftM(more);
@@ -78,7 +87,7 @@ YAHOO.GEIESMONADS.test.oTestSMMAO = new YAHOO.tool.TestCase({
 	}
 });
 
-/* This test shows the labeling of a tree by using a state MAYBE monad
+/* This test shows the labeling of a tree by using a statemaybe monad
 */
 YAHOO.GEIESMONADS.test.oTestStateMaybeMonadicLabelingOK = new YAHOO.tool.TestCase({
 	name : "TestStateMaybeMonadicLabelingOK",

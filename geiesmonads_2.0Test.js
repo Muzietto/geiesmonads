@@ -20,26 +20,26 @@ YAHOO.GEIESMONADS.test.oTestMultipleFlatmap = new YAHOO.tool.TestCase({
 	
 		var getString = Monad.state.lift(prompt);
 		var putString = Monad.state.lift(alert);
-		var nullState = function(){
-			return Monad.state.unit(function(x){return x});
-		};
-		
+		var start = Monad.state.monad(function(state){
+            return {value:'whatever',state:state}
+        });
+        
 /*		
 		for {
-			a <- nullState()
+			_ <- start
 			x <- getString('what is your first name?')
 			y <- getString('what is your second name?')
 			z <- putString(('welcome, ' + x + ' ' + y))
 		} yield z
 		
-		nullState
-			.flatMap(a -> getString('what is your first name?')
+		start
+			.flatMap(_ -> getString('what is your first name?')
 				.flatMap(x -> getString('what is your second name?')
 					.flatMap(y -> putString('welcome, ' + x + ' ' + y)
 						.map(IDENTITY))))
 */
 		
-		var askThenInputThenAskThenInputThenGreet = nullState()
+		var askThenInputThenAskThenInputThenGreet = start
 			.bind(function(a){ return getString('TEST askThenInputThenAskThenInputThenGreet\n\nwhat is your first name?')
 				.bind(function(x){ return getString('what is your second name?')
 					.bind(function(y){ return putString('welcome, ' + x + ' ' + y)
@@ -47,7 +47,7 @@ YAHOO.GEIESMONADS.test.oTestMultipleFlatmap = new YAHOO.tool.TestCase({
 						})})});
 		
 		// Uncomment to run demo
-		// askThenInputThenAskThenInputThenGreet(0);
+		//askThenInputThenAskThenInputThenGreet(0);
 		
 		/* This section handles a state object that gets enriched by the user by providing strings 'key_value'
 		*/	
@@ -66,13 +66,13 @@ YAHOO.GEIESMONADS.test.oTestMultipleFlatmap = new YAHOO.tool.TestCase({
 			});
 		}
 		
-		var cccchain = nullState()
+		var cccchain = start
 			.bind(function(_){ return putKeyValuePairInState('TEST update state\n\nvariable x: what is your first name?\nNB - please write x_YOURFIRSTNAME'); })
 			.bind(function(x){ return putKeyValuePairInState('ok, ' + x +'; we\' printing your first name here through the closure. But state is growing bigger. \nNow variable y: what is your family name?\nNB - please write y_YOURFAMILYNAME'); })
 			.bind(function(_){ return getValuesFromState('The state is telling us you\'re '); });
 		
 		// Uncomment to run demo
-		// cccchain({});
+		//cccchain({});
 	}
 });
 
@@ -182,8 +182,8 @@ YAHOO.util.Event
 		.onDOMReady(function() {
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite = new YAHOO.tool.TestSuite(
 					"Second YUI Test Suite for GEIESMONADS");
-			//YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
-			//	.add(YAHOO.GEIESMONADS.test.oTestMultipleFlatmap);
+			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
+				.add(YAHOO.GEIESMONADS.test.oTestMultipleFlatmap);
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 				.add(YAHOO.GEIESMONADS.test.oTestBeckmanManualLabeling);
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
