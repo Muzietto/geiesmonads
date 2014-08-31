@@ -17,8 +17,9 @@ WORK IN PROGRESS
 ----------------
 Define a State monad that manages errors (in a sense like Maybe): 
 if an error/problem occurs during the "do" computation, 
-it is signalled and propagated by >>=. 
-The error should also contain a string describing it.
+it is signalled and propagated by bind. 
+ - Step 1) The presence of a None indicates an error has occurred
+ - Step 2) The error should propagate carrying a string which describes what occurred.
 
 See files geiesmonads_StateMaybe.js and geiesmonads_stateMaybeTest.js.
 
