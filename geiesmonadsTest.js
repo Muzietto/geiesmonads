@@ -139,30 +139,6 @@ YAHOO.GEIESMONADS.test.oTestSMAO = new YAHOO.tool.TestCase({
 	}
 });
 
-YAHOO.GEIESMONADS.test.oTestSMWF = new YAHOO.tool.TestCase({
-	name : "TestStateMonadWithFailures",
-	testStateMonadWithFailures : function() {
-
-        // already a famb
-        var mMore = function(value) {
-            return function(state) {
-                return {value:'more ' + value, state:state}
-            }
-        }
-        
-        var ouch = Monad.state.fail('OUCH!');
-        
-        var moreFail = Monad.state.unit('coffee').bind(mMore).bind(ouch);
-        
-        try {
-            modeFail(0);
-        } catch (exc) {
-            Assert.areEqual('OUCH',exc.message);
-        }
-
-	}
-});
-
 YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
 	name : "TestStateMonadAsIOMonad",
 	testStateMonadAsIOMonad : function() {
@@ -199,29 +175,18 @@ YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
             return {value:null,state:state};
         });
 		
-		var askThenInputThenGreet = start.bind(
-			function(x){ return putString('what is your name?')}).bind(
-			function(x){ return getString(x);}).bind(
-			function(x){ return putString('Ciao ' + x);}
-			);
-
-		// uncomment to run
-		// askThenInputThenGreet(0);
-		
-		var promptThenGreet = start.bind(
-			function(x){ return getString('what is your name?')}).bind(
-			function(x){ return putString('welcome ' + x);}
-		);
+		var promptThenGreet = start
+            .bind(function(_){ return getString('promptThenGreet: what is your name?')})
+                .bind(function(x){ return putString('welcome ' + x);});
 		
 		// uncomment to run
 		// promptThenGreet(0);
 		
-		var promptThenCheckThenGreet = start
-			.bind(function(x){ return getString('what is your name? NB - pippo is not welcome');})
-			// a naked filter throws real runtime exceptions
-			.filter(function(x){return (x!='pippo');},'not welcome')
-			.bind(function(x){ return putString('welcome ' + x);}
-		);
+        var promptThenCheckThenGreet = start
+            .bind(function(_){ return getString('promptThenCheckThenGreet: what is your name? \NB - pippo is not welcome');})
+                // a naked filter throws real runtime exceptions
+                .filter(function(x){return (x!='pippo');},'not welcome')
+                    .bind(function(x){ return putString('welcome ' + x);});
 		
 		try{
 			// uncomment to run
@@ -236,13 +201,63 @@ YAHOO.GEIESMONADS.test.oTestSMAIOM = new YAHOO.tool.TestCase({
 		}
 
 		var promptThenCheckThenGreetOrKick = start
-		    .bind(function(x){return getString('what is your name? \nNB - Jeremy is not welcome');})
+		    .bind(function(_){return getString('promptThenCheckThenGreetOrKick: what is your name? \nNB - Jeremy is not welcome');})
 		        .filter(function(y){return (y!='Jeremy')},'not welcome')
 		            .bind(function(z){return putString('welcome '+z)})
 		                .onError(kickAway);
 		
 		// uncomment to run
 		//promptThenCheckThenGreetOrKick(0);
+	}
+});
+
+YAHOO.GEIESMONADS.test.oTestSMWB = new YAHOO.tool.TestCase({
+	name : "TestStateMonadWithBranching",
+	testStateMonadWithBranching : function() {
+
+		var putString = Monad.state.lift(alert);
+		var getString = Monad.state.lift(prompt);
+		var start = Monad.state.monad(function(state){return {value:null,state:state};});
+
+        var jeremyPredicate = function(name){ return name !== 'Jeremy' };
+        var trueMonad = start.bind(function(_){ return putString('welcome') });
+        var falseMonad = start.bind(function(_){ return putString('go away') });
+        
+        var branching = start
+            .bind(function(_){ return getString('branching: what is your name?'); })
+            .iff(jeremyPredicate,trueMonad,falseMonad)
+            .bind(function(x){ return putString('I told you so... ' + x); });
+        
+        // uncomment to run demo
+        //branching(0);
+	}
+});
+
+YAHOO.GEIESMONADS.test.oTestSMMF = new YAHOO.tool.TestCase({
+	name : "TestStateMonadMapFlatten",
+	testStateMonadMapFlatten : function() {
+    
+        var monad = Monad.state.monad
+        var getState = monad(function(state){return {value:state,state:state}});
+        var setState = function(x){return monad(function(state){return {value:undefined,state:x}})};
+    
+        // map
+        var mapped = getState.map(function(x){return parseInt(x);});
+        
+        Assert.areEqual(1,mapped('1').value);
+        Assert.areEqual('1',mapped('1').state);
+
+        // setState
+        var manipolated = mapped.bind(function(_){ return setState('new state') });
+        
+        Assert.areEqual(undefined,manipolated('whatever').value);
+        Assert.areEqual('new state',manipolated('whatever else').state);
+        
+        // flatten
+        var monadMonad = monad(mapped);
+        
+        Assert.areEqual(1,monadMonad.flatten()('1').value);
+        Assert.areEqual('1',monadMonad.flatten()('1').state);
 	}
 });
 
@@ -261,11 +276,14 @@ YAHOO.util.Event
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 				.add(YAHOO.GEIESMONADS.test.oTestSMAO);
 
-			//YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
-			//	.add(YAHOO.GEIESMONADS.test.oTestSMWF);
+			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
+				.add(YAHOO.GEIESMONADS.test.oTestSMMF);
                 
 			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
 				.add(YAHOO.GEIESMONADS.test.oTestSMAIOM);
+
+			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
+				.add(YAHOO.GEIESMONADS.test.oTestSMWB);
 
 			var logger = new YAHOO.tool.TestLogger("testLogger_GEIESMONADS");
 			logger.hideCategory("info");

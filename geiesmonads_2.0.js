@@ -76,13 +76,19 @@ Monad.maybe = myMaybeMonad;
 
 var myStateMonad = function() {
 
-	var monad = function(fssa) { // State a :: s -> (s,a)
-		var result = fssa.bind({}) // clone using prototype.bind
+	var monad = function(fssa) { // s -> (s,a)
+        // allow wrapping
+        if (fssa.instanceOf && fssa.instanceOf()==='state') {
+            return unit(fssa);
+        }        
+        var result = fssa.bind({}) // clone using prototype.bind
 		;
 		result.bind = bind; // overriding prototype.bind - what a pity!!!
 		result.flatten = flatten;
 		result.map = map;
 		result.filter = filter;
+		result.flatten = flatten;
+		result.iff = iff;
 		result.onError = onError;
 		result.instanceOf = instanceOf;
 		
@@ -96,25 +102,13 @@ var myStateMonad = function() {
 		return monad(result);
 	};
 
-	// famb(this(newState).value)(this(newState).state) --> mb
+	// famb(this(state).value)(this(state).state) --> mb
 	var bind = function(famb){
 		var that = this;
-		return monad(function(newState) { // a new fssa
-			var cp = that(newState); // current pair
+		return monad(function(state) { // a new fssa
+			var cp = that(state); // current pair
 			return famb(cp.value)(cp.state);
 		});
-	};
-
-	var flatten = function() {
-		var that = this;
-		return monad(function(state){
-			// grandissima FIGATA!!!!
-			return (that(state));
-		});
-	};
-	
-	var map = function(fab){
-		return bind(lift(fab));
 	};
 	
 	// fab --> famb
@@ -123,56 +117,91 @@ var myStateMonad = function() {
 			return unit(fab(x));
 		};
 	};
+
+    // extract value from s -> (s, s -> (s,a))
+	var flatten = function() {
+		var that = this;
+		return monad(function(state){
+            return (that(state).value)(state);
+		});
+	};
+	
+    // monad(s -> {state:s,value:fab(this(s).state)}) -> m(mb)
+	var map = function(fab){
+        var that = this;
+        return monad(function(state){ // a new fssa
+            var cp = that(state); // current pair
+            return {state:state,value:fab(cp.value)};
+        });
+        // simpler alternative
+		//return this.bind(lift(fab));
+	};
 	
 	var instanceOf = function(){
 		return 'state';
 	};
 	
-    // this is a famb and it may be bound
+    /* 
+    theoretically this is a bindable famb, 
+    but there's no reason bind it.
+    It would explode at each run of the monad */
 	var fail = function(value){
-		return unit(function(x){throw {message:value}}());
+		return monad(function(state){
+            throw {message:value}
+        });
 	};
-	
-	// predicate: v -> boolean
+
+	// predicate: value -> boolean
 	var filter = function(predicate,msg){
-		var iff = function(v) {
-			if (predicate(v)){
-				return unit(v);
+        // _iff is famb...
+		var _iff = function(value) {
+			if (predicate(value)){
+				return unit(value);
 			} else {
-				return fail(msg + '-' + v);
+				return fail(msg + '-' + value);
 			}
 		};
-		return this.bind(iff);
+        // ...that gets bound to the chain
+		return this.bind(_iff);
 	};
-	
-	// errorHandler must be a :exception -> state monad
-	var executor = function(monad,errorHandler){
-		return function(state){
-			try {
-				return monad(state);
-			} catch (exception){
-				return errorHandler(exception)(state);
-			}
-		};
-	};
-	
+
+	/*
+    last ring in a particular section of the monad chain.
+    wraps the execution in a try block and proceeds with 
+    errorHandler must be a function 
+    with type exception -> state monad 
+    */
 	var onError = function(errorHandler){
-        // this is the SM itself
-		return executor(this,errorHandler);
-	};
+        var that = this
+        ;
+        return function(state){
+            try {
+                return that(state);
+            } catch (exception){
+                return errorHandler(exception)(state);
+            }
+        };
+    };
 	
+    // binds one or the other monad depending on predicate
+    var iff = function(predicate,trueMonad,falseMonad) {
+        // _iff is famb...
+        var _iff = function(value){
+            if (predicate(value)){
+                return trueMonad.bind(function(_){return unit(value)})
+            } else {
+                return falseMonad.bind(function(_){return unit(value)})
+            }
+        }
+        // ...that gets bound to the chain
+        return this.bind(_iff);
+    }
+    
 	return {
-		monad:monad,
-		unit: unit,
-		lift: lift,
-		liftM: lift,
-		fail: fail,
-		executor: executor,
-		onError: onError,
-		map: map,
-		flatten: flatten,
-		instanceOf: instanceOf,
-		bind: bind
+        monad:monad,
+        unit: unit,
+        lift: lift,
+        liftM: lift
 	};
 }();
 

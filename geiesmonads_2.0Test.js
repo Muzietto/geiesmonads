@@ -40,7 +40,7 @@ YAHOO.GEIESMONADS.test.oTestMultipleFlatmap = new YAHOO.tool.TestCase({
 */
 		
 		var askThenInputThenAskThenInputThenGreet = start
-			.bind(function(a){ return getString('TEST askThenInputThenAskThenInputThenGreet\n\nwhat is your first name?')
+			.bind(function(_){ return getString('TEST askThenInputThenAskThenInputThenGreet\n\nwhat is your first name?')
 				.bind(function(x){ return getString('what is your second name?')
 					.bind(function(y){ return putString('welcome, ' + x + ' ' + y)
 						//.map(function(xxx){return xxx})
