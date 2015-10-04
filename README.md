@@ -1,10 +1,19 @@
-geiesmonads - RELEASE 2.0
+geiesmonads - RELEASE 2.1
 =========================
-Crisp clear Javascript monads.
+Crisp clear Javascript monads (rel. 2.0).
+
+**NOW with porting to ECMAScript 6**
+
+New with RELEASE 2.1
+--------------------
+Maybe and State in ECMAScript 6. Verify whether your browser can run the code.
+Mocha test runner.
+
+Download/clone and doubleclick one of the HTML files.
 
 New with RELEASE 2.0
 --------------------
-- Minor improvements to the maibe monad:
+- Minor improvements to the maybe monad:
   - introduction of inner functions some() and none()
   - streamlining of the API
 - Major improvements to the state monad:
