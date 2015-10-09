@@ -31,7 +31,22 @@ describe('state monad', function() {
     expect(sss).to.be.equal(13);
     expect(aaa).to.be.equal(11);
   });
-  it('features sGet and sSet - IMPLEMENT ME!!', function() {
-    expect(true).to.be.not.ok;
+  it('features sGet', function() {
+    var getState = MONAD.state.sGet;
+    var twelve = unit(12);
+    var fasmb = a => state(s => [a+s, a-s]); // s -> 12+s
+    var bound = twelve.bind(fasmb).bind(a => getState);
+    var [sss, aaa] = bound(1);
+    expect(sss).to.be.equal(13);
+    expect(aaa).to.be.equal(13);
+  });
+  it('features sSet', function() {
+    var setState = MONAD.state.sSet;
+    var twelve = unit(12);
+    var fasmb = a => state(s => [a+s, a-s]); // a -> 12-s
+    var bound = twelve.bind(fasmb).bind(a => setState(a*2));
+    var [sss, aaa] = bound(1);
+    expect(sss).to.be.equal(22);
+    expect(aaa).to.be.undefined;
   });
 });

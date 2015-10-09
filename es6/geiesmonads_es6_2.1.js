@@ -52,35 +52,50 @@ var MyTree = function(){
 	monadicLabeler,
 	nextLeaf
 	;
-	
-	leaf = function(value) {
-		var result, _type = 'LEAF'
-		;
-		result = function() {return value;}
-		result.type = function(){return _type;};
+
+	leaf = value => {
+		var result = () => value;
+    result.match = (lFun, tFun) => lFun(value);
+		return result;
+	};
+
+	branch = (left, right) => {
+		var result = w => w(left, right);
+    result.match = (lFun, tFun) => tFun(left, right);
 		return result;
 	};
 	
-	branch = function(leftT,rightT) {
-		var result, _type = 'BRANCH'
-		;
-		result = function(w){return w(leftT,rightT)};
-		result.type = function(){return _type;};
-		return result;
-	};
-	
-	left = function(branch) {
-		return branch(function(l,r){return l;});
-	};
-	
-	right = function(branch) {
-		return branch(function(l,r){return r;});
-	};
+	left = branch => branch((l,r) => l);
+	right = branch => branch((l,r) => r);
 	
 	/* this function accepts a tree and produces a labeled tree.
 	 * Because of the recursion call needs, the return value 
-	 * must be a pair [state,labeled tree]
+	 * must be a pair [state, labeled tree]
 	 */
+/*  manualLabeler = [s, tree] => {
+    tree.match(
+      aLeaf => [s+1, leaf([aLeaf(), s])],
+      aBranch => {
+        var leftLTree = manualLabeler([s, left(aBranch)]);
+        var rightLTree = manualLabeler([leftLTree[0], right(aBranch)]);
+        return []
+      }
+    );
+  }
+   
+  */ 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
 	manualLabeler = function(tree,stateNum) {
 		var lltreeLeft, lltreeRight
 		;
