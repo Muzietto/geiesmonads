@@ -50,3 +50,42 @@ describe('state monad', function() {
     expect(aaa).to.be.undefined;
   });
 });
+
+var branch = MyTree.branch;
+var leaf = MyTree.leaf;
+var left = MyTree.left;
+var right = MyTree.right;
+var identity = x => x;
+
+var simpleTree = branch(leaf('a'),branch(leaf('b'),leaf('c')));
+var complexTree = branch(
+  leaf('a'),
+  branch(
+    branch(
+      leaf('b'),
+      leaf('c')),
+    leaf('d')
+  )
+);
+
+describe('manual labeler', function() {
+  it('labels a single leaf', function() {
+    var result = MyTree.manualLabeler([0, leaf('aaa')]);
+    expect(result[0]).to.be.equal(1);
+    expect(result[1](identity)).to.be.equal('aaa');
+  });
+  it('labels a simple tree', function() {
+    var simpleResult = MyTree.manualLabeler([0, simpleTree]);
+    expect(left(simpleResult[1])(identity)).to.be.equal('a');
+    expect(left(simpleResult[0])).to.be.equal(0);
+    expect(right(right(simpleResult[1]))).to.be.equal(2);
+    expect(right(right(simpleResult[1]))).to.be.equal('c');
+  });
+  it('labels a complex tree', function() {
+    var complexResult = MyTree.manualLabeler([0, complexTree]);
+    expect(left(complexResult)[0]).to.be.equal(0);
+    expect(left(complexResult)[1]).to.be.equal('a');
+    expect(rightL(left(right(complexResult)))[0]).to.be.equal(2);
+    expect(right(left(right(complexResult)))[1]).to.be.equal('c');
+  });
+});

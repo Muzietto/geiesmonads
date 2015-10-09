@@ -46,22 +46,28 @@ MONAD.state = function() {
    cfr. http://channel9.msdn.com/Shows/Going+Deep/Brian-Beckman-The-Zen-of-Expressing-State-The-State-Monad
 */
 var MyTree = function(){
-	var branch, leaf,
+	var empty, branch, leaf,
 	left, right,
 	manualLabeler,
 	monadicLabeler,
 	nextLeaf
 	;
 
+	empty = () => {
+		var result = () => {};
+    result.match = (eFun, lFun, tFun) => eFun();
+		return result;
+	};
+
 	leaf = value => {
-		var result = () => value;
-    result.match = (lFun, tFun) => lFun(value);
+		var result = w => w(value);
+    result.match = (eFun, lFun, tFun) => lFun(value);
 		return result;
 	};
 
 	branch = (left, right) => {
 		var result = w => w(left, right);
-    result.match = (lFun, tFun) => tFun(left, right);
+    result.match = (eFun, lFun, tFun) => tFun(left, right);
 		return result;
 	};
 	
@@ -70,22 +76,20 @@ var MyTree = function(){
 	
 	/* this function accepts a tree and produces a labeled tree.
 	 * Because of the recursion call needs, the return value 
-	 * must be a pair [state, labeled tree]
+	 * must be a pair [state, tree]
 	 */
-/*  manualLabeler = [s, tree] => {
-    tree.match(
-      aLeaf => [s+1, leaf([aLeaf(), s])],
-      aBranch => {
-        var leftLTree = manualLabeler([s, left(aBranch)]);
-        var rightLTree = manualLabeler([leftLTree[0], right(aBranch)]);
-        return []
-      }
-    );
-  }
+  manualLabeler = ([s, tree]) => tree.match(
+    empty => {},
+    value => [s+1, leaf(value)],
+    (lBranch, rBranch) => {
+      var leftLTree = manualLabeler([s, lBranch]);
+      var rightLTree = manualLabeler([leftLTree[0], rBranch]);
+      return [rightLTree[0], branch(leftLTree[1], rightLTree[1])];
+    }
+  );
+  
    
-  */ 
-   
-   
+
    
    
    
@@ -96,7 +100,9 @@ var MyTree = function(){
    
    
    
-	manualLabeler = function(tree,stateNum) {
+   
+   
+	_manualLabeler = function(tree, stateNum) {
 		var lltreeLeft, lltreeRight
 		;
 		switch (tree.type()) {
