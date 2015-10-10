@@ -46,7 +46,7 @@ MONAD.state = function() {
    cfr. http://channel9.msdn.com/Shows/Going+Deep/Brian-Beckman-The-Zen-of-Expressing-State-The-State-Monad
 */
 var MyTree = function(){
-	var empty, branch, leaf,
+	var empty, node, leaf,
 	left, right,
 	manualLabeler,
 	monadicLabeler,
@@ -65,67 +65,88 @@ var MyTree = function(){
 		return result;
 	};
 
-	branch = (left, right) => {
+	node = (left, right) => {
 		var result = w => w(left, right);
     result.match = (eFun, lFun, tFun) => tFun(left, right);
 		return result;
 	};
 	
-	left = branch => branch((l,r) => l);
-	right = branch => branch((l,r) => r);
+	left = node => node((l,r) => l);
+	right = node => node((l,r) => r);
 	
 	/* this function accepts a tree and produces a labeled tree.
 	 * Because of the recursion call needs, the return value 
-	 * must be a pair [state, tree]
+	 * must be a pair [state, labeled tree]
 	 */
-  manualLabeler = ([s, tree]) => tree.match(
-    empty => {},
-    value => [s+1, leaf(value)],
-    (lBranch, rBranch) => {
-      var leftLTree = manualLabeler([s, lBranch]);
-      var rightLTree = manualLabeler([leftLTree[0], rBranch]);
-      return [rightLTree[0], branch(leftLTree[1], rightLTree[1])];
+  manualLabeler = (s, tree) => tree.match(
+    _ => [s, empty()],
+    value => [s + 1, leaf([s, value])],
+    (lnode, rnode) => {
+      var leftLTree = manualLabeler(s, lnode);
+      var rightLTree = manualLabeler(leftLTree[0], rnode);
+      return [rightLTree[0], node(leftLTree[1], rightLTree[1])];
     }
   );
+
+	/* accepts a tree and returns a state monad
+	 * that will label it starting from an initial state (to be provided)
+	 */
+  monadicLabeler = tree => {
+    var tick = MONAD.state.state(n => [n+1, n]);
+    var getState = MONAD.state.sGet;
+    var setState = MONAD.state.sSet;
+    var unit = MONAD.state.UNIT;
+    return tree.match(
+      /*  do return undefined
+       */
+      _ => unit(empty()),
+      /*  value => do n <- getState
+       *              setState (n+1)
+       *              return leaf([n,value])
+       */
+      value => tick.bind(n => unit(leaf([n,value]))),
+      //value => getState.bind(n => setState(n+1).bind(_ => unit(leaf([n,value])))),
+      /*  (lTree, rTree) => do leftLTree  <- monadicLabeler(lTree)
+       *                       rightLTree <- monadicLabeler(rTree)
+       *                       return node(leftLTree, rightLTree)
+       */
+      (lTree, rTree) => monadicLabeler(lTree)
+                          .bind(leftLTree => monadicLabeler(rTree)
+                            .bind(rightLTree => unit(node(leftLTree, rightLTree))))
+    );
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
    
 
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-	_manualLabeler = function(tree, stateNum) {
-		var lltreeLeft, lltreeRight
-		;
-		switch (tree.type()) {
-		
-			case 'LEAF':
-				return [stateNum+1,leaf([stateNum,tree()])];
-				break;
-			case 'BRANCH':
-				lltreeLeft = manualLabeler(left(tree),stateNum);
-				 // manualLabeler(left(tree)) returns and updated state to be fed to the right branch
-				lltreeRight = manualLabeler(right(tree),lltreeLeft[0]);
-				return [lltreeRight[0],branch(lltreeLeft[1],lltreeRight[1])];
-				break;
-			default:
-				throw "Not a tree!";
-		}
-	};
 	
 	/* accepts a tree and returns a state monad
 	 * that will label it starting from an initial state (to be provided)
 	 */
-	monadicLabeler = function(tree) {
-		var leafSM, branchSM
+	_monadicLabeler = function(tree) {
+		var leafSM, nodeSM
 		;
 		switch (tree.type()) {
 			case 'LEAF':
@@ -146,27 +167,27 @@ var MyTree = function(){
 				*/
 				return leafSM;
 				break;
-			case 'BRANCH':				
+			case 'node':				
 				/**
 				 * do
-				 *  // PLB = pair-labeled branch
-				 *  leftPLB <- MkM(left(branch))
-				 *  rightPLB <- MkM(right(branch)) 
+				 *  // PLB = pair-labeled node
+				 *  leftPLB <- MkM(left(node))
+				 *  rightPLB <- MkM(right(node)) 
 				 * return (Br leftPLB rightPLB)
 				 *
 				 * MkM(oldLeft)
 				 * 	 .bind(leftPLB -> MkM(oldRight)
-				 *		.bind(rightPLB -> unit(branch(leftPLB, rightPLB))));
+				 *		.bind(rightPLB -> unit(node(leftPLB, rightPLB))));
 				 */
-				branchSM = monadicLabeler(left(tree))
+				nodeSM = monadicLabeler(left(tree))
 					.bind(function(leftPLB) { return monadicLabeler(right(tree))
 						.bind(function(rightPLB) {
-							return MONAD.state.UNIT(branch(leftPLB,rightPLB));
+							return MONAD.state.UNIT(node(leftPLB,rightPLB));
 						});
 							// NO SMART ALTERNATIVE using lift here (why is that?)
 					});
 					
-				return branchSM;
+				return nodeSM;
 				break;
 			default:
 				throw "Not a tree!";
@@ -179,12 +200,13 @@ var MyTree = function(){
 	});
 	
 	return {
-		branch:branch,
-		leaf:leaf,
-		left:left,
-		right:right,
-		manualLabeler:manualLabeler,
-		monadicLabeler:monadicLabeler
+		node : node,
+		leaf : leaf,
+		empty : empty,
+		left : left,
+		right : right,
+		manualLabeler : manualLabeler,
+		monadicLabeler : monadicLabeler
 	}
 }();
 
