@@ -3,14 +3,15 @@ mocha.setup('bdd');
 
 describe('maybe monad', function() {
   var maybe = MONAD.maybe.UNIT;
+  var isSome = MONAD.maybe.isSome;
   it('may be some or none', function() {
     expect(maybe(12)()).to.be.equal(12);
-    expect(maybe(null)()).to.be.not.ok;
+    expect(isSome(maybe(null)())).to.be.not.ok;
   });
   it('binds into some or none', function() {
     var famb = a => maybe(a * 2);
     expect(maybe(12).bind(famb)()).to.be.equal(24);
-    expect(maybe(null).bind(famb)()).to.be.not.ok;
+    expect(isSome(maybe(null).bind(famb)())).to.be.not.ok;
   });
 });
 
@@ -133,3 +134,22 @@ describe('monadic labeler', function() {
   });
 });
 
+var state = MONAD.state.state;
+var unit = MONAD.state.UNIT;
+var getState = MONAD.state.sGet;
+
+describe('stateMaybe monad', function() {
+  it('is a spring mouse', function() {
+    expect(unit(12)(1)[0]).to.be.equal(1);
+    expect(unit(12)(1)[1]).to.be.equal(12);
+    expect(state(s => [s, 12])(1)[0]).to.be.equal(1);
+    expect(state(s => [s, 12])(1)[1]).to.be.equal(12);
+  });
+  it('binds very well', function() {
+    var twelve = unit(12);
+    var fasmb = a => state(s => [a+s, a-s]);
+    var bound = twelve.bind(fasmb);
+    var [sss, aaa] = bound(1);
+    expect(sss).to.be.equal(13);
+    expect(aaa).to.be.equal(11);
+  }); });

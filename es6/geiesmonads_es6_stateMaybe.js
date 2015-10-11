@@ -4,18 +4,51 @@
 	Web: http://faustinelli.net/
 	     http://faustinelli.wordpress.com/
 
-	The MIT License - Copyright (c) 2013/2014 Geiesmonads Project
+	The MIT License - Copyright (c) 2013/2015 Geiesmonads Project
 */
 
 /* Define a State monad that manages errors (in a sense like Maybe): 
    if an error/problem occurs during the "do" computation, 
-   it is signalled and propagated by >>=. 
+   it is signalled and propagated by >>= 
    step 1) The presence of a None indicates an error has occurred
    step 2) The error should propagate carrying a string which describes what occurred.
 */
-var myStateMaybeMonad = function() {
 
-	var monad = function(fssma) { // State a :: s -> (s,maybe a)
+MONAD.stateMaybe = function() {
+
+  var monad = fssma => { // s => [s, maybe a]
+    var result = s => fssma(s);
+    result.bind = fassmb => s => {
+      var bound = ...;
+      try {
+        var [sss, aaa] = result(s);
+        if (!aaa)
+        return fassmb(aaa)(sss);
+      } catch (e) {
+        bound = MONAD.maybe(null);
+      }
+      return bound;
+    };
+    return result;
+  }
+  
+  var unit = value => s => [s, value];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	var _monad = function(fssma) { // State a :: s -> (s,maybe a)
 		var result = fssma.bind({}) // clone using prototype.bind
 		;
 		result.bind = bind; // overriding prototype.bind - what a pity!!!
