@@ -9,87 +9,102 @@
 
 /* Define a State monad that manages errors (in a sense like Maybe): 
    if an error/problem occurs during the "do" computation, 
-   it is signalled and propagated by >>=. 
+   it is signalled and propagated by >>=
    step 1) The presence of a None indicates an error has occurred
    step 2) The error should propagate carrying a string which describes what occurred.
 */
 
 var expect = chai.expect;
-YAHOO.namespace('GEIESMONADS.test');
-
-var Assert = YAHOO.util.Assert;
-
-/* Go back to maybe and test a better implementation
- */
+mocha.setup('bdd');
 
 /* This test shows the labeling of a tree by using a statemaybe monad
  */
-YAHOO.GEIESMONADS.test.oTestStateMaybeMonadicLabelingOK = new YAHOO.tool.TestCase({
-	name : "TestStateMaybeMonadicLabelingOK",
-	testStateMaybeMonadicLabelingOK : function() {
 
-		var simpleTree = MyTree.leaf('a');
+var stateMaybe = MONAD.stateMaybe.stateMaybe;
+var unit = MONAD.stateMaybe.UNIT;
+var getState = MONAD.stateMaybe.sGet;
+var maybe = MONAD.maybe.UNIT;
 
-		var simpleTreeMonad = MyTree.monadicMaybeLabeler(simpleTree); 
-		var simpleResultScp = simpleTreeMonad(0);
-		var simpleResultLlt = simpleResultScp.value;
-		var simpleResultState = simpleResultScp.state;
-
-		Assert.areEqual(1, simpleResultState);
-		Assert.areEqual('LEAF', simpleResultLlt()().type());
-		Assert.areEqual('a', simpleResultLlt()()()[1]);
-
-		var simpleTree2 = MyTree.branch(MyTree.leaf('a'),MyTree.leaf('b'));
-
-		var simpleTreeMonad2 = MyTree.monadicMaybeLabeler(simpleTree2); 
-		var simpleResultScp2 = simpleTreeMonad2(0);
-		var simpleResultLlt2 = simpleResultScp2.value;
-		var simpleResultState2 = simpleResultScp2.state;
-
-		Assert.areEqual(2, simpleResultState2);
-		Assert.areEqual('BRANCH', simpleResultLlt2().type());
-		Assert.areEqual('LEAF', MyTree.left(simpleResultLlt2())()().type());
-
-		var testTree = MyTree.branch(
-			MyTree.leaf('a'),
-			MyTree.branch(
-				MyTree.branch(
-					MyTree.leaf('b'),
-					MyTree.leaf('c')),
-				MyTree.leaf('d')
-			)
-		); 
-
-		var treeMonad = MyTree.monadicMaybeLabeler(simpleTree); 
-		var resultScp = treeMonad(0);
-		var resultLlt = resultScp.value;
-		var resultState = resultScp.state;
-
-		Assert.areEqual(4, resultState);
-		Assert.areEqual('BRANCH', resultLlt().type());
-		Assert.areEqual('LEAF', MyTree.left(resultLlt())()().type());
-
-		// here start the errors
-		Assert.areEqual(1, MyTree.left(MyTree.left(MyTree.right(resultLlt)))()()[0]);
-		Assert.areEqual('b', MyTree.left(MyTree.left(MyTree.right(resultLlt)))()()[1]);
-		Assert.areEqual(2, MyTree.right(MyTree.left(MyTree.right(resultLlt)))()()[0]);
-		Assert.areEqual('c', MyTree.right(MyTree.left(MyTree.right(resultLlt)))()()[1]);
-	}
+describe('stateMaybe monad', function() {
+  it('is a spring mouse', function() {
+    var stateMaybeRunned = unit(12)(1); // [1, maybe(12)]
+    expect(stateMaybeRunned[0]).to.be.equal(1);
+    expect(stateMaybeRunned[1]()).to.be.equal(12);
+    var stateMaybeRunned2 = stateMaybe(s => [s, maybe(12)])(1); // [1, maybe(12)]
+    expect(stateMaybeRunned2[0]).to.be.equal(1);
+    expect(stateMaybeRunned2[1]()).to.be.equal(12);
+  });
+  it('binds to produce somes', function() {
+    var twelve = unit(12);
+    var fasmb = a => stateMaybe(s => [a+s, maybe(a-s)]);
+    var bound = twelve.bind(fasmb);
+    var [sss, maybea] = bound(1);
+    expect(sss).to.be.equal(13);
+    expect(maybea()).to.be.equal(11);
+  });
+  it('binds to preserve nones', function() {
+    var none = unit(null);
+    var fasmb = a => stateMaybe(s => [a+s, maybe(a-s)]);
+    var bound = none.bind(fasmb);
+    var [sss, maybea] = bound(1);
+    expect(sss).to.be.equal(1);
+    expect(maybea()).to.be.undefined;
+  });
+  it('binds to produce nones', function() {
+    var twelve = unit(12);
+    var facrash = a => stateMaybe(s => { throw 'ouch!'; });
+    var bound = twelve.bind(facrash);
+    var [sss, maybea] = bound(1);
+    expect(sss).to.be.equal(1);
+    expect(maybea()).to.be.undefined;
+  });
 });
 
-YAHOO.util.Event
-		.onDOMReady(function() {
-			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite = new YAHOO.tool.TestSuite(
-					"Second YUI Test Suite for GEIESMONADS");
-			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
-				.add(YAHOO.GEIESMONADS.test.oTestSMMAO);
-			YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite
-				.add(YAHOO.GEIESMONADS.test.oTestStateMaybeMonadicLabelingOK);
+var node = MyTree.node;
+var leaf = MyTree.leaf;
+var empty = MyTree.empty;
+var left = maybeNode => MyTree.left(maybeNode());
+var right = maybeNode => MyTree.right(maybeNode());
+var identity = x => x;
 
-			var logger = new YAHOO.tool.TestLogger("testLogger_GEIESMONADS");
-			logger.hideCategory("info");
+var simpleTree = node(leaf('a'),node(leaf('b'),leaf('c')));
 
-			YAHOO.tool.TestRunner
-					.add(YAHOO.GEIESMONADS.test.GEIESMONADS_TestSuite);
-			YAHOO.tool.TestRunner.run()
-		});
+describe('monadic labeler using stateMaybes', function() {
+  it('labels a single leaf', function() {
+    var result = MyTree.monadicMaybeLabeler(leaf('aaa'));
+    // s => [s+1, maybe(leaf([s,'aaa']))]
+    expect(result(0)[0]).to.be.equal(1);
+    expect(result(0)[1]()(identity)).to.be.eql([0, 'aaa']);
+  });
+  it('puts none on an empty node', function() {
+    // s => [s, none]
+    var result = MyTree.monadicMaybeLabeler(empty());
+    expect(result(0)[0]).to.be.equal(0);
+    var none = result(0)[1];
+    expect(MONAD.maybe.isNone(none)).to.be.ok;
+  });
+  it('puts nones also deep down', function() {
+    var result = MyTree.monadicMaybeLabeler(node(empty(), leaf('aaa')));
+    // [1, maybe(node(none, maybe(leaf([0,'aaa']))))]
+    expect(result(0)[0]).to.be.equal(1);
+    expect(left(result(0)[1])(identity)).to.be.undefined;
+    expect(right(result(0)[1])(identity)).to.be.eql([0, 'aaa']);
+  });
+  it('labels a simple tree', function() {
+    var simpleResult = MyTree.monadicMaybeLabeler(simpleTree);
+    /* s => [s+3, 
+             maybe(node(
+               maybe(leaf([s,'a'])),
+               maybe(node(
+                 maybe(leaf([s+1,'b'])),
+                 maybe(leaf([s+2,'c']))
+               ))
+             ))
+            ]
+     */
+    expect(simpleResult(0)[0]).to.be.equal(3);
+    var leftLabeledLeaf = left(simpleResult(0)[1]); // leaf([0,'a'])
+    expect(leftLabeledLeaf(identity)).to.be.eql([0,'a']);
+    expect(right(right(simpleResult(0)[1]))(identity)).to.be.eql([2,'c']);
+  });
+});
