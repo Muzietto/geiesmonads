@@ -17,114 +17,23 @@
 MONAD.stateMaybe = function() {
 
   var monad = fssma => { // s => [s, maybe a]
-    var result = s => fssma(s);
-    result.bind = fassmb => s => {
-      var bound = ...;
+    var statemaybe = s => fssma(s);
+    statemaybe.bind = fassmb => monad(s => {
       try {
-        var [sss, aaa] = result(s);
-        if (!aaa)
-        return fassmb(aaa)(sss);
+        var [sss, maybea] = statemaybe(s);
+        if (MONAD.maybe.isNone(maybea)) throw "got a none!!";
+        return fassmb(maybea())(sss);
       } catch (e) {
-        bound = MONAD.maybe(null);
+        return [sss, MONAD.maybe.none];
       }
-      return bound;
-    };
-    return result;
+    });
+    return statemaybe;
   }
-  
-  var unit = value => s => [s, value];
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	var _monad = function(fssma) { // State a :: s -> (s,maybe a)
-		var result = fssma.bind({}) // clone using prototype.bind
-		;
-		result.bind = bind; // overriding prototype.bind - what a pity!!!
-		result.instanceOf = instanceOf;
-		
-		return result;
-	};
-
-	var unit = function(value){
-		var result = function (state) {
-			return { state:state, value:Monad.maybe.unit(value) };
-		};
-		return monad(result);
-	};
-
-	var bind = function(fasmb){ // a -> state maybe b
-		var that = this;
-		return monad(function(newState) { // a new fssma
-            try {
-			    var cp = that(newState); // current pair
-			    if (cp.value.is_some()) return fasmb(cp.value())(cp.state);
-			    else throw "got a none!!";
-            } catch (exc) {
-                return monad(function(state){
-				   return { state:newState, value:Monad.maybe.unit(null) };
-			    });
-            }
-		});
-	};
-
-	var instanceOf = function(){
-		return 'stateMaybe';
-	};
-	
-	return {
-		monad:monad,
-		unit: unit,
-		instanceOf: instanceOf,
-		bind: bind
-	};
+  return {
+    UNIT : value => monad(s => [s, MONAD.maybe.UNIT(value)]),
+    stateMaybe : monad,
+    sSet : MONAD.state.sSet,
+    sGet : MONAD.state.sGet    
+  }
 }();
-
-Monad.stateMaybe = myStateMaybeMonad;
-
-	/* accepts a tree and returns a state monad
-	 * that will label it starting from an initial state (to be provided)
-	 */
-MyTree.monadicMaybeLabeler = function(tree) {
-	var leafSM, branchSM
-	;
-	switch (tree.type()) {
-		case 'LEAF':
-			leafSM = updateState.bind(function(n) {
-				var maybe
-				;
-				if (tree()!=='x') {
-					maybe = Monad.maybe.unit(MyTree.leaf([n,tree()]))
-				} else {
-					maybe = Monad.maybe.unit(null);
-				}
-				return Monad.stateMaybe.unit(maybe);
-			});
-			return leafSM;
-			break;
-			
-		case 'BRANCH':				
-			branchSM = MyTree.monadicMaybeLabeler(MyTree.left(tree))
-				.bind(function(leftPLB) { return MyTree.monadicMaybeLabeler(MyTree.right(tree))
-					.bind(function(rightPLB) {
-						return Monad.stateMaybe.unit(MyTree.branch(leftPLB,rightPLB));
-					});
-				});					
-			return branchSM;
-			break;
-			
-		default:
-			throw "Not a tree!";
-	}
-};
