@@ -16,13 +16,14 @@ var MONAD = {
 MONAD.maybe = (function() {
   var monad = value => {
     var maybe = () => value;
-    maybe.bind = famb => (isSome(value)) ? famb(value) : maybe;
+    maybe.bind = famb => (isSome(maybe)) ? famb(value) : maybe;
     return maybe;
   }
-  var isSome = value => typeof value !== 'undefined' && value !== null;
-  var isNone = value => !isSome(value);
+  var isSome = maybe => typeof maybe() !== 'undefined' && maybe() !== null;
+  var isNone = maybe => !isSome(maybe);
   return {
-    UNIT : monad ,
+    UNIT : monad,
+    none : monad(undefined),
     isNone : isNone,
     isSome : isSome
   };
