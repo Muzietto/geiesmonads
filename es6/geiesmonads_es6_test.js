@@ -110,7 +110,7 @@ describe('monadic labeler', function() {
     expect(result(0)[1](identity)).to.be.eql([0, 'aaa']);
   });
   it('labels a half-empty node', function() {
-    // [1, node(empty(), leaf([1,'aaa']))]
+    // result(0) = [1, node(empty(), leaf([1,'aaa']))]
     var result = MyTree.monadicLabeler(node(empty(), leaf('aaa')));
     expect(result(0)[0]).to.be.equal(1);
     expect(left(result(0)[1])(identity)).to.be.undefined;
