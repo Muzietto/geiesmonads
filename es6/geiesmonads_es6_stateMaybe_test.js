@@ -84,13 +84,14 @@ describe('monadic labeler using stateMaybes', function() {
     expect(MONAD.maybe.isNone(none)).to.be.ok;
   });
   it('puts nones also deep down', function() {
-    var result = MyTree.monadicMaybeLabeler(node(empty(), leaf('aaa')));
-    // [1, maybe(node(none, maybe(leaf([0,'aaa']))))]
+    var tree = node(empty(), leaf('aaa'));
+    var result = MyTree.monadicMaybeLabeler(tree);
+    // result(0) = [1, maybe(node(none, maybe(leaf([0,'aaa']))))]
     expect(result(0)[0]).to.be.equal(1);
     expect(left(result(0)[1])(identity)).to.be.undefined;
     expect(right(result(0)[1])(identity)).to.be.eql([0, 'aaa']);
   });
-  it('labels a simple tree', function() {
+  it.skip('labels a simple tree', function() {
     var simpleResult = MyTree.monadicMaybeLabeler(simpleTree);
     /* s => [s+3, 
              maybe(node(

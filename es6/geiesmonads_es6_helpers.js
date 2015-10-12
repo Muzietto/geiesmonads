@@ -93,8 +93,14 @@ var MyTree = function() {
       _ => unit(null),
       value => tick.bind(n => unit(leaf([n, value]))),
       (lTree, rTree) => monadicMaybeLabeler(lTree)
-                          .bind(leftLTree => monadicMaybeLabeler(rTree)
-                            .bind(rightLTree => unit(node(leftLTree, rightLTree))))
+                          .bind((leftLTree => { 
+                            debugger; 
+                            return monadicMaybeLabeler(rTree);
+                          })
+                            .bind(rightLTree => { 
+                              debugger; 
+                              return unit(node(leftLTree, rightLTree)); 
+                            }))
     );
   }
   return {
