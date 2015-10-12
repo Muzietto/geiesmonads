@@ -25,7 +25,7 @@ var unit = MONAD.stateMaybe.UNIT;
 var getState = MONAD.stateMaybe.sGet;
 var maybe = MONAD.maybe.UNIT;
 
-describe('stateMaybe monad', function() {
+describe('stateMaybe monad', function() {this.timeout(50000);
   it('is a spring mouse', function() {
     var stateMaybeRunned = unit(12)(1); // [1, maybe(12)]
     expect(stateMaybeRunned[0]).to.be.equal(1);
@@ -69,7 +69,7 @@ var identity = x => x;
 
 var simpleTree = node(leaf('a'),node(leaf('b'),leaf('c')));
 
-describe('monadic labeler using stateMaybes', function() {
+describe('monadic labeler using stateMaybes', function() {this.timeout(50000);
   it('labels a single leaf', function() {
     var result = MyTree.monadicMaybeLabeler(leaf('aaa'));
     // s => [s+1, maybe(leaf([s,'aaa']))]
