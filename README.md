@@ -6,8 +6,16 @@ Crisp clear Javascript monads (rel. 2.0).
 
 New with RELEASE 2.1
 --------------------
-Maybe and State in ECMAScript 6. Verify whether your browser can run the code.
-Mocha test runner.
+Maybe, Either, State, StateMaybe and StateEither in ECMAScript 6. Verify whether your browser can run the code.
+
+NB: This repo has been tested on FF. Mocha test runner.
+
+Define a State monad that manages errors (in a sense like Maybe): 
+if an error/problem occurs during the "do" computation, it is signalled and propagated by bind. 
+ - Step 1) The presence of a None indicates an error has occurred -> StateMaybe monad
+ - Step 2) The error should propagate carrying a string which describes what occurred -> StateEither monad
+
+See files geiesmonads_StateMaybe.js and geiesmonads_stateMaybeTest.js.
 
 Download/clone and doubleclick one of the HTML files.
 
@@ -21,16 +29,6 @@ New with RELEASE 2.0
 - Implementation of monadic labeling for a binary tree and its
   comparison with manual labeling. See 4)
 - Usage of the state monad to emulate imperative programming - see 5)
-
-WORK IN PROGRESS
-----------------
-Define a State monad that manages errors (in a sense like Maybe): 
-if an error/problem occurs during the "do" computation, 
-it is signalled and propagated by bind. 
- - Step 1) The presence of a None indicates an error has occurred
- - Step 2) The error should propagate carrying a string which describes what occurred.
-
-See files geiesmonads_StateMaybe.js and geiesmonads_stateMaybeTest.js.
 
 TRAINING
 --------
