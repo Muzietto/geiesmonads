@@ -13,7 +13,7 @@ var MONAD = {
 	state: null
 };
 
-MONAD.maybe = (function() {
+MONAD.maybe = (() => {
   var monad = value => {
     var maybe = () => value;
     maybe.bind = famb => (isSome(maybe)) ? famb(value) : maybe;
@@ -29,7 +29,17 @@ MONAD.maybe = (function() {
   };
 })();
 
-MONAD.state = function() {
+MONAD.either = (() => {
+  var left = thrown => {
+    
+  }
+  var right = value => {
+    
+  }
+  
+})();
+
+MONAD.state = (() => {
   var monad = fssa => { 
     var state = s => fssa(s);
     state.bind = fasmb => monad(s => {
@@ -45,4 +55,4 @@ MONAD.state = function() {
     sSet : S => monad(s => [S, undefined]),
     sGet : monad(s => [s, s])
 	};
-}();
+})();
