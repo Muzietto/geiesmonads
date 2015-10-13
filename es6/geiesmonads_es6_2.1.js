@@ -31,8 +31,6 @@ MONAD.maybe = (() => {
 })();
 
 MONAD.either = (() => {
-  var isLeft = either => either.match(() => true, () => false)();
-  var isRight = either => either.match(() => false, () => true)();
   var monad = (matchFun) => value => {
     var either = () => value;
     either.match = matchFun;
@@ -48,7 +46,9 @@ MONAD.either = (() => {
   }
   var left = monad((lFun, rFun) => lFun);
   var right = monad((lFun, rFun) => rFun);
-  
+  var isLeft = either => either.match(() => true, () => false)();
+  var isRight = either => either.match(() => false, () => true)();
+
   return {
     left: left,
     right: right,
