@@ -36,3 +36,26 @@ MONAD.stateMaybe = function() {
     sGet : monad(s => [s, MONAD.maybe.UNIT(s)])
   }
 }();
+
+MONAD.stateMaybe2 = function() {
+  var monad = fssma => { // s => [s, either a b]
+    var statemaybe = s => fssma(s);
+    statemaybe.bind = fassmb => monad(s => {
+      try {
+        var [sss, either] = statemaybe(s);
+        if (MONAD.maybe.isLeft(either)) throw either();
+        return fassmb(either())(sss);
+      } catch (e) {
+        return [sss, MONAD.either.left(e)];
+      }
+    });
+    return statemaybe;
+  }
+
+  return {
+    UNIT : value => monad(s => [s, MONAD.either.right(value)]),
+    stateMaybe2 : monad,
+    sSet : S => monad(s => [S, MONAD.either.right()]),
+    sGet : monad(s => [s, MONAD.either.right(s)])
+  }
+}();
