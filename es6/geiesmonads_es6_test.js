@@ -15,6 +15,43 @@ describe('maybe monad', function() {
   });
 });
 
+describe('either a monad', function() {
+  var left = MONAD.either.left;
+  var right = MONAD.either.right;
+  var isLeft = MONAD.either.isLeft;
+  var isRight = MONAD.either.isRight;
+  it('may be left or right', function() {
+    expect(left(12)()).to.be.equal(12);
+    expect(right(13)()).to.be.equal(13);
+    expect(isLeft(right('www'))).to.be.not.ok;
+    expect(isRight(left('www'))).to.be.not.ok;
+    expect(isLeft(left('www'))).to.be.ok;
+    expect(isRight(right('www'))).to.be.ok;
+  });
+  it('binds from right to left', function() {
+    var farb = a => right(a * 2);
+    var falb = a => left(a * 2);
+    var right2Right = right(12).bind(farb);
+    expect(right2Right()).to.be.equal(24);
+    expect(isRight(right2Right)).to.be.ok;
+
+    var right2Left = right(12).bind(falb);
+    expect(right2Left()).to.be.equal(24);
+    expect(isLeft(right2Left)).to.be.ok;
+  });
+  it('binds from left to left', function() {
+    var farb = a => right(a * 2);
+    var falb = a => left(a * 2);
+    var left2Right = left(12).bind(farb);
+    expect(left2Right()).to.be.equal(12);
+    expect(isLeft(left2Right)).to.be.ok;
+
+    var left2Left = left(12).bind(falb);
+    expect(left2Left()).to.be.equal(12);
+    expect(isLeft(left2Left)).to.be.ok;
+  });
+});
+
 var state = MONAD.state.state;
 var unit = MONAD.state.UNIT;
 var getState = MONAD.state.sGet;

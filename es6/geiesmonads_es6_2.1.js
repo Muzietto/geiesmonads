@@ -10,6 +10,7 @@
 
 var MONAD = {
 	maybe: null,
+	either: null,
 	state: null
 };
 
@@ -30,13 +31,30 @@ MONAD.maybe = (() => {
 })();
 
 MONAD.either = (() => {
-  var left = thrown => {
-    
+  var isLeft = either => either.match(() => true, () => false)();
+  var isRight = either => either.match(() => false, () => true)();
+  var monad = (matchFun) => value => {
+    var either = () => value;
+    either.match = matchFun;
+    either.bind = faeb => {
+      try {
+        if (isLeft(either)) throw either();
+        return faeb(either());
+      } catch (exc) {
+        return left(exc);
+      }
+    }
+    return either;
   }
-  var right = value => {
-    
-  }
+  var left = monad((lFun, rFun) => lFun);
+  var right = monad((lFun, rFun) => rFun);
   
+  return {
+    left: left,
+    right: right,
+    isLeft : isLeft,
+    isRight : isRight
+  }
 })();
 
 MONAD.state = (() => {
