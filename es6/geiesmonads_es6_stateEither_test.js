@@ -9,13 +9,13 @@
 
 /* Define a State monad that manages errors (in a sense like Maybe): 
    if an error/problem occurs during the "do" computation, it is signalled and propagated by >>=
-   step 1) The presence of a None indicates an error has occurred
+   step 2) The error should propagate carrying a string which describes what occurred
 */
 
 var expect = chai.expect;
 mocha.setup('bdd');
 
-/* This test shows the labeling of a tree by using a statemaybe monad
+/* This test shows the labeling of a tree by using a stateeither monad
  */
 
 var stateMaybe = MONAD.stateMaybe.stateMaybe;
@@ -24,7 +24,7 @@ var getState = MONAD.stateMaybe.sGet;
 var setState = MONAD.stateMaybe.sSet;
 var maybe = MONAD.maybe.UNIT;
 
-describe('stateMaybe monad', function() {this.timeout(50000);
+describe('stateEither monad', function() {this.timeout(50000);
   it('is a spring mouse', function() {
     var stateMaybeRunned = unit(12)(1); // [1, maybe(12)]
     expect(stateMaybeRunned[0]).to.be.equal(1);
@@ -102,7 +102,7 @@ var complexTreeWithEmpties = node(
   )
 );
 
-describe('monadic labeler using stateMaybes', function() {this.timeout(50000);
+describe('monadic labeler using stateEithers', function() {this.timeout(50000);
   it('labels a single leaf', function() {
     var result = MyTree.monadicMaybeLabeler(leaf('aaa'));
     // s => [s+1, maybe(leaf([s,'aaa']))]

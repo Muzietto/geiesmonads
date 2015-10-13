@@ -8,10 +8,9 @@
 */
 
 /* Define a State monad that manages errors (in a sense like Maybe): 
-   if an error/problem occurs during the "do" computation, 
-   it is signalled and propagated by >>= 
-   step 1) The presence of a None indicates an error has occurred
-   step 2) The error should propagate carrying a string which describes what occurred.
+   if an error/problem occurs during the "do" computation, it is signalled and propagated by >>= 
+   step 1) The presence of a None indicates an error has occurred -> StateMaybe monad
+   step 2) The error should propagate carrying a string which describes what occurred -> StateEither monad
 */
 
 MONAD.stateMaybe = function() {
@@ -37,24 +36,24 @@ MONAD.stateMaybe = function() {
   }
 }();
 
-MONAD.stateMaybe2 = function() {
+MONAD.stateEither = function() {
   var monad = fssma => { // s => [s, either a b]
-    var statemaybe = s => fssma(s);
-    statemaybe.bind = fassmb => monad(s => {
+    var stateeither = s => fssma(s);
+    stateeither.bind = fassmb => monad(s => {
       try {
-        var [sss, either] = statemaybe(s);
+        var [sss, either] = stateeither(s);
         if (MONAD.maybe.isLeft(either)) throw either();
         return fassmb(either())(sss);
       } catch (e) {
         return [sss, MONAD.either.left(e)];
       }
     });
-    return statemaybe;
+    return stateeither;
   }
 
   return {
     UNIT : value => monad(s => [s, MONAD.either.right(value)]),
-    stateMaybe2 : monad,
+    stateEither : monad,
     sSet : S => monad(s => [S, MONAD.either.right()]),
     sGet : monad(s => [s, MONAD.either.right(s)])
   }
