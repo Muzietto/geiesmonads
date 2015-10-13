@@ -23,6 +23,7 @@ mocha.setup('bdd');
 var stateMaybe = MONAD.stateMaybe.stateMaybe;
 var unit = MONAD.stateMaybe.UNIT;
 var getState = MONAD.stateMaybe.sGet;
+var setState = MONAD.stateMaybe.sSet;
 var maybe = MONAD.maybe.UNIT;
 
 describe('stateMaybe monad', function() {this.timeout(50000);
@@ -58,6 +59,22 @@ describe('stateMaybe monad', function() {this.timeout(50000);
     expect(sss).to.be.equal(1);
     expect(maybea()).to.be.undefined;
   });
+  it('features sGet', function() {
+    var twelve = unit(12);
+    var fasmb = a => stateMaybe(s => [a+s, maybe(a-s)]); // s -> 12+s
+    var bound = twelve.bind(fasmb).bind(a => getState);
+    var [sss, maybea] = bound(1);
+    expect(sss).to.be.equal(13);
+    expect(maybea()).to.be.equal(13);
+  });
+  it('features sSet', function() {
+    var twelve = unit(12);
+    var fasmb = a => stateMaybe(s => [a+s, maybe(a-s)]); // a -> 12-s
+    var bound = twelve.bind(fasmb).bind(a => setState(a*2));
+    var [sss, maybea] = bound(1);
+    expect(sss).to.be.equal(22);
+    expect(maybea()).to.be.undefined;
+  });
 });
 
 var node = MyTree.node;
@@ -66,8 +83,28 @@ var empty = MyTree.empty;
 var left = maybeNode => MyTree.left(maybeNode());
 var right = maybeNode => MyTree.right(maybeNode());
 var identity = x => x;
+//var left = MyTree.left;
+//var right = MyTree.right;
 
 var simpleTree = node(leaf('a'),node(leaf('b'),leaf('c')));
+var complexTree = node(
+  leaf('a'),
+  node(
+    node(
+      leaf('b'),
+      leaf('c')),
+    leaf('d')
+  )
+);
+var complexTreeWithEmpties = node(
+  leaf('a'),
+  node(
+    node(
+      leaf('b'),
+      empty()),
+    leaf('d')
+  )
+);
 
 describe('monadic labeler using stateMaybes', function() {this.timeout(50000);
   it('labels a single leaf', function() {
@@ -83,29 +120,41 @@ describe('monadic labeler using stateMaybes', function() {this.timeout(50000);
     var none = result(0)[1];
     expect(MONAD.maybe.isNone(none)).to.be.ok;
   });
-  it('puts nones also deep down', function() {
-    var tree = node(empty(), leaf('aaa'));
+  it('labels the simplest node', function() {
+    var tree = node(leaf('a'), leaf('b'));
     var result = MyTree.monadicMaybeLabeler(tree);
-    // result(0) = [1, maybe(node(none, maybe(leaf([0,'aaa']))))]
-    expect(result(0)[0]).to.be.equal(1);
-    expect(left(result(0)[1])(identity)).to.be.undefined;
-    expect(right(result(0)[1])(identity)).to.be.eql([0, 'aaa']);
+    // result(0) = [2, maybe(node(leaf([0,'a']), leaf([1,'b'])))]
+    expect(result(0)[0]).to.be.equal(2);
+    expect(left(result(0)[1])()(identity)).to.be.eql([0, 'a']);
+    expect(right(result(0)[1])()(identity)).to.be.eql([1, 'b']);
   });
-  it.skip('labels a simple tree', function() {
+  it('detects nones also deep down', function() {
+    var tree = node(leaf('aaa'),empty());
+    var result = MyTree.monadicMaybeLabeler(tree);
+    // result(0) = [0, none]
+    expect(result(0)[0]).to.be.equal(1); // one leaf encountered
+    expect(MONAD.maybe.isNone(result(0)[1])).to.be.ok;
+  });
+  it('labels a simple tree', function() {
     var simpleResult = MyTree.monadicMaybeLabeler(simpleTree);
-    /* s => [s+3, 
-             maybe(node(
-               maybe(leaf([s,'a'])),
-               maybe(node(
-                 maybe(leaf([s+1,'b'])),
-                 maybe(leaf([s+2,'c']))
-               ))
-             ))
-            ]
-     */
     expect(simpleResult(0)[0]).to.be.equal(3);
-    var leftLabeledLeaf = left(simpleResult(0)[1]); // leaf([0,'a'])
+    var leftLabeledLeaf = left(simpleResult(0)[1])(); // leaf([0,'a'])
     expect(leftLabeledLeaf(identity)).to.be.eql([0,'a']);
-    expect(right(right(simpleResult(0)[1]))(identity)).to.be.eql([2,'c']);
+    expect(right(right(simpleResult(0)[1]))()(identity)).to.be.eql([2,'c']);
+  });
+  it('labels a complex tree', function() {
+    var complexResult = MyTree.monadicMaybeLabeler(complexTree);
+    var finalState = complexResult(0)[0];
+    var labeledTree = complexResult(0)[1];
+    expect(finalState).to.be.equal(4);
+    expect(left(labeledTree)()(identity)).to.be.eql([0,'a']);
+    expect(right(left(right(labeledTree)))()(identity)).to.be.eql([2,'c']);
+  });
+  it('nones a complex tree with empties', function() {
+    var complexResult = MyTree.monadicMaybeLabeler(complexTreeWithEmpties);
+    var finalState = complexResult(0)[0];
+    var maybeLabeledTree = complexResult(0)[1];
+    expect(finalState).to.be.equal(2);
+    expect(MONAD.maybe.isNone(maybeLabeledTree)).to.be.ok;
   });
 });

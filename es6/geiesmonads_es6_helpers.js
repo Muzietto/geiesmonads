@@ -33,7 +33,9 @@ var MyTree = function() {
 
 	node = (left, right) => {
 		var result = w => w(left, right);
-    result.match = (eFun, lFun, tFun) => tFun(left, right);
+    result.match = (eFun, lFun, tFun) => {
+      return tFun(left, right);
+    }
 		return result;
 	};
 	
@@ -84,23 +86,18 @@ var MyTree = function() {
 
 	/* accepts a tree and returns a state monad
 	 * that will label it starting from an initial state (to be provided)
-   * NB: if an empty leaf is met, it becomes a none
+   * NB: if an empty leaf is met, the whole tree becomes a none
 	 */
   monadicMaybeLabeler = tree => {
-    var tick = MONAD.stateMaybe.stateMaybe(n => [n+1, MONAD.maybe.UNIT(n)]);
+    var maybe = MONAD.maybe.UNIT;
+    var tick = MONAD.stateMaybe.stateMaybe(n => [n+1, maybe(n)]);
     var unit = MONAD.stateMaybe.UNIT;
     return tree.match(
       _ => unit(null),
       value => tick.bind(n => unit(leaf([n, value]))),
       (lTree, rTree) => monadicMaybeLabeler(lTree)
-                          .bind((leftLTree => { 
-                            debugger; 
-                            return monadicMaybeLabeler(rTree);
-                          })
-                            .bind(rightLTree => { 
-                              debugger; 
-                              return unit(node(leftLTree, rightLTree)); 
-                            }))
+                          .bind(leftLTree => monadicMaybeLabeler(rTree)
+                            .bind(rightLTree => unit(node(maybe(leftLTree), maybe(rightLTree)))))
     );
   }
   return {

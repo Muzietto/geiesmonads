@@ -70,6 +70,15 @@ var complexTree = node(
     leaf('d')
   )
 );
+var complexTreeWithEmpties = node(
+  leaf('a'),
+  node(
+    node(
+      leaf('b'),
+      empty()),
+    leaf('d')
+  )
+);
 
 describe('manual labeler', function() {
   it('labels a single leaf', function() {
@@ -98,6 +107,7 @@ describe('manual labeler', function() {
     expect(finalState).to.be.equal(4);
     expect(left(labeledTree)(identity)).to.be.eql([0,'a']);
     expect(right(left(right(labeledTree)))(identity)).to.be.eql([2,'c']);
+    expect(right(right(labeledTree))(identity)).to.be.eql([3,'d']);
   });
 });
 
@@ -131,5 +141,13 @@ describe('monadic labeler', function() {
     expect(finalState).to.be.equal(4);
     expect(left(labeledTree)(identity)).to.be.eql([0,'a']);
     expect(right(left(right(labeledTree)))(identity)).to.be.eql([2,'c']);
+  });
+  it('labels a complex tree with empties', function() {
+    var complexResult = MyTree.monadicLabeler(complexTreeWithEmpties);
+    var finalState = complexResult(0)[0];
+    var labeledTree = complexResult(0)[1];
+    expect(finalState).to.be.equal(3);
+    expect(left(labeledTree)(identity)).to.be.eql([0,'a']);
+    expect(right(left(right(labeledTree)))(identity)).to.be.undefined;
   });
 });

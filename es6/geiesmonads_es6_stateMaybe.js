@@ -15,11 +15,9 @@
 */
 
 MONAD.stateMaybe = function() {
-
   var monad = fssma => { // s => [s, maybe a]
     var statemaybe = s => fssma(s);
     statemaybe.bind = fassmb => monad(s => {
-      debugger;
       try {
         var [sss, maybea] = statemaybe(s);
         if (MONAD.maybe.isNone(maybea)) throw "got a none!!";
@@ -34,7 +32,7 @@ MONAD.stateMaybe = function() {
   return {
     UNIT : value => monad(s => [s, MONAD.maybe.UNIT(value)]),
     stateMaybe : monad,
-    sSet : MONAD.state.sSet,
-    sGet : MONAD.state.sGet    
+    sSet : S => monad(s => [S, MONAD.maybe.none]),
+    sGet : monad(s => [s, MONAD.maybe.UNIT(s)])
   }
 }();
