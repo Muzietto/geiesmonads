@@ -84,7 +84,7 @@ var MyTree = function() {
     );
   }
 
-	/* accepts a tree and returns a state monad
+	/* accepts a tree and returns a StateMaybe monad
 	 * that will label it starting from an initial state (to be provided)
    * NB: if an empty leaf is met, the whole tree becomes a none
 	 */
@@ -100,6 +100,26 @@ var MyTree = function() {
                             .bind(rightLTree => unit(node(maybe(leftLTree), maybe(rightLTree)))))
     );
   }
+
+	/* accepts a tree and returns a StateEither monad
+	 * that will label it starting from an initial state (to be provided)
+   * NB: if an empty leaf is met, the whole tree becomes a left(currentState)
+	 */
+  monadicEitherLabeler = tree => {
+    var right = MONAD.either.right;
+    var left = MONAD.either.left;
+    var getState = MONAD.stateEither.sGet;
+    var tick = MONAD.stateEither.stateEither(n => [n+1, right(n)]);
+    var unit = MONAD.stateEither.UNIT; // expects an either!!
+    return tree.match(
+      _ => getState.bind(n => unit(left(n))),
+      value => tick.bind(n => unit(right(leaf([n, value])))),
+      (lTree, rTree) => monadicEitherLabeler(lTree)
+                          .bind(leftLTree => monadicEitherLabeler(rTree)
+                            .bind(rightLTree => unit(right(node(right(leftLTree), right(rightLTree))))))
+    );
+  }
+
   return {
 		node : node,
 		leaf : leaf,
@@ -108,6 +128,7 @@ var MyTree = function() {
 		right : right,
 		manualLabeler : manualLabeler,
 		monadicLabeler : monadicLabeler,
-		monadicMaybeLabeler : monadicMaybeLabeler
+		monadicMaybeLabeler : monadicMaybeLabeler,
+		monadicEitherLabeler : monadicEitherLabeler
 	}
 }();
