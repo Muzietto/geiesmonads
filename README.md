@@ -1,6 +1,6 @@
 geiesmonads - RELEASE 2.1
 =========================
-Crisp clear Javascript monads (rel. 2.0).
+Crisp clear chainable Javascript monads (rel. 2.1).
 
 **NOW with porting to ECMAScript 6**
 
@@ -8,14 +8,17 @@ New with RELEASE 2.1
 --------------------
 Maybe, Either, State, StateMaybe and StateEither in ECMAScript 6. Verify whether your browser can run the code.
 
-NB: This repo has been tested on FF. Mocha test runner.
+NB: This repo has been tested on FF 41.0.1. Mocha test runner.
 
 Define a State monad that manages errors (in a sense like Maybe): 
 if an error/problem occurs during the "do" computation, it is signalled and propagated by bind. 
  - Step 1) The presence of a None indicates an error has occurred -> StateMaybe monad
  - Step 2) The error should propagate carrying a string which describes what occurred -> StateEither monad
 
-See files geiesmonads_StateMaybe.js and geiesmonads_stateMaybeTest.js.
+See files:
+* es6/geiesmonads_StateMaybe_StateEither.js
+* es6/geiesmonads_stateMaybeTest.js.
+* es6/geiesmonads_stateEitherTest.js.
 
 Download/clone and doubleclick one of the HTML files.
 
