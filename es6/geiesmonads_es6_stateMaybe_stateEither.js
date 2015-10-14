@@ -42,7 +42,7 @@ MONAD.stateEither = function() {
     stateeither.bind = fassmb => monad(s => {
       try {
         var [sss, either] = stateeither(s);
-        if (MONAD.maybe.isLeft(either)) throw either();
+        if (MONAD.either.isLeft(either)) throw either();
         return fassmb(either())(sss);
       } catch (e) {
         return [sss, MONAD.either.left(e)];
@@ -50,11 +50,15 @@ MONAD.stateEither = function() {
     });
     return stateeither;
   }
+  
+  // pick one depending on the type of value
+  var mempty = 0;
+  //var mempty = '';
 
   return {
-    UNIT : value => monad(s => [s, MONAD.either.right(value)]),
+    UNIT : either => monad(s => [s, either]),
     stateEither : monad,
-    sSet : S => monad(s => [S, MONAD.either.right()]),
+    sSet : S => monad(s => [S, MONAD.either.right(mempty)]),
     sGet : monad(s => [s, MONAD.either.right(s)])
   }
 }();
