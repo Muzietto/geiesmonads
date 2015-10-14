@@ -52,6 +52,7 @@ MONAD.either = (() => {
   return {
     left: left,
     right: right,
+    UNIT: right,
     isLeft : isLeft,
     isRight : isRight
   }
