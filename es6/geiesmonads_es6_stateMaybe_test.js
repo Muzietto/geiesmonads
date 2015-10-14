@@ -24,7 +24,7 @@ var getState = MONAD.stateMaybe.sGet;
 var setState = MONAD.stateMaybe.sSet;
 var maybe = MONAD.maybe.UNIT;
 
-describe('stateMaybe monad', function() {this.timeout(50000);
+describe('stateMaybe monad', function() {
   it('is a spring mouse', function() {
     var stateMaybeRunned = unit(12)(1); // [1, maybe(12)]
     expect(stateMaybeRunned[0]).to.be.equal(1);
@@ -102,7 +102,7 @@ var complexTreeWithEmpties = node(
   )
 );
 
-describe('monadic labeler using stateMaybes', function() {this.timeout(50000);
+describe('monadic labeler using stateMaybes', function() {
   it('labels a single leaf', function() {
     var result = MyTree.monadicMaybeLabeler(leaf('aaa'));
     // s => [s+1, maybe(leaf([s,'aaa']))]
@@ -119,7 +119,7 @@ describe('monadic labeler using stateMaybes', function() {this.timeout(50000);
   it('labels the simplest node', function() {
     var tree = node(leaf('a'), leaf('b'));
     var result = MyTree.monadicMaybeLabeler(tree);
-    // result(0) = [2, maybe(node(leaf([0,'a']), leaf([1,'b'])))]
+    // result(0) = [2, maybe(node(maybe(leaf([0,'a'])), maybe(leaf([1,'b']))))]
     expect(result(0)[0]).to.be.equal(2);
     expect(left(result(0)[1])()(identity)).to.be.eql([0, 'a']);
     expect(right(result(0)[1])()(identity)).to.be.eql([1, 'b']);
