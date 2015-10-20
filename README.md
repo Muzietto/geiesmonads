@@ -30,22 +30,22 @@ New with RELEASE 2.0
   - introduction of inner functions `some()` and `none()`
   - streamlining of the API
 - Major improvements to the `state` monad:
-  - monad as pure JS function - see [[7]]()
-- Implementation of monadic labeling for a binary tree and its comparison with manual labeling. See [[4]]()
-- Usage of the state monad to emulate imperative programming - see [[5]]()
+  - monad as pure JS function - see [[7]](http://faustinelli.wordpress.com/2014/06/01/state-monad-goes-to-js-town-and-starts-swinging/)
+- Implementation of monadic labeling for a binary tree and its comparison with manual labeling. See [[4]](http://channel9.msdn.com/Shows/Going+Deep/Brian-Beckman-The-Zen-of-Expressing-State-The-State-Monad)
+- Usage of the state monad to emulate imperative programming - see [[5]](http://brandon.si/code/the-state-monad-a-tutorial-for-the-confused/)
 
 TRAINING
 --------
 - We start with experiments with `Identity` and `Maybe` monad. We verify the three laws for both of them.
 - We improve on the design and create a chainable `Maybe` monad.
-- We implement a state monad along the lines of [[2]] and [[3]] and verify the three laws also for that.
+- We implement a state monad along the lines of [[2]](http://jabberwocky.eu/2012/11/02/monads-for-dummies/) and [[3]](http://igstan.ro/posts/2011-05-02-understanding-monads-with-javascript.html) and verify the three laws also for that.
 See files geiesmonads_0.1.js and geiesmonads_0.2.js.
 
 ORIGINAL CONTRIBUTION
 ---------------------
 Implementation of a CHAINABLE STATE MONAD.
 This monad is a native JS function with type `s -> (s,a)` enriched with a `bind` method.
-The present JS implementation of 4) is also available in Java 8 language at 6)
+The present JS implementation of [[4]](http://channel9.msdn.com/Shows/Going+Deep/Brian-Beckman-The-Zen-of-Expressing-State-The-State-Monad) is also available in Java 8 language at 6)
 
 See file geiesmonads_2.0.js.
 
@@ -56,7 +56,7 @@ of implementations given in [[2]](http://jabberwocky.eu/2012/11/02/monads-for-du
 
 - The chainable maybe monad is a re-elaboration of old code of mine, written in Java and available [at my blog](http://faustinelli.wordpress.com/2010/07/27/example-maybe-monad-in-java)
 
-- The original contribution (chainable state monad) is a truly cool thing.
+- My original contribution (chainable state monad) is a truly cool thing.
 
 
 I am in debt with:
