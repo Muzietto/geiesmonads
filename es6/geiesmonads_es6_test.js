@@ -1,3 +1,12 @@
+/*
+	GEIESMONADS - JS monads
+	Author: Marco Faustinelli (contacts@faustinelli.net)
+	Web: http://faustinelli.net/
+	     http://faustinelli.wordpress.com/
+
+	The MIT License - Copyright (c) 2013/2015 Geiesmonads Project
+*/
+
 var expect = chai.expect;
 mocha.setup('bdd');
 
