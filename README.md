@@ -45,7 +45,7 @@ ORIGINAL CONTRIBUTION
 ---------------------
 Implementation of a CHAINABLE STATE MONAD.
 This monad is a native JS function with type `s -> (s,a)` enriched with a `bind` method.
-The present JS implementation of [[4]](http://channel9.msdn.com/Shows/Going+Deep/Brian-Beckman-The-Zen-of-Expressing-State-The-State-Monad) is also available in Java 8 language at 6)
+The present JS implementation of [[4]](http://channel9.msdn.com/Shows/Going+Deep/Brian-Beckman-The-Zen-of-Expressing-State-The-State-Monad) is also available in Java 8 language at [[6]](http://faustinelli.wordpress.com/2014/04/25/the-state-monad-in-java-8-eventually)
 
 See file geiesmonads_2.0.js.
 
