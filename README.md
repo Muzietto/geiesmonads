@@ -1,9 +1,8 @@
-geiesmonads - RELEASE 2.1
-=========================
+# geiesmonads (_j_-_s_-monads)
 
 ![alt image](/img/say_monad.jpg)
 
-Crisp clear chainable Javascript monads (rel. 2.1).
+Crisp clear chainable Javascript monads.
 
 **NOW with porting to ECMAScript 6**
 
