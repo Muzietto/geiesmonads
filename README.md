@@ -30,15 +30,15 @@ New with RELEASE 2.0
   - introduction of inner functions `some()` and `none()`
   - streamlining of the API
 - Major improvements to the `state` monad:
-  - monad as pure JS function - see 7)
-- Implementation of monadic labeling for a binary tree and its comparison with manual labeling. See 4)
-- Usage of the state monad to emulate imperative programming - see 5)
+  - monad as pure JS function - see [[7]]()
+- Implementation of monadic labeling for a binary tree and its comparison with manual labeling. See [[4]]()
+- Usage of the state monad to emulate imperative programming - see [[5]]()
 
 TRAINING
 --------
 - We start with experiments with `Identity` and `Maybe` monad. We verify the three laws for both of them.
 - We improve on the design and create a chainable `Maybe` monad.
-- We implement a state monad along the lines of 2) and 3) and verify the three laws also for that.
+- We implement a state monad along the lines of [[2]] and [[3]] and verify the three laws also for that.
 See files geiesmonads_0.1.js and geiesmonads_0.2.js.
 
 ORIGINAL CONTRIBUTION
@@ -58,11 +58,13 @@ of implementations given in [[2]](http://jabberwocky.eu/2012/11/02/monads-for-du
 
 - The original contribution (chainable state monad) is a truly cool thing.
 
+
 I am in debt with:
 
 [2] http://jabberwocky.eu/2012/11/02/monads-for-dummies/
 
 [3] http://igstan.ro/posts/2011-05-02-understanding-monads-with-javascript.html
+
 
 I am in DEEP debt with:
 
@@ -71,6 +73,7 @@ I am in DEEP debt with:
 [4] http://channel9.msdn.com/Shows/Going+Deep/Brian-Beckman-The-Zen-of-Expressing-State-The-State-Monad
 
 [5] http://brandon.si/code/the-state-monad-a-tutorial-for-the-confused/
+
 
 A bit of self-promotion:
 
