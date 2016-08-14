@@ -35,17 +35,18 @@ var myMaybeMonad = (function() {
 			&& value !== null
 			&& value === value);
 	};
-	
+
+	// fab --> mb
 	var map = function(fab){
 		return this.bind(liftM(fab));
 	};
-	
+
 	var flatten = function(){
 		// grandissima FIGATA!!!!
 		if (some(this())) return this();
 		return undefined;
 	};
-	
+
 	// famb(flatten(ma)) --> mb
 	var bind = function(famb){
 		if (some(this())) return famb(this());
