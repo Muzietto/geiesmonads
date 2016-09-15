@@ -2,7 +2,7 @@
 
 ![alt image](/img/say_monad.jpg)
 
-Crisp clear chainable Javascript monads.
+Crisp clear chainable JavaScript monads.
 
 **NOW with porting to ECMAScript 6**
 
