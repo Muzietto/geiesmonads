@@ -8,9 +8,11 @@ Crisp clear chainable JavaScript monads.
 
 New with RELEASE 2.1
 --------------------
-`Maybe`, `Either a`, `State`, `StateMaybe` and `StateEither` in ECMAScript 6. Verify whether your browser can run the code.
+[`Maybe`, `Either a`, `State`](http://rawgit.com/Muzietto/geiesmonads/master/MochaGeiesmonadsES6_Test.htm), [`StateMaybe`](http://rawgit.com/Muzietto/geiesmonads/master/MochaGeiesmonadsES6_StateMaybe_Test.htm) and [`StateEither`](http://rawgit.com/Muzietto/geiesmonads/master/MochaGeiesmonadsES6_StateEither_Test.htm) in ECMAScript 6.
 
-NB: This repo has been tested on FF 41.0.1. Mocha test runner.
+Click on the above links to access the Mocha unit test page (verify whether your browser can run the code).
+
+NB: This repo has been tested on FF 41 and Chrome 57.
 
 Define a State monad that manages errors (in a sense like Maybe): 
 if an error/problem occurs during the "do" computation, it is signalled and propagated by `bind`.
