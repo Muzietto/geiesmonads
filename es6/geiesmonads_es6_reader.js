@@ -31,10 +31,11 @@ Reader.prototype.flatMap_ref = function farb(k) {
 };
 
 Reader.prototype.flatMap = function flatMap(k) {
-    return new Reader((function bound(r) {
-      var zzz = this.run(r);
+  var self = this;
+    return new Reader(function bound(r) {
+      var zzz = self.run(r);
       return k(zzz).run(r);
-    }).bind(this));
+    });
 };
 
 var greet = function greet(name) {
