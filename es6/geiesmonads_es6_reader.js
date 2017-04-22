@@ -18,17 +18,28 @@ MONAD.reader = (() => {
 	};
 })();
 
-var greet = name => {
-  return MONAD.reader.ask().bind(ctx => {
-    return MONAD.reader.UNIT(ctx + ", " + name);
-  });
-};
+var reader = MONAD.reader,
+unit = MONAD.reader.UNIT,
+ask = MONAD.reader.ask,
+asks = MONAD.reader.asks
+;
+
+var greet = name => ask().bind(ctx => unit(ctx + ', ' + name));
 
 var example0 = () => {
-  console.log(greet("JavaScript")("Hi"));
+  console.log(greet('JavaScript')('Hi'));
 };
 
-//debugger;
 example0();
 
-var end = 0
+var end = str => {
+  var isHello = ctx => (ctx === 'Hello');
+  return asks(isHello).bind(outcome => unit(str + (outcome ? '!!' : '...')));
+};
+
+var example1 = () => {
+  console.log(greet('James').bind(end)('Hello'));
+  console.log(greet('Tom').bind(end)('Hi'));
+};
+
+example1();
