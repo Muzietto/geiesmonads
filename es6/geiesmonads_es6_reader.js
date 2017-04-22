@@ -50,7 +50,7 @@ var greet_ref = function greet_ref(name) {
 };
 
 var example0 = function example0() {
-    console.log(greet_ref("JavaScript").run("Hi"));
+    console.log(greet("JavaScript").run("Hi"));
 };
 
 debugger;
