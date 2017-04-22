@@ -12,5 +12,7 @@ var expect = chai.expect;
 mocha.setup('bdd');
 
 describe('a reader monad', function() {
-  it('xxx', () => {expect(Reader).to.be.equal(12)});
+  //it('xxx', () => {
+  //  expect(new Reader(parseInt).ask()).to.be.equal(12)
+  //});
 });
