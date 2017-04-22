@@ -2,9 +2,18 @@
 
 ![alt image](/img/say_monad.jpg)
 
-Crisp clear chainable JavaScript monads.
+Crisp clear chainable JavaScript/ECMAScript 6 monads.
 
-**NOW with porting to ECMAScript 6**
+Special Challenge: the READER MONAD
+-----------------------------------
+File [geiesmonads_es6_reader.js](https://github.com/Muzietto/geiesmonads/blob/master/es6/geiesmonads_es6_reader.js) contains:
+
+- an implementation of a chainable reader monad
+- a couple of examples of utilisation
+
+You may see it at work [here](http://rawgit.com/Muzietto/geiesmonads/master/GeiesmonadsES6_Reader.htm), after opening the dev tools.
+
+NB - with a big credit due to [Don't Fear the Reader](https://passy.svbtle.com/dont-fear-the-reader).
 
 New with RELEASE 2.1
 --------------------
