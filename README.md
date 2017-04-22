@@ -10,7 +10,7 @@ New with RELEASE 2.1
 --------------------
 [`Maybe`, `Either a`, `State`](http://rawgit.com/Muzietto/geiesmonads/master/MochaGeiesmonadsES6_Test.htm), [`StateMaybe`](http://rawgit.com/Muzietto/geiesmonads/master/MochaGeiesmonadsES6_StateMaybe_Test.htm) and [`StateEither`](http://rawgit.com/Muzietto/geiesmonads/master/MochaGeiesmonadsES6_StateEither_Test.htm) in ECMAScript 6.
 
-Click on the above links to access the Mocha unit test page (verify whether your browser can run the code).
+Click on the above links to access the Mocha unit test page (verify whether your browser can run the code). Old-fashioned YUI admirers can click [here](http://rawgit.com/Muzietto/geiesmonads/master/YUIGeiesmonads_Test.htm) and [here](http://rawgit.com/Muzietto/quindici/geiesmonads/YUIGeiesmonads_TRAIN_Test.htm).
 
 NB: This repo has been tested on FF 41 and Chrome 57.
 
@@ -20,11 +20,9 @@ if an error/problem occurs during the "do" computation, it is signalled and prop
  - Step 2) The error should propagate carrying a string which describes what occurred -> `StateEither` monad
 
 See files:
-* es6/geiesmonads_StateMaybe_StateEither.js
-* es6/geiesmonads_stateMaybeTest.js.
-* es6/geiesmonads_stateEitherTest.js.
-
-Download/clone and doubleclick one of the HTML files.
+* [es6/geiesmonads_StateMaybe_StateEither.js](https://github.com/Muzietto/geiesmonads/blob/master/es6/geiesmonads_StateMaybe_StateEither.js)
+* [es6/geiesmonads_stateMaybeTest.js](https://github.com/Muzietto/geiesmonads/blob/master/es6/geiesmonads_stateMaybeTest.js)
+* [es6/geiesmonads_stateEitherTest.js](https://github.com/Muzietto/geiesmonads/blob/master/es6/geiesmonads_es6_stateEither_test.js)
 
 New with RELEASE 2.0
 --------------------
