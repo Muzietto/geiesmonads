@@ -43,11 +43,11 @@ See files [geiesmonads_0.1.js](https://github.com/Muzietto/geiesmonads/blob/mast
 
 ORIGINAL CONTRIBUTION
 ---------------------
-Implementation of a CHAINABLE STATE MONAD.
+Implementation of a __chainable state monad__.
 This monad is a native JS function with type `s -> (s,a)` enriched with a `bind` method.
 The present JS implementation of [[4]](http://channel9.msdn.com/Shows/Going+Deep/Brian-Beckman-The-Zen-of-Expressing-State-The-State-Monad) is also available in Java 8 language at [[6]](http://faustinelli.wordpress.com/2014/04/25/the-state-monad-in-java-8-eventually)
 
-See file geiesmonads_2.0.js.
+See file [geiesmonads_0.2.js](https://github.com/Muzietto/geiesmonads/blob/master/js/geiesmonads_0.2.js).
 
 DEBITS AND CREDITS
 ------------------
@@ -56,7 +56,7 @@ of implementations given in [[2]](http://jabberwocky.eu/2012/11/02/monads-for-du
 
 - The chainable maybe monad is a re-elaboration of old code of mine, written in Java and available [at my blog](http://faustinelli.wordpress.com/2010/07/27/example-maybe-monad-in-java)
 
-- My original contribution (chainable state monad) is a truly cool thing.
+- My original contribution (the chainable state monad) is a truly cool thing.
 
 
 I am in debt with:
