@@ -11,7 +11,7 @@ File [geiesmonads_es6_reader.js](https://github.com/Muzietto/geiesmonads/blob/ma
 - an implementation of a chainable reader monad
 - a couple of examples of utilisation
 
-You may see it at work [here](http://rawgit.com/Muzietto/geiesmonads/master/GeiesmonadsES6_Reader.htm), after opening the dev tools.
+You may see it at work [here](http://rawgit.com/Muzietto/geiesmonads/master/MochaGeiesmonadsES6_Reader_Test.htm).
 
 NB - with a big credit due to [Don't Fear the Reader](https://passy.svbtle.com/dont-fear-the-reader).
 
