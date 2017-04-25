@@ -6,10 +6,7 @@ Crisp clear chainable JavaScript/ECMAScript 6 monads.
 
 Special Challenge: the READER MONAD
 -----------------------------------
-File [geiesmonads_es6_reader.js](https://github.com/Muzietto/geiesmonads/blob/master/es6/geiesmonads_es6_reader.js) contains:
-
-- an implementation of a chainable reader monad
-- a couple of examples of utilisation
+File [geiesmonads_es6_reader.js](https://github.com/Muzietto/geiesmonads/blob/master/es6/geiesmonads_es6_reader.js) contains an implementation of a __chainable reader monad__.
 
 You may see it at work [here](http://rawgit.com/Muzietto/geiesmonads/master/MochaGeiesmonadsES6_Reader_Test.htm).
 
