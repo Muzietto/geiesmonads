@@ -11,12 +11,12 @@ MONAD.reader = (() => { // rm a = rm ctx a = rm (ctx -> a)
     return thisreader;
   }
 
-	return { // NB writing 'rm a' or 'rm ctx a' is the same
+  return { // NB writing 'rm a' or 'rm ctx a' is the same
     UNIT: a => monad(_ => a), // UNIT :: a -> rm a = a -> rm (ctx -> a)
     reader: monad, // monad :: (ctx -> a) -> rm a
     ask: _ => monad(ctx => ctx), // ask :: ctx -> rm ctx
     asks: fctxb => monad(fctxb), // asks :: (ctx -> b) -> rm b
     // local :: (ctx -> ctx) -> rm a -> rm a
     local: fctxctx => rma => monad(ctx => rma(fctxctx(ctx)))
-	};
+  };
 })();
