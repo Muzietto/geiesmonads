@@ -3,13 +3,21 @@ import {
     tail,
 } from 'util';
 import {
-    Pair,
+    pair,
+    success,
+    failure,
 } from 'classes';
 
-const parser = char => str => {
+const parser1 = char => str => {
     if ('' === str) throw new Error('reached end of char stream');
-    if (head(str) === char) return new Pair(true, tail(str));
-    return new Pair(false, str);
+    if (head(str) === char) return pair(true, tail(str));
+    return pair(false, str);
 }
 
-export {parser};
+const parser2 = char => str => {
+    if ('' === str) throw new Error('reached end of char stream');
+    if (head(str) === char) return success(char, tail(str));
+    return failure(char, str);
+}
+
+export {parser1, parser2};
