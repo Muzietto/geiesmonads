@@ -17,3 +17,10 @@ export function failure(matched, str) {
   result.name = 'failure';
   return result;
 }
+
+export function parser(fn) {
+  return {
+      run: str => fn(str),
+      name: 'parser'
+  };
+}

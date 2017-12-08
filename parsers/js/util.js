@@ -10,6 +10,10 @@ export function isFailure(thing) {
     return thing.name === 'failure';
 }
 
+export function isParser(thing) {
+    return thing.name === 'parser';
+}
+
 export function rnd(size) {
     size = size || 6;
     return Math.floor(Math.random() * Math.pow(10, size));
