@@ -1,13 +1,19 @@
-function Pair(_1, _2) {
-    this._1 = _1;
-    this._2 = _2;
+export function pair(_1, _2) {
+    return {
+        name: 'pair',
+        first: () => _1,
+        second: () => _2,
+    };
 }
 
-Pair.prototype.first = function() {
-    return this._1;
-};
-Pair.prototype.second = function() {
-    return this._2;
-};
+export function success(matched, str) {
+  let result = pair('got ' + matched, str);
+  result.name = 'success';
+  return result;
+}
 
-export {Pair};
+export function failure(matched, str) {
+  let result = pair('missed ' + matched, str);
+  result.name = 'failure';
+  return result;
+}

@@ -1,12 +1,13 @@
-export function typeOf(thing) {
-    let result;
+export function isPair(thing) {
+    return thing.name === 'pair';
+}
 
-    try {
-        result = thing.__proto__.constructor.name;
-    } catch (err) {
-    }
+export function isSuccess(thing) {
+    return thing.name === 'success';
+}
 
-    return (typeof result === 'string') ? result : 'undefined';
+export function isFailure(thing) {
+    return thing.name === 'failure';
 }
 
 export function rnd(size) {
