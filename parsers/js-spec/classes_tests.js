@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import parser from 'parsers';
+import {typeOf} from 'util';
 import {
     Pair,
 } from 'classes';
@@ -12,6 +12,7 @@ describe('pairs', () => {
         const pair = new Pair(true, 12)
         expect(pair.first()).to.be.eql(true);
         expect(pair.second()).to.be.eql(12);
+        expect(typeOf(pair)).to.be.eql('Pair');
     });
 
 });

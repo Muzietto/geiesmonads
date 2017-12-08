@@ -1,3 +1,14 @@
+export function typeOf(thing) {
+    let result;
+
+    try {
+        result = thing.__proto__.constructor.name;
+    } catch (err) {
+    }
+
+    return (typeof result === 'string') ? result : 'undefined';
+}
+
 export function rnd(size) {
     size = size || 6;
     return Math.floor(Math.random() * Math.pow(10, size));
