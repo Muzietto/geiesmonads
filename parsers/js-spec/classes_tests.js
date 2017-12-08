@@ -1,6 +1,5 @@
 import {expect} from 'chai';
 import {
-    typeOf,
     isPair,
     isSuccess,
     isFailure,
