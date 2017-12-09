@@ -50,3 +50,24 @@ export function orElse(parser1, parser2) {
         return (isSuccess(res1)) ? res1 : parser2.run(str);
     });
 }
+
+let _fail = parser(str => failure('parsing failed', str));
+
+let _succeed = parser(str => success('parsing succeeded', str));
+
+export function choice(parsers) {
+    return parsers.reduceRight((rest, curr) => {
+        return orElse(curr, rest);
+    }, _fail);
+}
+
+export function alternativeParsers(chars) {
+    return choice(chars.map(pchar));
+}
+
+export function choiceL(parsers) {
+    return tail(parsers).concat([_fail])
+        .reduce((acc, curr) => {
+            return orElse(acc, curr);
+        }, head(parsers));
+}
