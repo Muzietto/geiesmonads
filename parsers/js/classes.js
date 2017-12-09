@@ -6,14 +6,19 @@ export function pair(_1, _2) {
     };
 }
 
+function _concat(msgs) {
+    if (Array.isArray(msgs)) return msgs.join('');
+    else return msgs;
+}
+
 export function success(matched, str) {
-  let result = pair('got ' + matched, str);
+  let result = pair(_concat(matched), str);
   result.name = 'success';
   return result;
 }
 
 export function failure(matched, str) {
-  let result = pair('missed ' + matched, str);
+  let result = pair(_concat(matched), str);
   result.name = 'failure';
   return result;
 }
@@ -21,6 +26,6 @@ export function failure(matched, str) {
 export function parser(fn) {
   return {
       run: str => fn(str),
-      name: 'parser'
+      name: 'parser',
   };
 }
