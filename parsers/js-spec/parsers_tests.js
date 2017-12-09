@@ -4,6 +4,7 @@ import {
     parser2,
     pchar,
     andThen,
+    orElse,
 } from 'parsers';
 import {
     isPair,
@@ -11,6 +12,33 @@ import {
     isFailure,
     isParser,
 } from 'util';
+
+describe('two parsers bound by orElse', () => {
+    let parserA, parserB, parserAorB;
+
+    beforeEach(() => {
+        parserAorB = orElse(pchar('a'), pchar('b'));
+    });
+
+    it('can parse one of two chars', () => {
+        expect(isParser(parserAorB)).to.be.true;
+        let parsingAorB = parserAorB.run('abc');
+        expect(isSuccess(parsingAorB)).to.be.true;
+        expect(parsingAorB.first()).to.be.eql('a');
+        expect(parsingAorB.second()).to.be.eql('bc');
+        parsingAorB = parserAorB.run('bbc');
+        expect(isSuccess(parsingAorB)).to.be.true;
+        expect(parsingAorB.first()).to.be.eql('b');
+        expect(parsingAorB.second()).to.be.eql('bc');
+    });
+
+    it('can also parse NONE of two chars', () => {
+        const parsingAorB = parserAorB.run('cde');
+        expect(isFailure(parsingAorB)).to.be.true;
+        expect(parsingAorB.first()).to.be.eql('b');
+        expect(parsingAorB.second()).to.be.eql('cde');
+    });
+});
 
 describe('two parsers bound by andThen', () => {
     let parserA, parserB, parserAandB;

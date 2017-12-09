@@ -43,3 +43,10 @@ export function andThen(parser1, parser2) {
         } else return res1;
     });
 }
+
+export function orElse(parser1, parser2) {
+    return parser(str => {
+        let res1 = parser1.run(str);
+        return (isSuccess(res1)) ? res1 : parser2.run(str);
+    });
+}
