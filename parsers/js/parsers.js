@@ -1,6 +1,8 @@
 import {
     head,
     tail,
+    isSuccess,
+    isFailure,
 } from 'util';
 import {
     pair,
@@ -21,11 +23,23 @@ const parser2 = char => str => {
     return failure(char, str);
 };
 
-function pchar(char) {
+export {parser1, parser2};
+
+export function pchar(char) {
     let result = function (str) {
         return parser2(char)(str);
     };
     return parser(result);
 }
 
-export {parser1, parser2, pchar};
+export function andThen(parser1, parser2) {
+    return parser(function (str) {
+        let res1 = parser1.run(str);
+        if (isSuccess(res1)) {
+            let res2 = parser2.run(res1.second());
+            if (isSuccess(res2)) {
+                return success([res1.first(), res2.first()], res2.second());
+            } else return res2;
+        } else return res1;
+    });
+}
