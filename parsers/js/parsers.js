@@ -25,7 +25,7 @@ const parser2 = char => str => {
 
 export {parser1, parser2};
 
-export function pchar(char) {
+export function charParser(char) {
     let result = function (str) {
         return parser2(char)(str);
     };
@@ -62,7 +62,7 @@ export function choice(parsers) {
 }
 
 export function alternativeParsers(chars) {
-    return choice(chars.map(pchar));
+    return choice(chars.map(charParser));
 }
 
 export function choiceL(parsers) {

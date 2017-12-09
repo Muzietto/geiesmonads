@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {
     parser1,
     parser2,
-    pchar,
+    charParser,
     andThen,
     orElse,
     choice,
@@ -15,9 +15,11 @@ import {
     isParser,
 } from 'util';
 
+let lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',];
+let uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
+let digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
 describe('a parsers for a choice of chars', () => {
-    let lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',];
-    let uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
 
     it('can parse any lowercase char', () => {
         let lowercasesParser = alternativeParsers(lowercases);
@@ -78,7 +80,7 @@ describe('a choice of parsers bound by orElse', () => {
     let parsersChoice;
 
     beforeEach(() => {
-        parsersChoice = choice([pchar('a'), pchar('b'), pchar('c'), pchar('d'),]);
+        parsersChoice = choice([charParser('a'), charParser('b'), charParser('c'), charParser('d'),]);
     });
 
     it('can parse one of four chars', () => {
@@ -109,7 +111,7 @@ describe('two parsers bound by orElse', () => {
     let parserA, parserB, parserAorB;
 
     beforeEach(() => {
-        parserAorB = orElse(pchar('a'), pchar('b'));
+        parserAorB = orElse(charParser('a'), charParser('b'));
     });
 
     it('can parse one of two chars', () => {
@@ -136,7 +138,7 @@ describe('two parsers bound by andThen', () => {
     let parserA, parserB, parserAandB;
 
     beforeEach(() => {
-        parserAandB = andThen(pchar('a'), pchar('b'));
+        parserAandB = andThen(charParser('a'), charParser('b'));
     });
 
     it('can parse two chars', () => {
@@ -203,7 +205,7 @@ describe('a named character parser', () => {
     let parserA;
 
     beforeEach(() => {
-        parserA = pchar('a');
+        parserA = charParser('a');
     });
 
     it('can parse a single char', () => {
