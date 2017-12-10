@@ -7,6 +7,7 @@ import {
     orElse,
     choice,
     anyOf,
+    fmap,
 } from 'parsers';
 import {
     isPair,
@@ -15,9 +16,21 @@ import {
     isParser,
 } from 'util';
 
-let lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',];
-let uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
-let digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+const lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',];
+const uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
+const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+
+describe('parse 3 digits', () => {
+    it('parses three digits', () => {
+        let parseDigit = anyOf(digits);
+        let threeDigits = fmap(andThen(parseDigit, andThen(parseDigit, parseDigit)), x => 'got ' + x);
+        let parsing = threeDigits.run('123');
+        expect(isSuccess(parsing)).to.be.true;
+        expect(parsing.first()).to.be.eql('got 123');
+        expect(parsing.second()).to.be.eql('');
+    });
+});
 
 describe('a parsers for any of a list of chars', () => {
 
@@ -162,7 +175,7 @@ describe('two parsers bound by orElse', () => {
 });
 
 describe('two parsers bound by andThen', () => {
-    let parserA, parserB, parserAandB;
+    let parserAandB;
 
     beforeEach(() => {
         parserAandB = andThen(charParser('a'), charParser('b'));
@@ -172,7 +185,7 @@ describe('two parsers bound by andThen', () => {
         expect(isParser(parserAandB)).to.be.true;
         const parsingAandB = parserAandB.run('abc');
         expect(isSuccess(parsingAandB)).to.be.true;
-        expect(parsingAandB.first()).to.be.eql('ab');
+        expect(parsingAandB.first().toString()).to.be.eql('[a,b]');
         expect(parsingAandB.second()).to.be.eql('c');
     });
 
