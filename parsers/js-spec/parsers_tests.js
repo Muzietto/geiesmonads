@@ -22,13 +22,23 @@ const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 
 describe('parse 3 digits', () => {
+    let parseDigit, threeDigits, parsing;
+    beforeEach(() => {
+        parseDigit = anyOf(digits);
+        threeDigits = andThen(parseDigit, andThen(parseDigit, parseDigit));
+        parsing = threeDigits.run('123');
+    });
     it('parses three digits', () => {
-        let parseDigit = anyOf(digits);
-        let threeDigits = fmap(andThen(parseDigit, andThen(parseDigit, parseDigit)), x => 'got ' + x);
+        expect(isSuccess(parsing)).to.be.true;
+        expect(parsing[0].toString()).to.be.eql('[1,[2,3]]');
+        expect(parsing[1]).to.be.eql('');
+    });
+    it('parses three digits while showcasing fmap', () => {
+        threeDigits = fmap(threeDigits, ([x, [y, z]]) => [x, y, z]);
         let parsing = threeDigits.run('123');
         expect(isSuccess(parsing)).to.be.true;
-        expect(parsing.first()).to.be.eql('got [1,[2,3]]');
-        expect(parsing.second()).to.be.eql('');
+        expect(parsing[0].toString()).to.be.eql('[1,2,3]');
+        expect(parsing[1]).to.be.eql('');
     });
 });
 
@@ -40,25 +50,25 @@ describe('a parsers for any of a list of chars', () => {
         expect(isParser(lowercasesParser)).to.be.true;
         let parsingChoice = lowercasesParser.run('a');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('a');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('a');
+        expect(parsingChoice[1]).to.be.eql('');
         parsingChoice = lowercasesParser.run('b');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('b');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('b');
+        expect(parsingChoice[1]).to.be.eql('');
         parsingChoice = lowercasesParser.run('d');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('d');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('d');
+        expect(parsingChoice[1]).to.be.eql('');
         parsingChoice = lowercasesParser.run('z');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('z');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('z');
+        expect(parsingChoice[1]).to.be.eql('');
 
         parsingChoice = lowercasesParser.run('Y');
         expect(isFailure(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('parsing failed');
-        expect(parsingChoice.second()).to.be.eql('Y');
+        expect(parsingChoice[0]).to.be.eql('parsing failed');
+        expect(parsingChoice[1]).to.be.eql('Y');
     });
 
     it('can parse any uppercase char', () => {
@@ -67,25 +77,25 @@ describe('a parsers for any of a list of chars', () => {
         expect(isParser(uppercasesParser)).to.be.true;
         let parsingChoice = uppercasesParser.run('A');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('A');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('A');
+        expect(parsingChoice[1]).to.be.eql('');
         parsingChoice = uppercasesParser.run('B');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('B');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('B');
+        expect(parsingChoice[1]).to.be.eql('');
         parsingChoice = uppercasesParser.run('R');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('R');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('R');
+        expect(parsingChoice[1]).to.be.eql('');
         parsingChoice = uppercasesParser.run('Z');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('Z');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('Z');
+        expect(parsingChoice[1]).to.be.eql('');
 
         parsingChoice = uppercasesParser.run('s');
         expect(isFailure(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('parsing failed');
-        expect(parsingChoice.second()).to.be.eql('s');
+        expect(parsingChoice[0]).to.be.eql('parsing failed');
+        expect(parsingChoice[1]).to.be.eql('s');
     });
 
     it('can parse any digit', () => {
@@ -94,25 +104,25 @@ describe('a parsers for any of a list of chars', () => {
         expect(isParser(digitsParser)).to.be.true;
         let parsingChoice = digitsParser.run('1');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('1');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('1');
+        expect(parsingChoice[1]).to.be.eql('');
         parsingChoice = digitsParser.run('3');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('3');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('3');
+        expect(parsingChoice[1]).to.be.eql('');
         parsingChoice = digitsParser.run('0');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('0');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('0');
+        expect(parsingChoice[1]).to.be.eql('');
         parsingChoice = digitsParser.run('8');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('8');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('8');
+        expect(parsingChoice[1]).to.be.eql('');
 
         parsingChoice = digitsParser.run('s');
         expect(isFailure(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('parsing failed');
-        expect(parsingChoice.second()).to.be.eql('s');
+        expect(parsingChoice[0]).to.be.eql('parsing failed');
+        expect(parsingChoice[1]).to.be.eql('s');
     });
 });
 
@@ -127,23 +137,23 @@ describe('a choice of parsers bound by orElse', () => {
         expect(isParser(parsersChoice)).to.be.true;
         let parsingChoice = parsersChoice.run('a');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('a');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('a');
+        expect(parsingChoice[1]).to.be.eql('');
         parsingChoice = parsersChoice.run('b');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('b');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('b');
+        expect(parsingChoice[1]).to.be.eql('');
         parsingChoice = parsersChoice.run('d');
         expect(isSuccess(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('d');
-        expect(parsingChoice.second()).to.be.eql('');
+        expect(parsingChoice[0]).to.be.eql('d');
+        expect(parsingChoice[1]).to.be.eql('');
     });
 
     it('can also parse NONE of four chars', () => {
         const parsingChoice = parsersChoice.run('x');
         expect(isFailure(parsingChoice)).to.be.true;
-        expect(parsingChoice.first()).to.be.eql('parsing failed');
-        expect(parsingChoice.second()).to.be.eql('x');
+        expect(parsingChoice[0]).to.be.eql('parsing failed');
+        expect(parsingChoice[1]).to.be.eql('x');
     });
 });
 
@@ -158,19 +168,19 @@ describe('two parsers bound by orElse', () => {
         expect(isParser(parserAorB)).to.be.true;
         let parsingAorB = parserAorB.run('abc');
         expect(isSuccess(parsingAorB)).to.be.true;
-        expect(parsingAorB.first()).to.be.eql('a');
-        expect(parsingAorB.second()).to.be.eql('bc');
+        expect(parsingAorB[0]).to.be.eql('a');
+        expect(parsingAorB[1]).to.be.eql('bc');
         parsingAorB = parserAorB.run('bbc');
         expect(isSuccess(parsingAorB)).to.be.true;
-        expect(parsingAorB.first()).to.be.eql('b');
-        expect(parsingAorB.second()).to.be.eql('bc');
+        expect(parsingAorB[0]).to.be.eql('b');
+        expect(parsingAorB[1]).to.be.eql('bc');
     });
 
     it('can also parse NONE of two chars', () => {
         const parsingAorB = parserAorB.run('cde');
         expect(isFailure(parsingAorB)).to.be.true;
-        expect(parsingAorB.first()).to.be.eql('b');
-        expect(parsingAorB.second()).to.be.eql('cde');
+        expect(parsingAorB[0]).to.be.eql('b');
+        expect(parsingAorB[1]).to.be.eql('cde');
     });
 });
 
@@ -185,16 +195,16 @@ describe('two parsers bound by andThen', () => {
         expect(isParser(parserAandB)).to.be.true;
         const parsingAandB = parserAandB.run('abc');
         expect(isSuccess(parsingAandB)).to.be.true;
-        expect(parsingAandB.first().toString()).to.be.eql('[a,b]');
-        expect(parsingAandB.second()).to.be.eql('c');
+        expect(parsingAandB[0].toString()).to.be.eql('[a,b]');
+        expect(parsingAandB[1]).to.be.eql('c');
         expect(parsingAandB.toString()).to.be.eql('[[a,b],c]');
     });
 
     it('can also NOT parse two chars', () => {
         const parsingAandB = parserAandB.run('acd');
         expect(isFailure(parsingAandB)).to.be.true;
-        expect(parsingAandB.first()).to.be.eql('b');
-        expect(parsingAandB.second()).to.be.eql('cd');
+        expect(parsingAandB[0]).to.be.eql('b');
+        expect(parsingAandB[1]).to.be.eql('cd');
     });
 });
 
@@ -207,15 +217,15 @@ describe('a simple parser', () => {
 
     it('can parse a single char', () => {
         const parsingA = parserA('abc');
-        expect(parsingA.first()).to.be.true;
-        expect(parsingA.second()).to.be.eql('bc');
+        expect(parsingA[0]).to.be.true;
+        expect(parsingA[1]).to.be.eql('bc');
         expect(isPair(parsingA)).to.be.true;
     });
 
     it('can also NOT parse a single char', () => {
         const parsingB = parserA('bcd');
-        expect(parsingB.first()).to.be.false;
-        expect(parsingB.second()).to.be.eql('bcd');
+        expect(parsingB[0]).to.be.false;
+        expect(parsingB[1]).to.be.eql('bcd');
         expect(isPair(parsingB)).to.be.true;
     });
 });
@@ -229,15 +239,15 @@ describe('a slightly more complex parser', () => {
 
     it('can parse a single char', () => {
         const parsingA = parserA('abc');
-        expect(parsingA.first()).to.be.eql('a');
-        expect(parsingA.second()).to.be.eql('bc');
+        expect(parsingA[0]).to.be.eql('a');
+        expect(parsingA[1]).to.be.eql('bc');
         expect(isSuccess(parsingA)).to.be.true;
     });
 
     it('can also NOT parse a single char', () => {
         const parsingB = parserA('bcd');
-        expect(parsingB.first()).to.be.eql('a');
-        expect(parsingB.second()).to.be.eql('bcd');
+        expect(parsingB[0]).to.be.eql('a');
+        expect(parsingB[1]).to.be.eql('bcd');
         expect(isFailure(parsingB)).to.be.true;
     });
 });
@@ -252,15 +262,15 @@ describe('a named character parser', () => {
     it('can parse a single char', () => {
         expect(isParser(parserA)).to.be.true;
         const parsingA = parserA.run('abc');
-        expect(parsingA.first()).to.be.eql('a');
-        expect(parsingA.second()).to.be.eql('bc');
+        expect(parsingA[0]).to.be.eql('a');
+        expect(parsingA[1]).to.be.eql('bc');
         expect(isSuccess(parsingA)).to.be.true;
     });
 
     it('can also NOT parse a single char', () => {
         const parsingB = parserA.run('bcd');
-        expect(parsingB.first()).to.be.eql('a');
-        expect(parsingB.second()).to.be.eql('bcd');
+        expect(parsingB[0]).to.be.eql('a');
+        expect(parsingB[1]).to.be.eql('bcd');
         expect(isFailure(parsingB)).to.be.true;
     });
 });
