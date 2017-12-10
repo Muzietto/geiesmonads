@@ -17,7 +17,7 @@ import {
 
 let lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',];
 let uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
-let digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+let digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 describe('a parsers for a choice of chars', () => {
 
@@ -70,6 +70,33 @@ describe('a parsers for a choice of chars', () => {
         expect(parsingChoice.second()).to.be.eql('');
 
         parsingChoice = uppercasesParser.run('s');
+        expect(isFailure(parsingChoice)).to.be.true;
+        expect(parsingChoice.first()).to.be.eql('parsing failed');
+        expect(parsingChoice.second()).to.be.eql('s');
+    });
+
+    it('can parse any digit', () => {
+        let digitsParser = alternativeParsers(digits);
+
+        expect(isParser(digitsParser)).to.be.true;
+        let parsingChoice = digitsParser.run('1');
+        expect(isSuccess(parsingChoice)).to.be.true;
+        expect(parsingChoice.first()).to.be.eql('1');
+        expect(parsingChoice.second()).to.be.eql('');
+        parsingChoice = digitsParser.run('3');
+        expect(isSuccess(parsingChoice)).to.be.true;
+        expect(parsingChoice.first()).to.be.eql('3');
+        expect(parsingChoice.second()).to.be.eql('');
+        parsingChoice = digitsParser.run('0');
+        expect(isSuccess(parsingChoice)).to.be.true;
+        expect(parsingChoice.first()).to.be.eql('0');
+        expect(parsingChoice.second()).to.be.eql('');
+        parsingChoice = digitsParser.run('8');
+        expect(isSuccess(parsingChoice)).to.be.true;
+        expect(parsingChoice.first()).to.be.eql('8');
+        expect(parsingChoice.second()).to.be.eql('');
+
+        parsingChoice = digitsParser.run('s');
         expect(isFailure(parsingChoice)).to.be.true;
         expect(parsingChoice.first()).to.be.eql('parsing failed');
         expect(parsingChoice.second()).to.be.eql('s');
