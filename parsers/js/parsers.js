@@ -61,7 +61,7 @@ export function choice(parsers) {
     }, _fail);
 }
 
-export function alternativeParsers(chars) {
+export function anyOf(chars) {
     return choice(chars.map(charParser));
 }
 

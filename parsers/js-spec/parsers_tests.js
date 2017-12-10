@@ -6,7 +6,7 @@ import {
     andThen,
     orElse,
     choice,
-    alternativeParsers,
+    anyOf,
 } from 'parsers';
 import {
     isPair,
@@ -19,10 +19,10 @@ let lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm
 let uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
 let digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-describe('a parsers for a choice of chars', () => {
+describe('a parsers for any of a list of chars', () => {
 
     it('can parse any lowercase char', () => {
-        let lowercasesParser = alternativeParsers(lowercases);
+        let lowercasesParser = anyOf(lowercases);
 
         expect(isParser(lowercasesParser)).to.be.true;
         let parsingChoice = lowercasesParser.run('a');
@@ -49,7 +49,7 @@ describe('a parsers for a choice of chars', () => {
     });
 
     it('can parse any uppercase char', () => {
-        let uppercasesParser = alternativeParsers(uppercases);
+        let uppercasesParser = anyOf(uppercases);
 
         expect(isParser(uppercasesParser)).to.be.true;
         let parsingChoice = uppercasesParser.run('A');
@@ -76,7 +76,7 @@ describe('a parsers for a choice of chars', () => {
     });
 
     it('can parse any digit', () => {
-        let digitsParser = alternativeParsers(digits);
+        let digitsParser = anyOf(digits);
 
         expect(isParser(digitsParser)).to.be.true;
         let parsingChoice = digitsParser.run('1');
