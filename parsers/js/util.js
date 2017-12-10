@@ -1,17 +1,17 @@
 export function isPair(thing) {
-    return thing.name === 'pair';
+    return thing.type === 'pair';
 }
 
 export function isSuccess(thing) {
-    return thing.name === 'success';
+    return thing.type === 'success';
 }
 
 export function isFailure(thing) {
-    return thing.name === 'failure';
+    return thing.type === 'failure';
 }
 
 export function isParser(thing) {
-    return thing.name === 'parser';
+    return thing.type === 'parser';
 }
 
 export function rnd(size) {
