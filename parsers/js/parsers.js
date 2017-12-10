@@ -36,9 +36,9 @@ export function andThen(parser1, parser2) {
     return parser(function (str) {
         let res1 = parser1.run(str);
         if (isSuccess(res1)) {
-            let res2 = parser2.run(res1.second());
+            let res2 = parser2.run(res1[1]);
             if (isSuccess(res2)) {
-                return success(pair(res1.first(), res2.first()), res2.second());
+                return success(pair(res1[0], res2[0]), res2[1]);
             } else return res2;
         } else return res1;
     });
@@ -68,7 +68,7 @@ export function anyOf(chars) {
 export function fmap(parser1, fab) {
     return parser(str => {
         let res1 = parser1.run(str);
-        if (isSuccess((res1))) return success(fab(res1.first()), res1.second());
+        if (isSuccess((res1))) return success(fab(res1[0]), res1[1]);
         return res1;
     });
 }
@@ -84,7 +84,7 @@ export function applyP(fP) {
 
         return parser(str => {
             let res1 = andThen(fP, xP).run(str);
-            return res1.first()(res1.second());
+            return res1[0](res1[1]);
         });
 
     };
