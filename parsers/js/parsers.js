@@ -38,7 +38,7 @@ export function andThen(parser1, parser2) {
         if (isSuccess(res1)) {
             let res2 = parser2.run(res1.second());
             if (isSuccess(res2)) {
-                return success([res1.first(), res2.first()], res2.second());
+                return success(pair(res1.first(), res2.first()), res2.second());
             } else return res2;
         } else return res1;
     });
@@ -63,6 +63,39 @@ export function choice(parsers) {
 
 export function anyOf(chars) {
     return choice(chars.map(charParser));
+}
+
+export function fmap(parser1, fab) {
+    return parser(str => {
+        let res1 = parser1.run(str);
+        if (isSuccess((res1))) return success(fab(res1.first()), res1.second());
+        return res1;
+    });
+}
+
+export function returnP(value) {
+    return parser(str => success(value, str));
+}
+
+// parser(a -> b) -> parser(a) -> parser(b)
+export function applyP(fP) {
+    return function (xP) {
+        //return fmap(andThen(fP, xP), (f, x) => f(x));
+
+        return parser(str => {
+            let res1 = andThen(fP, xP).run(str);
+            return res1.first()(res1.second());
+        });
+
+    };
+}
+
+export function lift2(faab) {
+    return function (parser1) {
+        return function (parser2) {
+            return applyP(applyP(faab, parser1), parser2);
+        }
+    }
 }
 
 export function choiceL(parsers) {
