@@ -3,6 +3,13 @@ export function pair(_1, _2) {
     result.name = 'pair';
     result.first = () => _1;
     result.second = () => _2;
+    result.toString = () => {
+        return '['
+            + result.first().toString()
+            + ','
+            + result.second().toString()
+            + ']';
+    };
     return result;
 }
 

@@ -27,7 +27,7 @@ describe('parse 3 digits', () => {
         let threeDigits = fmap(andThen(parseDigit, andThen(parseDigit, parseDigit)), x => 'got ' + x);
         let parsing = threeDigits.run('123');
         expect(isSuccess(parsing)).to.be.true;
-        expect(parsing.first()).to.be.eql('got 123');
+        expect(parsing.first()).to.be.eql('got [1,[2,3]]');
         expect(parsing.second()).to.be.eql('');
     });
 });
@@ -187,6 +187,7 @@ describe('two parsers bound by andThen', () => {
         expect(isSuccess(parsingAandB)).to.be.true;
         expect(parsingAandB.first().toString()).to.be.eql('[a,b]');
         expect(parsingAandB.second()).to.be.eql('c');
+        expect(parsingAandB.toString()).to.be.eql('[[a,b],c]');
     });
 
     it('can also NOT parse two chars', () => {
