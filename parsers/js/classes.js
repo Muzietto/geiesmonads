@@ -2,6 +2,12 @@ import {
     isPair,
 } from 'util';
 
+import {
+    fmap,
+    returnP,
+    applyP,
+} from 'parsers';
+
 const toString = Array.prototype.toString;
 
 Array.prototype.toString = function () {
@@ -37,5 +43,6 @@ export function parser(fn) {
     return {
         run: str => fn(str),
         type: 'parser',
+        fmap: function(fab) { return fmap(this, fab); },
     };
 }
