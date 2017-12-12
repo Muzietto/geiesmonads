@@ -49,7 +49,7 @@ describe('parse 3 digits', () => {
     });
     describe('parses any of three digits while showcasing fmap', () => {
         it('as global method', () => {
-            threeDigits = fmap(threeDigits, ([x, [y, z]]) => [x, y, z]);
+            threeDigits = fmap(([x, [y, z]]) => [x, y, z], threeDigits);
             let parsing = threeDigits.run('123');
             expect(isSuccess(parsing)).to.be.true;
             expect(parsing[0].toString()).to.be.eql('[1,2,3]');
