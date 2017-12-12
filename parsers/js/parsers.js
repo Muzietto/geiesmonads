@@ -94,6 +94,7 @@ export function lift2(faab) {
     };
 }
 
+// using lift2(cons)
 export function sequenceP(parsers) {
     return parsers
         .reduceRight((rest, curr) => {
@@ -101,6 +102,7 @@ export function sequenceP(parsers) {
         }, returnP([]));
 }
 
+// using naive andThen && fmap
 export function sequenceP2(parsers) {
     return parsers
         .reduceRight((rest, curr) => {
@@ -110,6 +112,24 @@ export function sequenceP2(parsers) {
 
 export function pstring(str) {
     return sequenceP(str.split('').map(pchar));
+}
+
+export function zeroOrMore(xP) {
+    return str => {
+        let res1 = xP.run(str);
+        if (isFailure(res1)) return success([], str);
+        let resN = zeroOrMore(xP)(res1[1]);
+        return success([res1[0]].concat(resN[0]), resN[1]);
+    };
+}
+
+// not working  :-(
+function zeroOrMoreX(xP) {
+    return parser(str => {
+        let res = xP.run(str);
+        if (isFailure(res)) return success([], str);
+        return lift2(_cons)(returnP(res[0]))(zeroOrMoreX(xP).run(res[1]));
+    });
 }
 
 function _cons(x) {
