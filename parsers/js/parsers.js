@@ -95,22 +95,17 @@ export function lift2(faab) {
 }
 
 export function sequenceP(parsers) {
-    return parsers.reverse()
-        .reduceRight((curr, rest) => {
+    return parsers
+        .reduceRight((rest, curr) => {
             return lift2(_cons)(curr)(rest);
         }, returnP([]));
 }
 
 export function sequenceP2(parsers) {
-    return parsers.reverse()
-        .reduceRight((curr, rest) => {
+    return parsers
+        .reduceRight((rest, curr) => {
             return fmap(([x, y]) => x + y, andThen(curr, rest));
         }, returnP(''));
-}
-
-export function sequenceP3(parsers) {
-    if (parsers.length === 0) return returnP('');
-    return fmap(([x, y]) => x + y, andThen(head(parsers), sequenceP3(tail(parsers))));
 }
 
 export function pstring(str) {
@@ -119,6 +114,6 @@ export function pstring(str) {
 
 function _cons(x) {
     return function (xs) {
-        return x.concat(xs);
+        return [x].concat(xs);
     };
 }

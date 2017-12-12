@@ -44,16 +44,10 @@ describe('sequence for parsers based on lift2(cons) (aka sequenceP)', () => {
     });
 });
 
-describe('sequences for parsers based on andThen && fmap (aka sequenceP2/sequenceP3)', () => {
-    describe('store matched chars inside a plain string', () => {
-        it('requiring reversal of the parsers array when using foldRight (sequenceP2)', () => {
-            const abcParser = sequenceP2([pchar('a'), pchar('b'), pchar('c'),]);
-            expect(abcParser.run('abc').toString()).to.be.eql('[abc,]');
-        });
-        it('using the unreverted parsers array when using plain recursion (sequenceP3)', () => {
-            const abcParser = sequenceP3([pchar('a'), pchar('b'), pchar('c'),]);
-            expect(abcParser.run('abc').toString()).to.be.eql('[abc,]');
-        });
+describe('sequences for parsers based on andThen && fmap (aka sequenceP2)', () => {
+    it('store matched chars inside a plain string', () => {
+        const abcParser = sequenceP2([pchar('a'), pchar('b'), pchar('c'),]);
+        expect(abcParser.run('abc').toString()).to.be.eql('[abc,]');
     });
 });
 
