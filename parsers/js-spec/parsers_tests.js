@@ -13,6 +13,8 @@ import {
     applyP,
     lift2,
     sequenceP,
+    sequenceP2,
+    sequenceP3,
     pstring,
 } from 'parsers';
 import {
@@ -26,10 +28,23 @@ const lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 
 const uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
 const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-describe('sequence for parsers (aka sequenceP)', () => {
-    it('allows to prepare sequences of chars to match', () => {
-        const abcParser = sequenceP([pchar('a')/*,pchar('b'),pchar('c'),*/]);
-        expect(abcParser.run('abc').toString()).to.be.eql('[a,bc]');
+describe('sequence for parsers based on lift2(cons) (aka sequenceP)', () => {
+    it('stores matched chars inside an array', () => {
+        const abcParser = sequenceP([pchar('a'), pchar('b'), pchar('c'),]);
+        expect(abcParser.run('abc').toString()).to.be.eql('[[a,b,c],]');
+    });
+});
+
+describe('sequences for parsers based on andThen && fmap (aka sequenceP2/sequenceP3)', () => {
+    describe('store matched chars inside a plain string', () => {
+        it('requiring reversal of the parsers array when using foldRight (sequenceP2)', () => {
+            const abcParser = sequenceP2([pchar('a'), pchar('b'), pchar('c'),]);
+            expect(abcParser.run('abc').toString()).to.be.eql('[abc,]');
+        });
+        it('using the unreverted parsers array when using plain recursion (sequenceP3)', () => {
+            const abcParser = sequenceP3([pchar('a'), pchar('b'), pchar('c'),]);
+            expect(abcParser.run('abc').toString()).to.be.eql('[abc,]');
+        });
     });
 });
 
@@ -74,6 +89,23 @@ describe('parse 3 digits', () => {
             expect(parsing[0].toString()).to.be.eql('[1,2,3]');
             expect(parsing[1]).to.be.eql('');
         });
+    });
+});
+
+describe('parse ABC', () => {
+    let abcP, parsing;
+    beforeEach(() => {
+        abcP = andThen(pchar('a'),
+            andThen(pchar('b'),
+                andThen(pchar('c'), returnP('')).fmap(([x, y]) => x + y)
+            ).fmap(([x, y]) => x + y)
+        ).fmap(([x, y]) => x + y);
+        parsing = abcP.run('abcd');
+    });
+    it('parses ABC', () => {
+        expect(isSuccess(parsing)).to.be.true;
+        expect(parsing[0].toString()).to.be.eql('abc');
+        expect(parsing[1]).to.be.eql('d');
     });
 });
 
@@ -214,7 +246,7 @@ describe('two parsers bound by orElse', () => {
     it('can also parse NONE of two chars', () => {
         const parsingAorB = parserAorB.run('cde');
         expect(isFailure(parsingAorB)).to.be.true;
-        expect(parsingAorB[0]).to.be.eql('b');
+        expect(parsingAorB[0]).to.be.eql('got b');
         expect(parsingAorB[1]).to.be.eql('cde');
     });
 });
@@ -238,7 +270,7 @@ describe('two parsers bound by andThen', () => {
     it('can also NOT parse two chars', () => {
         const parsingAandB = parserAandB.run('acd');
         expect(isFailure(parsingAandB)).to.be.true;
-        expect(parsingAandB[0]).to.be.eql('b');
+        expect(parsingAandB[0]).to.be.eql('got b');
         expect(parsingAandB[1]).to.be.eql('cd');
     });
 });
@@ -256,7 +288,7 @@ describe('a simple parser', () => {
 
     it('can also NOT parse a single char', () => {
         const parsingB = parserA('bcd');
-        expect(parsingB[0]).to.be.eql('a');
+        expect(parsingB[0]).to.be.eql('got a');
         expect(parsingB[1]).to.be.eql('bcd');
         expect(isFailure(parsingB)).to.be.true;
     });
@@ -270,7 +302,7 @@ describe('a simple parser', () => {
 
     it('can also NOT parse a single digit', () => {
         const parsing2 = parser1('234');
-        expect(parsing2[0]).to.be.eql(1);
+        expect(parsing2[0]).to.be.eql('got 1');
         expect(parsing2[1]).to.be.eql('234');
         expect(isFailure(parsing2)).to.be.true;
     });
@@ -288,7 +320,7 @@ describe('a slightly more complex parser', () => {
 
     it('can also NOT parse a single char', () => {
         const parsingB = parserA('bcd');
-        expect(parsingB[0]).to.be.eql('a');
+        expect(parsingB[0]).to.be.eql('got a');
         expect(parsingB[1]).to.be.eql('bcd');
         expect(isFailure(parsingB)).to.be.true;
     });
@@ -311,7 +343,7 @@ describe('a named character parser', () => {
 
     it('can also NOT parse a single char', () => {
         const parsingB = parserA.run('bcd');
-        expect(parsingB[0]).to.be.eql('a');
+        expect(parsingB[0]).to.be.eql('got a');
         expect(parsingB[1]).to.be.eql('bcd');
         expect(isFailure(parsingB)).to.be.true;
     });

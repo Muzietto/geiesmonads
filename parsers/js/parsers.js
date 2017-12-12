@@ -14,13 +14,13 @@ import {
 const charParser = char => str => {
     if ('' === str) throw new Error('reached end of char stream');
     if (head(str) === char) return success(char, tail(str));
-    return failure(char, str);
+    return failure('got ' + char, str);
 };
 
 const digitParser = digit => str => {
     if ('' === str) throw new Error('reached end of char stream');
     if (parseInt(head(str), 10) === digit) return success(digit, tail(str));
-    return failure(digit, str);
+    return failure('got ' + digit, str);
 };
 
 export {charParser, digitParser};
@@ -95,10 +95,22 @@ export function lift2(faab) {
 }
 
 export function sequenceP(parsers) {
-    return parsers
+    return parsers.reverse()
         .reduceRight((curr, rest) => {
             return lift2(_cons)(curr)(rest);
         }, returnP([]));
+}
+
+export function sequenceP2(parsers) {
+    return parsers.reverse()
+        .reduceRight((curr, rest) => {
+            return fmap(([x, y]) => x + y, andThen(curr, rest));
+        }, returnP(''));
+}
+
+export function sequenceP3(parsers) {
+    if (parsers.length === 0) return returnP('');
+    return fmap(([x, y]) => x + y, andThen(head(parsers), sequenceP3(tail(parsers))));
 }
 
 export function pstring(chars) {
