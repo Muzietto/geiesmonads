@@ -123,6 +123,12 @@ export function zeroOrMore(xP) {
     };
 }
 
+export function many(parser) {
+    return parser(str => {
+        return zeroOrMore(parser)(str);
+    });
+}
+
 // not working  :-(
 function zeroOrMoreX(xP) {
     return parser(str => {
