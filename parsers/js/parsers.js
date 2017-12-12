@@ -90,13 +90,15 @@ export function lift2(faab) {
     return function (parser1) {
         return function (parser2) {
             return applyP(applyP(returnP(faab))(parser1))(parser2);
-        }
-    }
+        };
+    };
 }
 
-export function sequence(parsers) {
+export function sequenceP(parsers) {
     return parsers
-        .reduceRight((curr, rest) => lift2(_cons)(curr)(rest), returnP([]));
+        .reduceRight((curr, rest) => {
+            return lift2(_cons)(curr)(rest);
+        }, returnP([]));
 }
 
 export function pstring(chars) {
@@ -105,6 +107,6 @@ export function pstring(chars) {
 
 function _cons(x) {
     return function (xs) {
-        return [x,xs];
-    }
+        return x.concat(xs);
+    };
 }

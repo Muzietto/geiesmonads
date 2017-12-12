@@ -12,7 +12,7 @@ import {
     returnP,
     applyP,
     lift2,
-    sequence,
+    sequenceP,
     pstring,
 } from 'parsers';
 import {
@@ -26,12 +26,24 @@ const lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 
 const uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
 const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-describe('lift2 for parsers', () => {
+describe('sequence for parsers (aka sequenceP)', () => {
+    it('allows to prepare sequences of chars to match', () => {
+        const abcParser = sequenceP([pchar('a')/*,pchar('b'),pchar('c'),*/]);
+        expect(abcParser.run('abc').toString()).to.be.eql('[a,bc]');
+    });
+});
 
+describe('lift2 for parsers', () => {
     it('operates on the results of two string parsings', () => {
-        const add = x => y => x + '+' + y;
-        const AplusB = lift2(add)(pchar('a'))(pchar('b'));
+        const addStrings = x => y => x + '+' + y;
+        const AplusB = lift2(addStrings)(pchar('a'))(pchar('b'));
         expect(AplusB.run('abc').toString()).to.be.eql('[a+b,c]');
+    });
+    it('adds the results of two digit parsings', () => {
+        const addDigits = x => y => x + y;
+        const addParser = lift2(addDigits)(pdigit(1))(pdigit(2));
+        expect(addParser.run('1234').toString()).to.be.eql('[3,34]');
+        expect(isFailure(addParser.run('144'))).to.be.true;
     });
 });
 
