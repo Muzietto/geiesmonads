@@ -14,13 +14,13 @@ import {
 const charParser = char => str => {
     if ('' === str) throw new Error('reached end of char stream');
     if (head(str) === char) return success(char, tail(str));
-    return failure('got ' + char, str);
+    return failure('wanted ' + char + '; got ' + head(str), str);
 };
 
 const digitParser = digit => str => {
     if ('' === str) throw new Error('reached end of char stream');
     if (parseInt(head(str), 10) === digit) return success(digit, tail(str));
-    return failure('got ' + digit, str);
+    return failure('wanted ' + digit + '; got ' + head(str), str);
 };
 
 export {charParser, digitParser};
@@ -123,9 +123,18 @@ export function zeroOrMore(xP) {
     };
 }
 
-export function many(parser) {
+export function many(xP) {
     return parser(str => {
-        return zeroOrMore(parser)(str);
+        return zeroOrMore(xP)(str);
+    });
+}
+
+export function many1(xP) {
+    return parser(str => {
+        let res1 = xP.run(str);
+        if (isFailure(res1)) return res1;
+        let resN = zeroOrMore(xP)(res1[1]);
+        return success([res1[0]].concat(resN[0]), resN[1]);
     });
 }
 
