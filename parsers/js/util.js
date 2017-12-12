@@ -1,5 +1,7 @@
 export function isPair(thing) {
-    return thing.type === 'pair';
+    return thing.type === 'pair'
+        || thing.type === 'success'
+        || thing.type === 'failure';
 }
 
 export function isSuccess(thing) {

@@ -32,13 +32,15 @@ describe('among helper classes', () => {
             expect(succ[0]).to.be.true;
             expect(succ[1]).to.be.eql(12);
             expect(isSuccess(succ)).to.be.true;
+            expect(isPair(succ)).to.be.true;
         });
         it('may represent failures', () => {
-            const succ = failure('a', 12);
-            expect(succ[0]).to.be.eql('a');
-            expect(succ[1]).to.be.eql(12);
-            expect(isSuccess(succ)).to.be.false;
-            expect(isFailure(succ)).to.be.true;
+            const fail = failure('a', 12);
+            expect(fail[0]).to.be.eql('a');
+            expect(fail[1]).to.be.eql(12);
+            expect(isSuccess(fail)).to.be.false;
+            expect(isFailure(fail)).to.be.true;
+            expect(isPair(fail)).to.be.true;
         });
     });
 
