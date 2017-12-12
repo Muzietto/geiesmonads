@@ -113,8 +113,8 @@ export function sequenceP3(parsers) {
     return fmap(([x, y]) => x + y, andThen(head(parsers), sequenceP3(tail(parsers))));
 }
 
-export function pstring(chars) {
-    return sequence(chars.split('').map(pchar));
+export function pstring(str) {
+    return sequenceP(str.split('').map(pchar));
 }
 
 function _cons(x) {
