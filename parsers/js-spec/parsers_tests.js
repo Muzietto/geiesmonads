@@ -1,8 +1,9 @@
 import {expect} from 'chai';
 import {
-    parser1,
-    parser2,
+    charParser,
+    digitParser,
     pchar,
+    pdigit,
     andThen,
     orElse,
     choice,
@@ -27,7 +28,7 @@ const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 describe('lift2 for parsers', () => {
 
-    it('adds the results of two parsings', () => {
+    it('operates on the results of two string parsings', () => {
         const add = x => y => x + '+' + y;
         const AplusB = lift2(add)(pchar('a'))(pchar('b'));
         expect(AplusB.run('abc').toString()).to.be.eql('[a+b,c]');
@@ -231,33 +232,40 @@ describe('two parsers bound by andThen', () => {
 });
 
 describe('a simple parser', () => {
-    let parserA;
-
-    beforeEach(() => {
-        parserA = parser1('a');
-    });
+    const parserA = charParser('a');
+    const parser1 = digitParser(1);
 
     it('can parse a single char', () => {
         const parsingA = parserA('abc');
-        expect(parsingA[0]).to.be.true;
+        expect(parsingA[0]).to.be.eql('a');
         expect(parsingA[1]).to.be.eql('bc');
-        expect(isPair(parsingA)).to.be.true;
+        expect(isSuccess(parsingA)).to.be.true;
     });
 
     it('can also NOT parse a single char', () => {
         const parsingB = parserA('bcd');
-        expect(parsingB[0]).to.be.false;
+        expect(parsingB[0]).to.be.eql('a');
         expect(parsingB[1]).to.be.eql('bcd');
-        expect(isPair(parsingB)).to.be.true;
+        expect(isFailure(parsingB)).to.be.true;
+    });
+
+    it('can parse a single digit', () => {
+        const parsing1 = parser1('123');
+        expect(parsing1[0]).to.be.eql(1);
+        expect(parsing1[1]).to.be.eql('23');
+        expect(isSuccess(parsing1)).to.be.true;
+    });
+
+    it('can also NOT parse a single digit', () => {
+        const parsing2 = parser1('234');
+        expect(parsing2[0]).to.be.eql(1);
+        expect(parsing2[1]).to.be.eql('234');
+        expect(isFailure(parsing2)).to.be.true;
     });
 });
 
 describe('a slightly more complex parser', () => {
-    let parserA;
-
-    beforeEach(() => {
-        parserA = parser2('a');
-    });
+    const parserA = charParser('a');
 
     it('can parse a single char', () => {
         const parsingA = parserA('abc');
