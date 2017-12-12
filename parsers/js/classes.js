@@ -6,16 +6,17 @@ import {
     fmap,
     returnP,
     applyP,
+    lift2, // fabc -> pa -> pb -> (returnP fabc) <*> pa <*> pb
 } from 'parsers';
 
 const toString = Array.prototype.toString;
 
 Array.prototype.toString = function () {
     return '[' + toString.apply(this) + ']';
-}
+};
 
-export function pair(_1, _2) {
-    let result = [_1, _2];
+export function pair(x, y) {
+    let result = [x, y];
     result.type = 'pair';
     result.toString = () => {
         return '['
@@ -41,8 +42,15 @@ export function failure(matched, str) {
 
 export function parser(fn) {
     return {
-        run: str => fn(str),
+        run(str) {
+            return fn(str);
+        },
         type: 'parser',
-        fmap: function(fab) { return fmap(this, fab); },
+        fmap(fab) {
+            return fmap(fab, this);
+        },
+        apply(px) {
+            return applyP(this)(px);
+        },
     };
 }
