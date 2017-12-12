@@ -2,12 +2,17 @@ import {expect} from 'chai';
 import {
     parser1,
     parser2,
-    charParser,
+    pchar,
     andThen,
     orElse,
     choice,
     anyOf,
     fmap,
+    returnP,
+    applyP,
+    lift2,
+    sequence,
+    pstring,
 } from 'parsers';
 import {
     isPair,
@@ -20,6 +25,14 @@ const lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 
 const uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
 const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
+describe('lift2 for parsers', () => {
+
+    it('adds the results of two parsings', () => {
+        const add = x => y => x + '+' + y;
+        const AplusB = lift2(add)(pchar('a'))(pchar('b'));
+        expect(AplusB.run('abc').toString()).to.be.eql('[a+b,c]');
+    });
+});
 
 describe('parse 3 digits', () => {
     let parseDigit, threeDigits, parsing;
@@ -28,12 +41,12 @@ describe('parse 3 digits', () => {
         threeDigits = andThen(parseDigit, andThen(parseDigit, parseDigit));
         parsing = threeDigits.run('123');
     });
-    it('parses three digits', () => {
+    it('parses any of three digits', () => {
         expect(isSuccess(parsing)).to.be.true;
         expect(parsing[0].toString()).to.be.eql('[1,[2,3]]');
         expect(parsing[1]).to.be.eql('');
     });
-    describe('parses three digits while showcasing fmap', () => {
+    describe('parses any of three digits while showcasing fmap', () => {
         it('as global method', () => {
             threeDigits = fmap(threeDigits, ([x, [y, z]]) => [x, y, z]);
             let parsing = threeDigits.run('123');
@@ -139,7 +152,7 @@ describe('a choice of parsers bound by orElse', () => {
     let parsersChoice;
 
     beforeEach(() => {
-        parsersChoice = choice([charParser('a'), charParser('b'), charParser('c'), charParser('d'),]);
+        parsersChoice = choice([pchar('a'), pchar('b'), pchar('c'), pchar('d'),]);
     });
 
     it('can parse one of four chars', () => {
@@ -170,7 +183,7 @@ describe('two parsers bound by orElse', () => {
     let parserA, parserB, parserAorB;
 
     beforeEach(() => {
-        parserAorB = orElse(charParser('a'), charParser('b'));
+        parserAorB = orElse(pchar('a'), pchar('b'));
     });
 
     it('can parse one of two chars', () => {
@@ -197,7 +210,7 @@ describe('two parsers bound by andThen', () => {
     let parserAandB;
 
     beforeEach(() => {
-        parserAandB = andThen(charParser('a'), charParser('b'));
+        parserAandB = andThen(pchar('a'), pchar('b'));
     });
 
     it('can parse two chars', () => {
@@ -265,7 +278,7 @@ describe('a named character parser', () => {
     let parserA;
 
     beforeEach(() => {
-        parserA = charParser('a');
+        parserA = pchar('a');
     });
 
     it('can parse a single char', () => {

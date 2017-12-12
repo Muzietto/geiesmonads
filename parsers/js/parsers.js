@@ -25,7 +25,7 @@ const parser2 = char => str => {
 
 export {parser1, parser2};
 
-export function charParser(char) {
+export function pchar(char) {
     let result = function (str) {
         return parser2(char)(str);
     };
@@ -56,19 +56,17 @@ let _fail = parser(str => failure('parsing failed', str));
 let _succeed = parser(str => success('parsing succeeded', str));
 
 export function choice(parsers) {
-    return parsers.reduceRight((rest, curr) => {
-        return orElse(curr, rest);
-    }, _fail);
+    return parsers.reduceRight((rest, curr) => orElse(curr, rest), _fail);
 }
 
 export function anyOf(chars) {
-    return choice(chars.map(charParser));
+    return choice(chars.map(pchar));
 }
 
-export function fmap(parser1, fab) {
+export function fmap(fab, parser1) {
     return parser(str => {
         let res1 = parser1.run(str);
-        if (isSuccess((res1))) return success(fab(res1[0]), res1[1]);
+        if (isSuccess(res1)) return success(fab(res1[0]), res1[1]);
         return res1;
     });
 }
@@ -80,27 +78,29 @@ export function returnP(value) {
 // parser(a -> b) -> parser(a) -> parser(b)
 export function applyP(fP) {
     return function (xP) {
-        //return fmap(andThen(fP, xP), (f, x) => f(x));
-
-        return parser(str => {
-            let res1 = andThen(fP, xP).run(str);
-            return res1[0](res1[1]);
-        });
-
+        return andThen(fP, xP).fmap(([f, x]) => f(x));
     };
 }
 
 export function lift2(faab) {
     return function (parser1) {
         return function (parser2) {
-            return applyP(applyP(faab, parser1), parser2);
+            return applyP(applyP(returnP(faab))(parser1))(parser2);
         }
     }
 }
 
-export function choiceL(parsers) {
-    return tail(parsers).concat([_fail])
-        .reduce((acc, curr) => {
-            return orElse(acc, curr);
-        }, head(parsers));
+export function sequence(parsers) {
+    return parsers
+        .reduceRight((curr, rest) => lift2(_cons)(curr)(rest), returnP([]));
+}
+
+export function pstring(chars) {
+    return sequence(chars.split('').map(pchar));
+}
+
+function _cons(x) {
+    return function (xs) {
+        return [x,xs];
+    }
 }
