@@ -4,6 +4,14 @@ export function isPair(thing) {
         || thing.type === 'failure';
 }
 
+export function isSome(thing) {
+    return thing.type === 'some';
+}
+
+export function isNone(thing) {
+    return thing.type === 'none';
+}
+
 export function isSuccess(thing) {
     return thing.type === 'success';
 }
