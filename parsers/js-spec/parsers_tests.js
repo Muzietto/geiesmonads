@@ -14,13 +14,14 @@ import {
     lift2,
     sequenceP,
     sequenceP2,
-    sequenceP3,
     pstring,
     zeroOrMore,
     many,
     many1,
     opt,
     optBook,
+    discardFirst,
+    discardSecond,
 } from 'parsers';
 import {
     isPair,
@@ -34,6 +35,12 @@ import {
 const lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',];
 const uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
 const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+const whites = [' ', '\t', '\n', '\r'];
+
+describe('a couple of parsers', () => {
+    it('can decide to discard the matches of the first one', () => {
+    });
+});
 
 describe('a parser for optional characters', () => {
     it('can capture or not capture a dot', () => {
@@ -49,6 +56,13 @@ describe('a parser for optional characters', () => {
             .fmap(([maybeSign, number]) => (isSome(maybeSign)) ? -number : number);
         expect(pSignedInt.run('13243546x')[0]).to.be.eql(13243546);
         expect(pSignedInt.run('-13243546x')[0]).to.be.eql(-13243546);
+    });
+    it('can capture or not capture a whole substring', () => {
+        const optSubstring = opt(pstring('marco')).andThen(pstring('faustinelli'));
+        expect(optSubstring.run('marcofaustinellix').toString())
+            .to.be.eql('[[some([m,a,r,c,o]),[f,a,u,s,t,i,n,e,l,l,i]],x]');
+        expect(optSubstring.run('faustinellix').toString())
+            .to.be.eql('[[none(),[f,a,u,s,t,i,n,e,l,l,i]],x]');
     });
 });
 
@@ -123,6 +137,18 @@ describe('a parser for zero or more occurrences', () => {
         let parsing = zeroOrMoreParser.run('marcomarcociao');
         expect(isSuccess(parsing)).to.be.true;
         expect(parsing.toString()).to.be.eql('[[[m,a,r,c,o],[m,a,r,c,o]],ciao]');
+    });
+    it('can parse whitespaces!!', () => {
+        const whitesParser = many(anyOf(whites));
+        const twoWords = sequenceP([pstring('ciao'), whitesParser, pstring('mamma')]);
+        let parsing = twoWords.run('ciaomammaX');
+        expect(parsing.toString()).to.be.eql('[[[c,i,a,o],[],[m,a,m,m,a]],X]');
+        parsing = twoWords.run('ciao mammaX');
+        expect(parsing.toString()).to.be.eql('[[[c,i,a,o],[ ],[m,a,m,m,a]],X]');
+        parsing = twoWords.run('ciao   mammaX');
+        expect(parsing.toString()).to.be.eql('[[[c,i,a,o],[ , , ],[m,a,m,m,a]],X]');
+        parsing = twoWords.run('ciao \t mammaX');
+        expect(parsing.toString()).to.be.eql('[[[c,i,a,o],[ ,\t, ],[m,a,m,m,a]],X]');
     });
 });
 
