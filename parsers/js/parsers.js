@@ -10,7 +10,6 @@ import {
     pair,
     success,
     failure,
-    parser,
     some,
     none,
 } from 'classes';
@@ -191,5 +190,33 @@ export function betweenParens(px) {
 function _cons(x) {
     return function (xs) {
         return [x].concat(xs);
+    };
+}
+
+// the real thing...
+export function parser(fn) {
+    return {
+        type: 'parser',
+        run(str) {
+            return fn(str);
+        },
+        fmap(fab) {
+            return fmap(fab, this);
+        },
+        apply(px) {
+            return applyP(this)(px);
+        },
+        andThen(px) {
+            return andThen(this, px);
+        },
+        orElse(px) {
+            return orElse(this, px);
+        },
+        discardFirst(px) {
+            return discardFirst(this, px);
+        },
+        discardSecond(px) {
+            return discardSecond(this, px);
+        },
     };
 }

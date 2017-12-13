@@ -39,7 +39,7 @@ const uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 
 const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const whites = [' ', '\t', '\n', '\r'];
 
-describe('discarding input', () => {
+describe('parsing while discarding input', () => {
     it('allows to exclude parentheses', () => {
         const insideParens = pchar('(')
             .discardFirst(many(anyOf(lowercases)))
@@ -47,7 +47,7 @@ describe('discarding input', () => {
         expect(insideParens.run('(marco)').toString()).to.be.eql('[[m,a,r,c,o],]');
         expect(insideParens.run('()').toString()).to.be.eql('[[],]');
     });
-    it('even with a tailor-made method', () => {
+    it('...even using a tailor-made method', () => {
         const insideParens = betweenParens(pstring('marco'));
         expect(insideParens.run('(marco)').toString()).to.be.eql('[[m,a,r,c,o],]');
     });

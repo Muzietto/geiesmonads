@@ -1,6 +1,6 @@
 import mocha from 'mocha';
 
-require(['parsers_tests'], function () {
+require(['classes_tests'], function () {
     var runner = mocha.run();
 });
 
