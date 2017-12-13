@@ -51,6 +51,15 @@ describe('parsing while discarding input', () => {
         const insideParens = betweenParens(pstring('marco'));
         expect(insideParens.run('(marco)').toString()).to.be.eql('[[m,a,r,c,o],]');
     });
+    it('cherry-picking elements separated by separators', () => {
+        const substringsWithCommas = many(many1(anyOf(lowercases)).discardSecond(pchar(',')));
+        expect(substringsWithCommas.run('a,b,cd,1').toString()).to.be.eql('[[[a],[b],[c,d]],1]');
+    });
+    it('...also when inside a lists', () => {
+        const substringsWithCommas = many(many1(anyOf(lowercases)).discardSecond(pchar(',')));
+        const listElements = between(pchar('['), substringsWithCommas, pchar(']'));
+        expect(listElements.run('[a,b,cd,marco,]1').toString()).to.be.eql('[[[a],[b],[c,d],[m,a,r,c,o]],1]');
+    });
 });
 
 describe('a couple of parsers', () => {
