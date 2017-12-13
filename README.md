@@ -8,7 +8,7 @@ Special Challenge: parser combinators in JavaScript!!!
 ------------------------------------------------------
 File [parsers.js](https://github.com/Muzietto/geiesmonads/blob/master/parsers/js/parsers.js) contains an implementation of a __chainable parser applicative__ (soon to see a  __chainable parser monad__ as well...).
 
-You may see it at work [here](http://rawgit.com/Muzietto/geiesmonads/master/parsers/Mocha_Parser_Combinators_Tests.html).
+To see it at work, clone the lot, install an [http server](https://www.npmjs.com/package/http-server) and surf to `parsers/Mocha_Parser_Combinators_Tests.html`
 
 NB - with a big credit due to [Understanding Parser Combinators](https://fsharpforfunandprofit.com/posts/understanding-parser-combinators/).
 
