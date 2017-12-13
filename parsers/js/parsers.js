@@ -9,6 +9,8 @@ import {
     success,
     failure,
     parser,
+    some,
+    none,
 } from 'classes';
 
 const charParser = char => str => {
@@ -57,6 +59,7 @@ export function orElse(parser1, parser2) {
 
 let _fail = parser(str => failure('parsing failed', str));
 
+// return neutral element instead of message
 let _succeed = parser(str => success('parsing succeeded', str));
 
 export function choice(parsers) {
@@ -69,9 +72,9 @@ export function anyOf(chars) {
 
 export function fmap(fab, parser1) {
     return parser(str => {
-        let res1 = parser1.run(str);
-        if (isSuccess(res1)) return success(fab(res1[0]), res1[1]);
-        return res1;
+        let res = parser1.run(str);
+        if (isSuccess(res)) return success(fab(res[0]), res[1]);
+        return res;
     });
 }
 
@@ -123,6 +126,15 @@ export function zeroOrMore(xP) {
     };
 }
 
+// not working  :-(
+function zeroOrMoreX(xP) {
+    return parser(str => {
+        let res = xP.run(str);
+        if (isFailure(res)) return success([], str);
+        return lift2(_cons)(returnP(res[0]))(zeroOrMoreX(xP).run(res[1]));
+    });
+}
+
 export function many(xP) {
     return parser(str => {
         return zeroOrMore(xP)(str);
@@ -138,12 +150,11 @@ export function many1(xP) {
     });
 }
 
-// not working  :-(
-function zeroOrMoreX(xP) {
+export function opt(xP) {
     return parser(str => {
-        let res = xP.run(str);
-        if (isFailure(res)) return success([], str);
-        return lift2(_cons)(returnP(res[0]))(zeroOrMoreX(xP).run(res[1]));
+        let res = xP.fmap(x => some(x)).run(str);
+        if (isSuccess(res)) return res;
+        return success(none(), str);
     });
 }
 
