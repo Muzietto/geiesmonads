@@ -1,3 +1,5 @@
+// cfr. "Understanding Parser Combinators" (F# for Fun and Profit)
+
 import {
     head,
     tail,
@@ -156,6 +158,13 @@ export function opt(xP) {
         if (isSuccess(res)) return res;
         return success(none(), str);
     });
+}
+
+// opt from the book
+export function optBook(pX) {
+    const someP = pX.fmap(some);
+    const noneP = returnP(none);
+    return someP.orElse(noneP);
 }
 
 function _cons(x) {
