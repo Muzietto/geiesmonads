@@ -48,6 +48,9 @@ export function some(value) {
         val() {
             return value;
         },
+        toString() {
+            return `some(${value})`;
+        }
     };
 }
 
@@ -57,6 +60,9 @@ export function none() {
         val() {
             return null;
         },
+        toString() {
+            return 'none()';
+        }
     };
 }
 
