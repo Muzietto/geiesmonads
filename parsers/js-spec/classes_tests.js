@@ -21,6 +21,7 @@ describe('among helper classes', () => {
             const aSome = some(12);
             expect(aSome.val()).to.be.eql(12);
             expect(isSome(aSome)).to.be.true;
+            expect(aSome.toString()).to.be.eql('some(12)');
         });
     });
 
@@ -29,6 +30,7 @@ describe('among helper classes', () => {
             const aNone = none();
             expect(aNone.val()).to.be.null;
             expect(isNone(aNone)).to.be.true;
+            expect(aNone.toString()).to.be.eql('none()');
         });
     });
 
