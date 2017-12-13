@@ -4,11 +4,19 @@
 
 Crisp clear chainable JavaScript/ECMAScript 6 monads.
 
-Special Challenge: the READER MONAD
------------------------------------
+Special Challenge: parser combinators in JavaScript!!!
+------------------------------------------------------
+File [parsers.js](https://github.com/Muzietto/geiesmonads/blob/master/parsers/parsers.js) contains an implementation of a __chainable parser applicative__ (soon to see a  __chainable parser monad__ as well...).
+
+You may see it at work [here](http://rawgit.com/Muzietto/geiesmonads/master/parsers/Mocha_Parser_Combinator_Tests.html).
+
+NB - with a big credit due to [Understanding Parser Combinators](https://fsharpforfunandprofit.com/posts/understanding-parser-combinators/).
+
+New with RELEASE 2.2
+--------------------
 File [geiesmonads_es6_reader.js](https://github.com/Muzietto/geiesmonads/blob/master/es6/geiesmonads_es6_reader.js) contains an implementation of a __chainable reader monad__.
 
-You may see it at work [here](http://rawgit.com/Muzietto/geiesmonads/master/MochaGeiesmonadsES6_Reader_Test.htm).
+Test page is [here](http://rawgit.com/Muzietto/geiesmonads/master/MochaGeiesmonadsES6_Reader_Test.htm).
 
 NB - with a big credit due to [Don't Fear the Reader](https://passy.svbtle.com/dont-fear-the-reader).
 
