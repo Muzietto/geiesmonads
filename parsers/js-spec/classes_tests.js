@@ -3,14 +3,34 @@ import {
     isPair,
     isSuccess,
     isFailure,
+    isSome,
+    isNone,
 } from 'util';
 import {
     pair,
     success,
     failure,
+    some,
+    none,
 } from 'classes';
 
 describe('among helper classes', () => {
+
+    describe('somes', () => {
+        it('include a value and allow to retrieve it', () => {
+            const aSome = some(12);
+            expect(aSome.val()).to.be.eql(12);
+            expect(isSome(aSome)).to.be.true;
+        });
+    });
+
+    describe('nones', () => {
+        it('are just a signpost', () => {
+            const aNone = none();
+            expect(aNone.val()).to.be.null;
+            expect(isNone(aNone)).to.be.true;
+        });
+    });
 
     describe('pairs', () => {
         beforeEach(() => {

@@ -7,6 +7,8 @@ import {
     returnP,
     applyP,
     lift2, // fabc -> pa -> pb -> (returnP fabc) <*> pa <*> pb
+    andThen,
+    orElse,
 } from 'parsers';
 
 const toString = Array.prototype.toString;
@@ -40,17 +42,41 @@ export function failure(matched, str) {
     return result;
 }
 
+export function some(value) {
+    return {
+        type: 'some',
+        val() {
+            return value;
+        },
+    };
+}
+
+export function none() {
+    return {
+        type: 'none',
+        val() {
+            return null;
+        },
+    };
+}
+
 export function parser(fn) {
     return {
+        type: 'parser',
         run(str) {
             return fn(str);
         },
-        type: 'parser',
         fmap(fab) {
             return fmap(fab, this);
         },
         apply(px) {
             return applyP(this)(px);
         },
+        andThen(px) {
+            return andThen(this, px);
+        },
+        orElse(px) {
+            return orElse(this, px);
+        }
     };
 }
