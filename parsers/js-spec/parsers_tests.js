@@ -56,6 +56,26 @@ describe('a parser for one or more occurrences', () => {
         expect(isSuccess(parsing)).to.be.true;
         expect(parsing.toString()).to.be.eql('[[[m,a,r,c,o],[m,a,r,c,o]],ciao]');
     });
+    it('can parse an integer, no matter how large...', () => {
+        const pint = many1(anyOf(digits));
+        let parsing = pint.run('12345A');
+        expect(isSuccess(parsing)).to.be.true;
+        expect(parsing.toString()).to.be.eql('[[1,2,3,4,5],A]');
+        parsing = pint.run('1B');
+        expect(isSuccess(parsing)).to.be.true;
+        expect(parsing.toString()).to.be.eql('[[1],B]');
+        parsing = pint.run('A12345');
+        expect(isFailure(parsing)).to.be.true;
+        expect(parsing.toString()).to.be.eql('[parsing failed,A12345]');
+    });
+    it('can parse an integer into a true integer', () => {
+        const pint = many1(anyOf(digits))
+            .fmap(l => parseInt(l.reduce((acc, curr) => acc + curr, ''), 10));
+        let parsing = pint.run('12345A');
+        expect(isSuccess(parsing)).to.be.true;
+        expect(parsing[0]).to.be.eql(12345);
+        expect(parsing[1]).to.be.eql('A');
+    });
 });
 
 describe('a parser for zero or more occurrences', () => {
