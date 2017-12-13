@@ -19,17 +19,37 @@ import {
     zeroOrMore,
     many,
     many1,
+    opt,
 } from 'parsers';
 import {
     isPair,
     isSuccess,
     isFailure,
     isParser,
+    isSome,
+    isNone,
 } from 'util';
 
 const lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',];
 const uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
 const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+describe('a parser for optional characters', () => {
+    it('can capture or not capture a dot', () => {
+        const optDotThenA = opt(pchar('.')).andThen(pchar('a'));
+        expect(optDotThenA.run('.abc').toString()).to.be.eql('[[some(.),a],bc]');
+        expect(optDotThenA.run('abc').toString()).to.be.eql('[[none(),a],bc]');
+    });
+    it('can parse SIGNED integers!!!', () => {
+        const pint = many1(anyOf(digits))
+            .fmap(l => parseInt(l.reduce((acc, curr) => acc + curr, ''), 10));
+        const pSignedInt = opt(pchar('-'))
+            .andThen(pint)
+            .fmap(([maybeSign, number]) => (isSome(maybeSign)) ? -number : number);
+        expect(pSignedInt.run('13243546x')[0]).to.be.eql(13243546);
+        expect(pSignedInt.run('-13243546x')[0]).to.be.eql(-13243546);
+    });
+});
 
 describe('a parser for one or more occurrences', () => {
     it('cannot parse a char zero times', () => {
