@@ -107,7 +107,7 @@ export function sequenceP(parsers) {
         }, returnP([]));
 }
 
-// using naive andThen && fmap
+// using naive andThen && fmap --> returns strings, not arrays!
 export function sequenceP2(parsers) {
     return parsers
         .reduceRight((rest, curr) => {
@@ -165,6 +165,18 @@ export function optBook(pX) {
     const someP = pX.fmap(some);
     const noneP = returnP(none);
     return someP.orElse(noneP);
+}
+
+export function discardSecond(p1, p2) {
+    return parser(str => {
+        return andThen(p1, p2).fmap(([r1, r2]) => r1);
+    });
+}
+
+export function discardFirst(p1, p2) {
+    return parser(str => {
+        return andThen(p1, p2).fmap(([r1, r2]) => r2);
+    });
 }
 
 function _cons(x) {

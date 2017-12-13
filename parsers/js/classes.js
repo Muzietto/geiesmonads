@@ -83,6 +83,12 @@ export function parser(fn) {
         },
         orElse(px) {
             return orElse(this, px);
-        }
+        },
+        discardFirst(pf) {
+            return discardFirst(this, px);
+        },
+        discardSecond(pf) {
+            return discardSecond(this, px);
+        },
     };
 }
