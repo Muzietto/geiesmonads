@@ -119,7 +119,7 @@ export function pstring(str) {
     return sequenceP(str.split('').map(pchar));
 }
 
-export function zeroOrMore(xP) {
+export function zeroOrMore(xP) { // zeroOrMore :: p a -> [a] -> try [a] = p a -> p [a]
     return str => {
         let res1 = xP.run(str);
         if (isFailure(res1)) return success([], str);
@@ -129,10 +129,11 @@ export function zeroOrMore(xP) {
 }
 
 // not working  :-(
-function zeroOrMoreX(xP) {
+function zeroOrMoreX(xP) { // zeroOrMoreX :: p a -> p(a -> p [a]) !!!
     return parser(str => {
         let res = xP.run(str);
         if (isFailure(res)) return success([], str);
+        // next line returns a parser (wrong, wrong, wrong...)
         return lift2(_cons)(returnP(res[0]))(zeroOrMoreX(xP).run(res[1]));
     });
 }
@@ -169,14 +170,22 @@ export function optBook(pX) {
 
 export function discardSecond(p1, p2) {
     return parser(str => {
-        return andThen(p1, p2).fmap(([r1, r2]) => r1);
+        return andThen(p1, p2).fmap(([r1, r2]) => r1).run(str);
     });
 }
 
 export function discardFirst(p1, p2) {
     return parser(str => {
-        return andThen(p1, p2).fmap(([r1, r2]) => r2);
+        return andThen(p1, p2).fmap(([r1, r2]) => r2).run(str);
     });
+}
+
+export function between(p1, p2, p3) {
+    return p1.discardFirst(p2).discardSecond(p3);
+}
+
+export function betweenParens(px) {
+    return between(pchar('('), px, pchar(')'));
 }
 
 function _cons(x) {

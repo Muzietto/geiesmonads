@@ -9,6 +9,8 @@ import {
     lift2, // fabc -> pa -> pb -> (returnP fabc) <*> pa <*> pb
     andThen,
     orElse,
+    discardFirst,
+    discardSecond,
 } from 'parsers';
 
 const toString = Array.prototype.toString;
@@ -84,10 +86,10 @@ export function parser(fn) {
         orElse(px) {
             return orElse(this, px);
         },
-        discardFirst(pf) {
+        discardFirst(px) {
             return discardFirst(this, px);
         },
-        discardSecond(pf) {
+        discardSecond(px) {
             return discardSecond(this, px);
         },
     };
