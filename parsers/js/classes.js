@@ -38,8 +38,8 @@ export function success(matched, str) {
     return result;
 }
 
-export function failure(matched, str) {
-    let result = pair(matched, str);
+export function failure(parserLabel, errorMsg) {
+    let result = pair(parserLabel, errorMsg);
     result.type = 'failure';
     return result;
 }
