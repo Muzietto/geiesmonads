@@ -93,7 +93,8 @@ export function applyP(fP) {
 export function lift2(faab) {
     return function (parser1) {
         return function (parser2) {
-            return applyP(applyP(returnP(faab))(parser1))(parser2);
+            //return applyP(applyP(returnP(faab))(parser1))(parser2);
+            return returnP(faab).apply(parser1).apply(parser2); // using instance methods
         };
     };
 }
@@ -191,7 +192,6 @@ export function bindP(famb, px) {
     return parser(str => {
         const res = px.run(str);
         if (isFailure(res)) return res;
-
         return famb(res[0]).run(res[1]);
     });
 }
@@ -209,12 +209,14 @@ export function parser(fn) {
         run(str) {
             return fn(str);
         },
+        apply(px) {
+            //return applyP(this)(px);
+            return this.bind(andThen(this, px).fmap(([f, x]) => f(x))).run; // we are the fP
+        },
         fmap(fab) {
             //return fmap(fab, this);
-            return bindP(str => returnP(fab(str)), this);
-        },
-        apply(px) {
-            return applyP(this)(px);
+            //return bindP(str => returnP(fab(str)), this);
+            return this.bind(str => returnP(fab(str)));
         },
         andThen(px) {
             return andThen(this, px);
