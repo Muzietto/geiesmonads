@@ -187,6 +187,15 @@ export function betweenParens(px) {
     return between(pchar('('), px, pchar(')'));
 }
 
+export function bindP(famb, px) {
+    return parser(str => {
+        const res = px.run(str);
+        if (isFailure(res)) return res;
+
+        return famb(res[0]).run(res[1]);
+    });
+}
+
 function _cons(x) {
     return function (xs) {
         return [x].concat(xs);
@@ -201,7 +210,8 @@ export function parser(fn) {
             return fn(str);
         },
         fmap(fab) {
-            return fmap(fab, this);
+            //return fmap(fab, this);
+            return bindP(str => returnP(fab(str)), this);
         },
         apply(px) {
             return applyP(this)(px);
@@ -218,5 +228,8 @@ export function parser(fn) {
         discardSecond(px) {
             return discardSecond(this, px);
         },
+        bind(famb) {
+            return bindP(famb, this);
+        }
     };
 }
