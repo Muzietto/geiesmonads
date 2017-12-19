@@ -53,9 +53,9 @@ export function andThenX(p1, p2) {
 }
 
 export function andThen(p1, p2) {
-    return p1.bind(res1 => {
-        return p2.bind(res2 => {
-            return returnP(pair(res1, res2));
+    return p1.bind(parsedValue1 => {
+        return p2.bind(parsedValue2 => {
+            return returnP(pair(parsedValue1, parsedValue2));
         });
     });
 }
@@ -225,7 +225,7 @@ export function parser(fn) {
         fmap(fab) {
             //return fmap(fab, this);
             //return bindP(str => returnP(fab(str)), this);
-            return this.bind(str => returnP(fab(str)));
+            return this.bind(parsedValue => returnP(fab(parsedValue)));
         },
         andThen(px) {
             return andThen(this, px);
