@@ -52,6 +52,7 @@ export function andThenX(p1, p2) {
     });
 }
 
+// using bind
 export function andThen(p1, p2) {
     return p1.bind(parsedValue1 => {
         return p2.bind(parsedValue2 => {
@@ -93,9 +94,20 @@ export function returnP(value) {
 }
 
 // parser(a -> b) -> parser(a) -> parser(b)
-export function applyP(fP) {
+export function applyPx(fP) {
     return function (xP) {
         return andThen(fP, xP).fmap(([f, x]) => f(x));
+    };
+}
+
+// using bind
+export function applyP(fP) {
+    return function (xP) {
+        return fP.bind(parsedValuef => {
+            return xP.bind(parsedValuex => {
+                return returnP(parsedValuef(parsedValuex));
+            });
+        });
     };
 }
 
