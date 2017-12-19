@@ -39,15 +39,24 @@ export function pdigit(digit) {
     return parser(str => digitParser(digit)(str));
 }
 
-export function andThen(parser1, parser2) {
+export function andThenX(p1, p2) {
     return parser(function (str) {
-        let res1 = parser1.run(str);
+        let res1 = p1.run(str);
         if (isSuccess(res1)) {
-            let res2 = parser2.run(res1[1]);
+            let res2 = p2.run(res1[1]);
+            return returnP()
             if (isSuccess(res2)) {
                 return success(pair(res1[0], res2[0]), res2[1]);
             } else return res2;
         } else return res1;
+    });
+}
+
+export function andThen(p1, p2) {
+    return p1.bind(res1 => {
+        return p2.bind(res2 => {
+            return returnP(pair(res1, res2));
+        });
     });
 }
 
@@ -210,8 +219,8 @@ export function parser(fn) {
             return fn(str);
         },
         apply(px) {
-            //return applyP(this)(px);
-            return this.bind(andThen(this, px).fmap(([f, x]) => f(x))).run; // we are the fP
+            return applyP(this)(px);
+            //return this.bind(andThen(this, px).fmap(([f, x]) => f(x))).run; // we are the fP
         },
         fmap(fab) {
             //return fmap(fab, this);
