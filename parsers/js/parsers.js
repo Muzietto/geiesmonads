@@ -44,7 +44,6 @@ export function andThenX(p1, p2) {
         let res1 = p1.run(str);
         if (isSuccess(res1)) {
             let res2 = p2.run(res1[1]);
-            return returnP()
             if (isSuccess(res2)) {
                 return success(pair(res1[0], res2[0]), res2[1]);
             } else return res2;
@@ -147,16 +146,6 @@ export function zeroOrMore(xP) { // zeroOrMore :: p a -> [a] -> try [a] = p a ->
         let resN = zeroOrMore(xP)(res1[1]);
         return success([res1[0]].concat(resN[0]), resN[1]);
     };
-}
-
-// not working  :-(
-function zeroOrMoreX(xP) { // zeroOrMoreX :: p a -> p(a -> p [a]) !!!
-    return parser(str => {
-        let res = xP.run(str);
-        if (isFailure(res)) return success([], str);
-        // next line returns a parser (wrong, wrong, wrong...)
-        return lift2(_cons)(returnP(res[0]))(zeroOrMoreX(xP).run(res[1]));
-    });
 }
 
 export function many(xP) {
