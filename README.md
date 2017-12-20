@@ -6,7 +6,7 @@ Crisp clear chainable JavaScript/ECMAScript 6 monads.
 
 Special Challenge: parser combinators in JavaScript!!!
 ------------------------------------------------------
-File [parsers.js](https://github.com/Muzietto/geiesmonads/blob/master/parsers/js/parsers.js) contains an implementation of a __chainable parser applicative__ (soon to see a  __chainable parser monad__ as well...).
+File [parsers.js](https://github.com/Muzietto/geiesmonads/blob/master/parsers/js/parsers.js) contains an implementation of __chainable parser combinators__, featuring both __applicative__ and __monadic__ interfaces.
 
 Test page is [here](http://rawgit.com/Muzietto/geiesmonads/master/parsers/Mocha_Parser_Combinators_Tests_RAWGIT.html).
 
