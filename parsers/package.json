@@ -34,7 +34,11 @@
     "chai": "^4.0.2",
     "mocha": "^3.4.2",
     "sinon": "^2.0.0",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "data.maybe": "v1.2.2",
+    "data.validation": "v1.3.1",
+    "folktale": "2.0.1",
+    "data.either" :"v1.5.1"
   },
   "dependencies": {
     "requirejs": "^2.2.0"
