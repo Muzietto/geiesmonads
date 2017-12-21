@@ -79,27 +79,27 @@ xdescribe('a couple of parsers', () => {
     });
 });
 
-xdescribe('a parser for optional characters', () => {
+describe('a parser for optional characters', () => {
     it('can capture or not capture a dot', () => {
         const optDotThenA = opt(pchar('.')).andThen(pchar('a'));
-        expect(optDotThenA.run('.abc').toString()).to.be.eql('[[some(.),a],bc]');
-        expect(optDotThenA.run('abc').toString()).to.be.eql('[[none(),a],bc]');
+        expect(optDotThenA.run('.abc').toString()).to.be.eql('Validation.Success([[Maybe.Just(.),a],bc])');
+        expect(optDotThenA.run('abc').toString()).to.be.eql('Validation.Success([[Maybe.Nothing,a],bc])');
     });
     it('can parse SIGNED integers!!!', () => {
         const pint = many1(anyOf(digits))
             .fmap(l => parseInt(l.reduce((acc, curr) => acc + curr, ''), 10));
         const pSignedInt = opt(pchar('-'))
             .andThen(pint)
-            .fmap(([maybeSign, number]) => (Maybe.isJust(maybeSign)) ? -number : number);
-        expect(pSignedInt.run('13243546x')[0]).to.be.eql(13243546);
-        expect(pSignedInt.run('-13243546x')[0]).to.be.eql(-13243546);
+            .fmap(optSignNumberPair => (optSignNumberPair[0].isJust) ? -optSignNumberPair[1] : optSignNumberPair[1]);
+        expect(pSignedInt.run('13243546x').value[0]).to.be.eql(13243546);
+        expect(pSignedInt.run('-13243546x').value[0]).to.be.eql(-13243546);
     });
     it('can capture or not capture a whole substring', () => {
         const optSubstring = opt(pstring('marco')).andThen(pstring('faustinelli'));
         expect(optSubstring.run('marcofaustinellix').toString())
-            .to.be.eql('[[some([m,a,r,c,o]),[f,a,u,s,t,i,n,e,l,l,i]],x]');
+            .to.be.eql('Validation.Success([[Maybe.Just([m,a,r,c,o]),[f,a,u,s,t,i,n,e,l,l,i]],x])');
         expect(optSubstring.run('faustinellix').toString())
-            .to.be.eql('[[none(),[f,a,u,s,t,i,n,e,l,l,i]],x]');
+            .to.be.eql('Validation.Success([[Maybe.Nothing,[f,a,u,s,t,i,n,e,l,l,i]],x])');
     });
 });
 
