@@ -523,15 +523,15 @@ describe.only('a named character parser', () => {
     it('can parse a single char', () => {
         expect(isParser(parserA)).to.be.true;
         const parsingA = parserA.run('abc');
-        expect(parsingA[0]).to.be.eql('a');
-        expect(parsingA[1]).to.be.eql('bc');
+        expect(parsingA.value[0]).to.be.eql('a');
+        expect(parsingA.value[1]).to.be.eql('bc');
         expect(parsingA.isSuccess).to.be.true;
     });
 
     it('can also NOT parse a single char', () => {
         const parsingB = parserA.run('bcd');
-        expect(parsingB[0]).to.be.eql('pchar_a');
-        expect(parsingB[1]).to.be.eql('wanted a; got b');
-        expect(parsingB.isSuccess).to.be.true;
+        expect(parsingB.value[0]).to.be.eql('pchar_a');
+        expect(parsingB.value[1]).to.be.eql('wanted a; got b');
+        expect(parsingB.isFailure).to.be.true;
     });
 });
