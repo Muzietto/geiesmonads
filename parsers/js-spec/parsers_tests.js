@@ -103,50 +103,50 @@ xdescribe('a parser for optional characters', () => {
     });
 });
 
-xdescribe('a parser for one or more occurrences', () => {
+describe('a parser for one or more occurrences', () => {
     it('cannot parse a char zero times', () => {
         const oneOrMoreParser = many1(pchar('m'));
         let parsing = oneOrMoreParser.run('arco');
         expect(parsing.isFailure).to.be.true;
-        expect(parsing.toString()).to.be.eql('[many1 pchar_m,wanted m; got a]');
+        expect(parsing.toString()).to.be.eql('Validation.Failure([many1 pchar_m,wanted m; got a])');
     });
     it('can parse a char many times', () => {
         const oneOrMoreParser = many1(pchar('m'));
         let parsing = oneOrMoreParser.run('mmmarco');
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('[[m,m,m],arco]');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[m,m,m],arco])');
     });
     it('cannot parse a char sequence zero times', () => {
         const oneOrMoreParser = many1(pstring('marco'));
         let parsing = oneOrMoreParser.run('xmarcomarcociao');
         expect(parsing.isFailure).to.be.true;
-        expect(parsing.toString()).to.be.eql('[many1 pstring marco,wanted m; got x]');
+        expect(parsing.toString()).to.be.eql('Validation.Failure([many1 pstring marco,wanted m; got x])');
     });
     it('can parse a char sequence many times', () => {
         const oneOrMoreParser = many1(pstring('marco'));
         let parsing = oneOrMoreParser.run('marcomarcociao');
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('[[[m,a,r,c,o],[m,a,r,c,o]],ciao]');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[[m,a,r,c,o],[m,a,r,c,o]],ciao])');
     });
     it('can parse an integer, no matter how large...', () => {
         const pint = many1(anyOf(digits));
         let parsing = pint.run('12345A');
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('[[1,2,3,4,5],A]');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[1,2,3,4,5],A])');
         parsing = pint.run('1B');
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('[[1],B]');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[1],B])');
         parsing = pint.run('A12345');
         expect(parsing.isFailure).to.be.true;
-        expect(parsing.toString()).to.be.eql('[many1 anyOf 0123456789,_fail]');
+        expect(parsing.toString()).to.be.eql('Validation.Failure([many1 anyOf 0123456789,_fail])');
     });
     it('can parse an integer into a true integer', () => {
         const pint = many1(anyOf(digits))
             .fmap(l => parseInt(l.reduce((acc, curr) => acc + curr, ''), 10));
         let parsing = pint.run('12345A');
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing[0]).to.be.eql(12345);
-        expect(parsing[1]).to.be.eql('A');
+        expect(parsing.value[0]).to.be.eql(12345);
+        expect(parsing.value[1]).to.be.eql('A');
     });
 });
 
@@ -267,7 +267,6 @@ describe('parse 3 digits', () => {
             return [pairOfPairs[0], pairOfPairs[1][0], pairOfPairs[1][1]];
         }
         it('as global method', () => {
-//            threeDigits = fmap(([x, [y, z]]) => [x, y, z], threeDigits);
             const threeDigitsImpl = fmap(unpacker, threeDigits);
             let parsing = threeDigitsImpl.run('123');
             expect(parsing.isSuccess).to.be.true;

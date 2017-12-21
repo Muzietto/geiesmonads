@@ -173,8 +173,8 @@ export function many1(xP) {
     return parser(str => {
         let res1 = xP.run(str);
         if (res1.isFailure) return res1;
-        let resN = zeroOrMore(xP)(res1[1]);
-        return Validation.Success(Pair([res1[0]].concat(resN[0]), resN[1]));
+        let resN = zeroOrMore(xP)(res1.value[1]);
+        return Validation.Success(Pair([res1.value[0]].concat(resN.value[0]), resN.value[1]));
     }, label).setLabel(label);
 }
 
