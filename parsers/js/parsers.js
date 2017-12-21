@@ -18,13 +18,13 @@ import {Maybe} from 'maybe'; // Just or Nothing
 import {Validation} from 'validation'; // Success or Failure
 
 const charParser = char => str => {
-    if ('' === str) throw new Error('reached end of char stream');
+    if ('' === str) return Validation.Failure(Pair('charParser', 'no more input'));
     if (head(str) === char) return Validation.Success(Pair(char, tail(str)));
     return Validation.Failure(Pair('charParser', 'wanted ' + char + '; got ' + head(str)));
 };
 
 const digitParser = digit => str => {
-    if ('' === str) throw new Error('reached end of char stream');
+    if ('' === str) return Validation.Failure(Pair('digitParser', 'no more input'));
     if (parseInt(head(str), 10) === digit) return Validation.Success(Pair(digit, tail(str)));
     return Validation.Failure(Pair('digitParser', 'wanted ' + digit + '; got ' + head(str)));
 };

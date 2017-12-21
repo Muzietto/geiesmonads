@@ -503,6 +503,13 @@ describe('a simple parser', () => {
         expect(parsing2.value[1]).to.be.eql('wanted 1; got 2');
         expect(parsing2.isFailure).to.be.true;
     });
+
+    it('fails at the end of the stream also when hunting for digits', () => {
+        const parsing3 = parser1('');
+        expect(parsing3.value[0]).to.be.eql('digitParser');
+        expect(parsing3.value[1]).to.be.eql('no more input');
+        expect(parsing3.isFailure).to.be.true;
+    });
 });
 
 describe('a slightly more complex parser', () => {
@@ -513,6 +520,13 @@ describe('a slightly more complex parser', () => {
         expect(parsingA.value[0]).to.be.eql('a');
         expect(parsingA.value[1]).to.be.eql('bc');
         expect(parsingA.isSuccess).to.be.true;
+    });
+
+    it('fails at the end of the stream', () => {
+        const parsingA = parserA('');
+        expect(parsingA.value[0]).to.be.eql('charParser');
+        expect(parsingA.value[1]).to.be.eql('no more input');
+        expect(parsingA.isFailure).to.be.true;
     });
 
     it('can also NOT parse a single char', () => {
