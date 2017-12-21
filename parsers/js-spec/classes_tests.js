@@ -12,6 +12,7 @@ import {
     failure,
     some,
     none,
+    Pair,
 } from 'classes';
 
 describe('among helper classes', () => {
@@ -35,14 +36,23 @@ describe('among helper classes', () => {
     });
 
     describe('pairs', () => {
-        beforeEach(() => {
-        });
         it('include 2 values and allow to retrieve them', () => {
             const apair = pair(true, 12);
             expect(apair[0]).to.be.eql(true);
             expect(apair[1]).to.be.eql(12);
             expect(apair.type).to.be.eql('pair');
             expect(isPair(apair)).to.be.true;
+        });
+    });
+
+    describe('Pair\'s', () => {
+        it('include 2 values and allow to retrieve them', () => {
+            const apair = Pair(true, 12);
+            expect(apair[0]).to.be.eql(true);
+            expect(apair[1]).to.be.eql(12);
+            expect(apair.type).to.be.eql('pair');
+            expect(apair.isPair).to.be.true;
+            expect(apair.toString()).to.be.eql('[true,12]');
         });
     });
 

@@ -19,6 +19,21 @@ Array.prototype.toString = function () {
     return '[' + toString.apply(this) + ']';
 };
 
+export function Pair(a, b) {
+    return new _pair(a, b);
+}
+
+function _pair(a, b) {
+    this[0] = a;
+    this[1] = b;
+}
+
+_pair.prototype.isPair = true;
+_pair.prototype.type = 'pair';
+_pair.prototype.toString = function() {
+    return '[' + this[0] + ',' + this[1] + ']';
+}
+
 export function pair(x, y) {
     let result = [x, y];
     result.type = 'pair';
