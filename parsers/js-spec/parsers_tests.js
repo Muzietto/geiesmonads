@@ -304,7 +304,6 @@ describe('parse 3 digits', () => {
 });
 
 describe('parse ABC', () => {
-//    const pairAdder = pair => pair.value[0] + pair.value[1];
     it('parses ABC', () => {
         const pairAdder = pair => pair[0] + pair[1];
         const abcP = andThen(pchar('a'),
