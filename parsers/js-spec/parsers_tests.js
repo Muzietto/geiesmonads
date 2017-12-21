@@ -239,16 +239,16 @@ xdescribe('sequences of parsers based on andThen && fmap (aka sequenceP2)', () =
     });
 });
 
-xdescribe('lift2 for parsers', () => {
+describe('lift2 for parsers', () => {
     it('operates on the results of two string parsings', () => {
         const addStrings = x => y => x + '+' + y;
         const AplusB = lift2(addStrings)(pchar('a'))(pchar('b'));
-        expect(AplusB.run('abc').toString()).to.be.eql('[a+b,c]');
+        expect(AplusB.run('abc').toString()).to.be.eql('Validation.Success([a+b,c])');
     });
     it('adds the results of two digit parsings', () => {
         const addDigits = x => y => x + y;
         const addParser = lift2(addDigits)(pdigit(1))(pdigit(2));
-        expect(addParser.run('1234').toString()).to.be.eql('[3,34]');
+        expect(addParser.run('1234').toString()).to.be.eql('Validation.Success([3,34])');
         expect(addParser.run('144').isFailure).to.be.true;
     });
 });

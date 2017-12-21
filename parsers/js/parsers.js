@@ -107,7 +107,7 @@ export function returnP(value) {
 // parser(a -> b) -> parser(a) -> parser(b)
 export function applyPx(fP) {
     return function (xP) {
-        return andThen(fP, xP).fmap(([f, x]) => f(x));
+        return andThen(fP, xP).fmap(pairfx => pairfx[0](pairfx[1]));
     };
 }
 
