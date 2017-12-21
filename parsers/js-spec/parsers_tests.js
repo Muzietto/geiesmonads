@@ -225,17 +225,17 @@ xdescribe('a parser for a specific word', () => {
     });
 });
 
-xdescribe('sequences of parsers based on lift2(cons) (aka sequenceP)', () => {
+describe('sequences of parsers based on lift2(cons) (aka sequenceP)', () => {
     it('stores matched chars inside an array', () => {
         const abcParser = sequenceP([pchar('a'), pchar('b'), pchar('c'),]);
-        expect(abcParser.run('abc').toString()).to.be.eql('[[a,b,c],]');
+        expect(abcParser.run('abc').toString()).to.be.eql('Validation.Success([[a,b,c],])');
     });
 });
 
-xdescribe('sequences of parsers based on andThen && fmap (aka sequenceP2)', () => {
+describe('sequences of parsers based on andThen && fmap (aka sequenceP2)', () => {
     it('store matched chars inside a plain string', () => {
         const abcParser = sequenceP2([pchar('a'), pchar('b'), pchar('c'),]);
-        expect(abcParser.run('abc').toString()).to.be.eql('[abc,]');
+        expect(abcParser.run('abc').toString()).to.be.eql('Validation.Success([abc,])');
     });
 });
 

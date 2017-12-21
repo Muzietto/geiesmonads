@@ -143,7 +143,7 @@ export function sequenceP(parsers) {
 export function sequenceP2(parsers) {
     return parsers
         .reduceRight((rest, curr) => {
-            return fmap(([x, y]) => x + y, andThen(curr, rest));
+            return fmap(pair => pair[0] + pair[1], andThen(curr, rest));
         }, returnP(''));
 }
 
