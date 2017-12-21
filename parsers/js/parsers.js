@@ -95,7 +95,7 @@ export function fmap(fab, parser1) {
     const label = parser1.label + ' fmap ' + fab.toString();
     return parser(str => {
         let res = parser1.run(str);
-        if (Validation.isSuccess(res)) return Validation.Success(Pair(fab(res.value[0]), res.value[1]));
+        if (res.isSuccess) return Validation.Success(Pair(fab(res.value[0]), res.value[1]));
         return Validation.Failure(Pair(label, res.value[1]));
     }, label);
 }
@@ -253,10 +253,10 @@ export function parser(fn, label) {
             return applyP(this)(px);
             //return this.bind(andThen(this, px).fmap(([f, x]) => f(x))).run; // we are the fP
         },
-        fmap(fab) {
-            //return fmap(fab, this);
+        fmap(fab) { // TODO - make all this work
+            return fmap(fab, this);
             //return bindP(str => returnP(fab(str)), this);
-            return this.bind(parsedValue => returnP(fab(parsedValue)));
+            //return this.bind(parsedValue => returnP(fab(parsedValue)));
         },
         andThen(px) {
             return andThen(this, px);

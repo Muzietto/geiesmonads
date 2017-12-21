@@ -253,32 +253,31 @@ xdescribe('lift2 for parsers', () => {
     });
 });
 
-xdescribe('parse 3 digits', () => {
-    let parseDigit, threeDigits, parsing;
-    beforeEach(() => {
-        parseDigit = anyOf(digits);
-        threeDigits = andThen(parseDigit, andThen(parseDigit, parseDigit));
-        parsing = threeDigits.run('123');
-    });
+describe('parse 3 digits', () => {
+    const parseDigit = anyOf(digits);
+    let threeDigits = andThen(parseDigit, andThen(parseDigit, parseDigit));
+    const parsing = threeDigits.run('123');
     it('parses any of three digits', () => {
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing[0].toString()).to.be.eql('[1,[2,3]]');
-        expect(parsing[1]).to.be.eql('');
+        expect(parsing.value[0].toString()).to.be.eql('[1,[2,3]]');
+        expect(parsing.value[1]).to.be.eql('');
     });
-    xdescribe('parses any of three digits while showcasing fmap', () => {
+    describe('parses any of three digits while showcasing fmap', () => {
+        const unpacker = pairOfPairs => [pairOfPairs[0], pairOfPairs[1][0], pairOfPairs[1][1]];
         it('as global method', () => {
-            threeDigits = fmap(([x, [y, z]]) => [x, y, z], threeDigits);
+//            threeDigits = fmap(([x, [y, z]]) => [x, y, z], threeDigits);
+            threeDigits = fmap(unpacker, threeDigits);
             let parsing = threeDigits.run('123');
             expect(parsing.isSuccess).to.be.true;
-            expect(parsing[0].toString()).to.be.eql('[1,2,3]');
-            expect(parsing[1]).to.be.eql('');
+            expect(parsing.value[0].toString()).to.be.eql('[1,2,3]');
+            expect(parsing.value[1]).to.be.eql('');
         });
         it('as instance method', () => {
-            threeDigits = threeDigits.fmap(([x, [y, z]]) => [x, y, z]);
+            threeDigits = threeDigits.fmap(unpacker);
             let parsing = threeDigits.run('123');
             expect(parsing.isSuccess).to.be.true;
-            expect(parsing[0].toString()).to.be.eql('[1,2,3]');
-            expect(parsing[1]).to.be.eql('');
+            expect(parsing.value[0].toString()).to.be.eql('[1,2,3]');
+            expect(parsing.value[1]).to.be.eql('');
         });
     });
 });
