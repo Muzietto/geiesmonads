@@ -253,10 +253,10 @@ export function parser(fn, label) {
             return applyP(this)(px);
             //return this.bind(andThen(this, px).fmap(([f, x]) => f(x))).run; // we are the fP
         },
-        fmap(fab) { // TODO - make all this work
-            return fmap(fab, this);
+        fmap(fab) {
+            //return fmap(fab, this);
             //return bindP(str => returnP(fab(str)), this);
-            //return this.bind(parsedValue => returnP(fab(parsedValue)));
+            return this.bind(parsedValue => returnP(fab(parsedValue)));
         },
         andThen(px) {
             return andThen(this, px);

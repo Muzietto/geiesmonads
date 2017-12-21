@@ -263,18 +263,20 @@ describe('parse 3 digits', () => {
         expect(parsing.value[1]).to.be.eql('');
     });
     describe('parses any of three digits while showcasing fmap', () => {
-        const unpacker = pairOfPairs => [pairOfPairs[0], pairOfPairs[1][0], pairOfPairs[1][1]];
+        const unpacker = pairOfPairs => {
+            return [pairOfPairs[0], pairOfPairs[1][0], pairOfPairs[1][1]];
+        }
         it('as global method', () => {
 //            threeDigits = fmap(([x, [y, z]]) => [x, y, z], threeDigits);
-            threeDigits = fmap(unpacker, threeDigits);
-            let parsing = threeDigits.run('123');
+            const threeDigitsImpl = fmap(unpacker, threeDigits);
+            let parsing = threeDigitsImpl.run('123');
             expect(parsing.isSuccess).to.be.true;
             expect(parsing.value[0].toString()).to.be.eql('[1,2,3]');
             expect(parsing.value[1]).to.be.eql('');
         });
         it('as instance method', () => {
-            threeDigits = threeDigits.fmap(unpacker);
-            let parsing = threeDigits.run('123');
+            const threeDigitsInst = threeDigits.fmap(unpacker);
+            let parsing = threeDigitsInst.run('123');
             expect(parsing.isSuccess).to.be.true;
             expect(parsing.value[0].toString()).to.be.eql('[1,2,3]');
             expect(parsing.value[1]).to.be.eql('');
