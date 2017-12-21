@@ -20,8 +20,7 @@ import {Validation} from 'validation'; // Success or Failure
 const charParser = char => str => {
     if ('' === str) throw new Error('reached end of char stream');
     if (head(str) === char) return Validation.Success(Pair(char, tail(str)));
-    const a = Pair('charParser', 'wanted ' + char + '; got ' + head(str));
-    return Validation.Failure(a);
+    return Validation.Failure(Pair('charParser', 'wanted ' + char + '; got ' + head(str)));
 };
 
 const digitParser = digit => str => {
@@ -44,21 +43,21 @@ export function pdigit(digit) {
     return parser(str => digitParser(digit)(str), 'pdigit_' + digit);
 }
 
-export function andThenX(p1, p2) {
+export function andThen(p1, p2) {
     const label = p1.label + ' andThen ' + p2.label;
     return parser(function (str) {
         let res1 = p1.run(str);
         if (res1.isSuccess) {
-            let res2 = p2.run(res1[1]);
+            let res2 = p2.run(res1.value[1]);
             if (res2.isSuccess) {
-                return Validation.Success(Pair(Pair(res1[0], res2[0]), res2[1]));
-            } else return Validation.Failure(Pair(label, res2[1]));
-        } else return Validation.Failure(Pair(label, res1[1]));
+                return Validation.Success(Pair(Pair(res1.value[0], res2.value[0]), res2.value[1]));
+            } else return Validation.Failure(Pair(label, res2.value[1]));
+        } else return Validation.Failure(Pair(label, res1.value[1]));
     }, label);
 }
 
 // using bind
-export function andThen(p1, p2) {
+export function andThenBBB(p1, p2) {
     return p1.bind(parsedValue1 => {
         return p2.bind(parsedValue2 => {
             return returnP(Pair(parsedValue1, parsedValue2));
@@ -73,7 +72,7 @@ export function orElse(p1, p2) {
         if (res1.isSuccess) return res1;
         const res2 = p2.run(str);
         if (res2.isSuccess) return res2;
-        return Validation.Failure(Pair(label, res2[1]));
+        return Validation.Failure(Pair(label, res2.value[1]));
     }, label).setLabel(label);
 }
 
@@ -224,7 +223,7 @@ export function bindP(famb, px) {
     return parser(str => {
         const res = px.run(str);
         if (res.isFailure) return res;
-        return famb(res[0]).run(res[1]);
+        return famb(res.value[0]).run(res.value[1]);
     }, label).setLabel(label);
 }
 
