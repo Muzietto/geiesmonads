@@ -56,7 +56,7 @@ export function andThen(p1, p2) {
     }, label);
 }
 
-// using bind
+// using bind - TODO: make it work
 export function andThenBBB(p1, p2) {
     return p1.bind(parsedValue1 => {
         return p2.bind(parsedValue2 => {
@@ -95,13 +95,13 @@ export function fmap(fab, parser1) {
     const label = parser1.label + ' fmap ' + fab.toString();
     return parser(str => {
         let res = parser1.run(str);
-        if (Validation.isSuccess(res)) return Validation.Success(Pair(fab(res[0]), res[1]));
-        return Validation.Failure(Pair(label, res[1]));
+        if (Validation.isSuccess(res)) return Validation.Success(Pair(fab(res.value[0]), res.value[1]));
+        return Validation.Failure(Pair(label, res.value[1]));
     }, label);
 }
 
 export function returnP(value) {
-    return parser(str => Validation.Success(Pair(Pair(value, str), value)));
+    return parser(str => Validation.Success(Pair(value, str)), value);
 }
 
 // parser(a -> b) -> parser(a) -> parser(b)
