@@ -13,16 +13,18 @@ import {
     some,
     none,
 } from 'classes';
+import {Maybe} from 'maybe'; // Just or Nothing
+import {Validation} from 'validation'; // Success or Failure
 
 const charParser = char => str => {
     if ('' === str) throw new Error('reached end of char stream');
-    if (head(str) === char) return success(char, tail(str));
+    if (head(str) === char) return Validation.Success(char, tail(str));
     return failure('charParser', 'wanted ' + char + '; got ' + head(str));
 };
 
 const digitParser = digit => str => {
     if ('' === str) throw new Error('reached end of char stream');
-    if (parseInt(head(str), 10) === digit) return success(digit, tail(str));
+    if (parseInt(head(str), 10) === digit) return Validation.Success(digit, tail(str));
     return failure('digitParser', 'wanted ' + digit + '; got ' + head(str));
 };
 
@@ -44,10 +46,10 @@ export function andThenX(p1, p2) {
     const label = p1.label + ' andThen ' + p2.label;
     return parser(function (str) {
         let res1 = p1.run(str);
-        if (isSuccess(res1)) {
+        if (res1.isSuccess) {
             let res2 = p2.run(res1[1]);
-            if (isSuccess(res2)) {
-                return success(pair(res1[0], res2[0]), res2[1]);
+            if (res2.isSuccess) {
+                return Validation.Success(pair(res1[0], res2[0]), res2[1]);
             } else return failure(label, res2[1]);
         } else return failure(label, res1[1]);
     }, label);
@@ -66,9 +68,9 @@ export function orElse(p1, p2) {
     const label = p1.label + ' orElse ' + p2.label;
     return parser(str => {
         const res1 = p1.run(str);
-        if (isSuccess(res1)) return res1;
+        if (res1.isSuccess) return res1;
         const res2 = p2.run(str);
-        if (isSuccess(res2)) return res2;
+        if (res2.isSuccess) return res2;
         return failure(label, res2[1]);
     }, label).setLabel(label);
 }
@@ -76,7 +78,7 @@ export function orElse(p1, p2) {
 let _fail = parser(str => failure('parsing failed', '_fail'), '_fail');
 
 // return neutral element instead of message
-let _succeed = parser(str => success('parsing succeeded', str), '_succeed');
+let _succeed = parser(str => Validation.Success('parsing succeeded', str), '_succeed');
 
 export function choice(parsers) {
     return parsers.reduceRight((rest, curr) => orElse(curr, rest), _fail)
@@ -92,13 +94,13 @@ export function fmap(fab, parser1) {
     const label = parser1.label + ' fmap ' + fab.toString();
     return parser(str => {
         let res = parser1.run(str);
-        if (isSuccess(res)) return success(fab(res[0]), res[1]);
+        if (Validation.isSuccess(res)) return Validation.Success(fab(res[0]), res[1]);
         return failure(label, res[1]);
     }, label);
 }
 
 export function returnP(value) {
-    return parser(str => success(value, str), value);
+    return parser(str => Validation.Success(value, str), value);
 }
 
 // parser(a -> b) -> parser(a) -> parser(b)
@@ -152,9 +154,9 @@ export function pstring(str) {
 export function zeroOrMore(xP) { // zeroOrMore :: p a -> [a] -> try [a] = p a -> p [a]
     return str => {
         let res1 = xP.run(str);
-        if (isFailure(res1)) return success([], str);
+        if (res1.isFailure) return Validation.Success([], str);
         let resN = zeroOrMore(xP)(res1[1]);
-        return success([res1[0]].concat(resN[0]), resN[1]);
+        return Validation.Success([res1[0]].concat(resN[0]), resN[1]);
     };
 }
 
@@ -169,25 +171,25 @@ export function many1(xP) {
     const label = 'many1 ' + xP.label;
     return parser(str => {
         let res1 = xP.run(str);
-        if (isFailure(res1)) return res1;
+        if (res1.isFailure) return res1;
         let resN = zeroOrMore(xP)(res1[1]);
-        return success([res1[0]].concat(resN[0]), resN[1]);
+        return Validation.Success([res1[0]].concat(resN[0]), resN[1]);
     }, label).setLabel(label);
 }
 
 export function opt(xP) {
     const label = 'opt ' + xP.label;
     return parser(str => {
-        let res = xP.fmap(x => some(x)).run(str);
-        if (isSuccess(res)) return res;
-        return success(none(), str);
+        let res = xP.fmap(x => Maybe.Just(x)).run(str);
+        if (res.isSuccess) return res;
+        return Validation.Success(Maybe.Nothing(), str);
     }, label).setLabel(label);
 }
 
 // opt from the book
 export function optBook(pX) {
-    const someP = pX.fmap(some);
-    const noneP = returnP(none);
+    const someP = pX.fmap(Maybe.Just);
+    const noneP = returnP(Maybe.Nothing);
     return someP.orElse(noneP);
 }
 
@@ -219,7 +221,7 @@ export function bindP(famb, px) {
     let label = 'unknown';
     return parser(str => {
         const res = px.run(str);
-        if (isFailure(res)) return res;
+        if (res.isFailure) return res;
         return famb(res[0]).run(res[1]);
     }, label).setLabel(label);
 }
@@ -233,7 +235,7 @@ function _cons(x) {
 function _setLabel(px, newLabel) {
     return parser(str => {
         let result = px.run(str);
-        if (isFailure(result)) return failure(newLabel, result[1]);
+        if (result.isFailure) return failure(newLabel, result[1]);
         return result;
     }, newLabel);
 }
