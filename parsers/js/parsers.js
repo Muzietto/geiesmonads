@@ -187,7 +187,7 @@ export function opt(xP) {
     }, label).setLabel(label);
 }
 
-// opt from the book
+// opt from the book - works ok, but toString() gives strange results
 export function optBook(pX) {
     const someP = pX.fmap(Maybe.Just);
     const noneP = returnP(Maybe.Nothing);
@@ -197,14 +197,14 @@ export function optBook(pX) {
 export function discardSecond(p1, p2) {
     const label = p1.label + ' discardSecond ' + p2.label;
     return parser(str => {
-        return andThen(p1, p2).fmap(([r1, r2]) => r1).run(str);
+        return andThen(p1, p2).fmap(pair => pair[0]).run(str);
     }, label).setLabel(label);
 }
 
 export function discardFirst(p1, p2) {
     const label = p1.label + ' discardFirst ' + p2.label;
     return parser(str => {
-        return andThen(p1, p2).fmap(([r1, r2]) => r2).run(str);
+        return andThen(p1, p2).fmap(pair => pair[1]).run(str);
     }, label).setLabel(label);
 }
 

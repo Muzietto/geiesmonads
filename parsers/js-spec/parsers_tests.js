@@ -41,41 +41,41 @@ const uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 
 const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const whites = [' ', '\t', '\n', '\r'];
 
-xdescribe('parsing while discarding input', () => {
+describe('parsing while discarding input', () => {
     it('allows to exclude parentheses', () => {
         const insideParens = pchar('(')
             .discardFirst(many(anyOf(lowercases)))
             .discardSecond(pchar(')'));
-        expect(insideParens.run('(marco)').toString()).to.be.eql('[[m,a,r,c,o],]');
-        expect(insideParens.run('()').toString()).to.be.eql('[[],]');
+        expect(insideParens.run('(marco)').toString()).to.be.eql('Validation.Success([[m,a,r,c,o],])');
+        expect(insideParens.run('()').toString()).to.be.eql('Validation.Success([[],])');
     });
     it('...even using a tailor-made method', () => {
         const insideParens = betweenParens(pstring('marco'));
-        expect(insideParens.run('(marco)').toString()).to.be.eql('[[m,a,r,c,o],]');
+        expect(insideParens.run('(marco)').toString()).to.be.eql('Validation.Success([[m,a,r,c,o],])');
     });
     it('cherry-picking elements separated by separators', () => {
         const substringsWithCommas = many(many1(anyOf(lowercases)).discardSecond(pchar(',')));
-        expect(substringsWithCommas.run('a,b,cd,1').toString()).to.be.eql('[[[a],[b],[c,d]],1]');
+        expect(substringsWithCommas.run('a,b,cd,1').toString()).to.be.eql('Validation.Success([[[a],[b],[c,d]],1])');
     });
     it('...also when inside a lists', () => {
         const substringsWithCommas = many(many1(anyOf(lowercases)).discardSecond(pchar(',')));
         const listElements = between(pchar('['), substringsWithCommas, pchar(']'));
-        expect(listElements.run('[a,b,cd,marco,]1').toString()).to.be.eql('[[[a],[b],[c,d],[m,a,r,c,o]],1]');
+        expect(listElements.run('[a,b,cd,marco,]1').toString()).to.be.eql('Validation.Success([[[a],[b],[c,d],[m,a,r,c,o]],1])');
     });
 });
 
-xdescribe('a couple of parsers', () => {
+describe('a couple of parsers', () => {
     it('can decide to discard the matches of the first one', () => {
         const discardIntegerSign = pchar('-').discardFirst(pdigit(8));
         let parsing = discardIntegerSign.run('-8x');
-        expect(parsing.toString()).to.be.eql('[8,x]');
+        expect(parsing.toString()).to.be.eql('Validation.Success([8,x])');
     });
     it('can decide to discard the matches of the second one', () => {
         const discardSuffix = pstring('marco').discardSecond(many1(anyOf(whites)));
         let parsing = discardSuffix.run('marco faustinelli');
-        expect(parsing.toString()).to.be.eql('[[m,a,r,c,o],faustinelli]');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[m,a,r,c,o],faustinelli])');
         parsing = discardSuffix.run('marco                                faustinelli');
-        expect(parsing.toString()).to.be.eql('[[m,a,r,c,o],faustinelli]');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[m,a,r,c,o],faustinelli])');
     });
 });
 
