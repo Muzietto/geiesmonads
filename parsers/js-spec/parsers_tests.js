@@ -216,12 +216,12 @@ xdescribe('a parsing function for zero or more occurrences', () => {
     });
 });
 
-xdescribe('a parser for a specific word', () => {
+describe('a parser for a specific word', () => {
     it('is easy to create with sequenceP', () => {
         const marcoParser = pstring('marco');
         const marcoParsing = marcoParser.run('marcociao');
-        expect(isSuccess(marcoParsing)).to.be.true;
-        expect(marcoParsing.toString()).to.be.eql('[[m,a,r,c,o],ciao]');
+        expect(marcoParsing.isSuccess).to.be.true;
+        expect(marcoParsing.toString()).to.be.eql('Validation.Success([[m,a,r,c,o],ciao])');
     });
 });
 
