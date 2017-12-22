@@ -305,12 +305,15 @@ describe('parse 3 digits', () => {
 
 describe('parse ABC', () => {
     it('parses ABC', () => {
-        const pairAdder = ([x, y]) => {
-            return x + y;
-        };
-        const abcP = andThen(pchar('a'),
-            andThen(pchar('b'),
-                andThen(pchar('c'), returnP('')).fmap(pairAdder)
+        const pairAdder = ([x, y]) => x + y;
+        const abcP = andThen(
+            pchar('a'),
+            andThen(
+                pchar('b'),
+                andThen(
+                    pchar('c'),
+                    returnP('')
+                ).fmap(pairAdder)
             ).fmap(pairAdder)
         ).fmap(pairAdder);
         const parsing = abcP.run('abcd');

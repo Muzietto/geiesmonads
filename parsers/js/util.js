@@ -4,6 +4,10 @@ export function isPair(thing) {
         || thing.type === 'failure';
 }
 
+export function isTriple(thing) {
+    return thing.type === 'triple';
+}
+
 export function isSome(thing) {
     return thing.type === 'some';
 }

@@ -12,7 +12,7 @@ import {
     failure,
     some,
     none,
-    Pair,
+    Tuple,
 } from 'classes';
 
 describe('among helper classes', () => {
@@ -43,7 +43,7 @@ describe('among helper classes', () => {
             expect(apair.type).to.be.eql('pair');
             expect(isPair(apair)).to.be.true;
         });
-        it('are true iterables and therefore allow positional destructuring', () => {
+        it('are are actually arrays, and therefore allow positional destructuring', () => {
             const [a, b] = pair(true, 12);
             expect(a).to.be.eql(true);
             expect(b).to.be.eql(12);
@@ -52,12 +52,35 @@ describe('among helper classes', () => {
 
     describe('Pair\'s', () => {
         it('include 2 values and allow to retrieve them', () => {
-            const apair = Pair(true, 12);
+            const apair = Tuple.Pair(true, 12);
             expect(apair[0]).to.be.eql(true);
             expect(apair[1]).to.be.eql(12);
             expect(apair.type).to.be.eql('pair');
             expect(apair.isPair).to.be.true;
             expect(apair.toString()).to.be.eql('[true,12]');
+        });
+        it('are true iterables, and therefore allow positional destructuring', () => {
+            const [a, b] = Tuple.Pair(true, 12);
+            expect(a).to.be.eql(true);
+            expect(b).to.be.eql(12);
+        });
+    });
+
+    describe('Triple\'s', () => {
+        it('include 3 values and allow to retrieve them', () => {
+            const atriple = Tuple.Triple(true, 12, 'a');
+            expect(atriple[0]).to.be.eql(true);
+            expect(atriple[1]).to.be.eql(12);
+            expect(atriple[2]).to.be.eql('a');
+            expect(atriple.type).to.be.eql('triple');
+            expect(atriple.isTriple).to.be.true;
+            expect(atriple.toString()).to.be.eql('[true,12,a]');
+        });
+        it('are true iterables, and therefore allow positional destructuring', () => {
+            const [a, b, c] = Tuple.Triple(true, 12, 'a');
+            expect(a).to.be.eql(true);
+            expect(b).to.be.eql(12);
+            expect(c).to.be.eql('a');
         });
     });
 

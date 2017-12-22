@@ -3,17 +3,8 @@
 import {
     head,
     tail,
-    isSuccess,
-    isFailure,
 } from 'util';
-import {
-    pair,
-    success,
-    failure,
-    some,
-    none,
-    Pair,
-} from 'classes';
+import {Pair} from 'classes';
 import {Maybe} from 'maybe'; // Just or Nothing
 import {Validation} from 'validation'; // Success or Failure
 
@@ -43,7 +34,7 @@ export function pdigit(digit) {
     return parser(str => digitParser(digit)(str), 'pdigit_' + digit);
 }
 
-export function andThen(p1, p2) {
+export function andThenX(p1, p2) {
     const label = p1.label + ' andThen ' + p2.label;
     return parser(function (str) {
         let res1 = p1.run(str);
@@ -56,8 +47,8 @@ export function andThen(p1, p2) {
     }, label);
 }
 
-// using bind - TODO: make it work
-export function andThenBBB(p1, p2) {
+// using bind
+export function andThen(p1, p2) {
     return p1.bind(parsedValue1 => {
         return p2.bind(parsedValue2 => {
             return returnP(Pair(parsedValue1, parsedValue2));
@@ -107,7 +98,7 @@ export function returnP(value) {
 // parser(a -> b) -> parser(a) -> parser(b)
 export function applyPx(fP) {
     return function (xP) {
-        return andThen(fP, xP).fmap(pairfx => pairfx[0](pairfx[1]));
+        return andThen(fP, xP).fmap(([f, x]) => f(x));
     };
 }
 
@@ -143,7 +134,7 @@ export function sequenceP(parsers) {
 export function sequenceP2(parsers) {
     return parsers
         .reduceRight((rest, curr) => {
-            return fmap(pair => pair[0] + pair[1], andThen(curr, rest));
+            return fmap(([x, y]) => x + y, andThen(curr, rest));
         }, returnP(''));
 }
 
@@ -197,14 +188,14 @@ export function optBook(pX) {
 export function discardSecond(p1, p2) {
     const label = p1.label + ' discardSecond ' + p2.label;
     return parser(str => {
-        return andThen(p1, p2).fmap(pair => pair[0]).run(str);
+        return andThen(p1, p2).fmap(([x, y]) => x).run(str);
     }, label).setLabel(label);
 }
 
 export function discardFirst(p1, p2) {
     const label = p1.label + ' discardFirst ' + p2.label;
     return parser(str => {
-        return andThen(p1, p2).fmap(pair => pair[1]).run(str);
+        return andThen(p1, p2).fmap(([x, y]) => y).run(str);
     }, label).setLabel(label);
 }
 
