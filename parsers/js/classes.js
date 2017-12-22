@@ -79,8 +79,12 @@ _position.prototype.isPosition = true;
 _position.prototype.char = function () {
     let result = Maybe.Nothing();
     try {
-        result = Maybe.Just(this.rows[this.row][this.col]);
-    } catch (err) {}
+        const newResultValue = this.rows[this.row][this.col];
+        if (typeof newResultValue !== 'undefined') {
+            result = Maybe.Just(newResultValue);
+        }
+    } catch (err) {
+    }
     return result;
 };
 _position.prototype.incrPos = function () {
@@ -92,7 +96,7 @@ _position.prototype.incrPos = function () {
     );
 };
 
-/////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 // deprecated in favour of Tuple, data.Maybe and data.Validation
 export function pair(x, y) {
     let result = [x, y];
