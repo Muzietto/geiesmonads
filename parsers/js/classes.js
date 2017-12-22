@@ -20,7 +20,12 @@ Array.prototype.toString = function () {
 };
 
 export function Pair(a, b) {
-    return new _pair(a, b);
+    let result = new _pair(a, b);
+    result[Symbol.iterator] = function*() {
+        yield a;
+        yield b;
+    };
+    return result;
 }
 
 function _pair(a, b) {
@@ -30,9 +35,10 @@ function _pair(a, b) {
 
 _pair.prototype.isPair = true;
 _pair.prototype.type = 'pair';
-_pair.prototype.toString = function() {
+_pair.prototype.toString = function () {
     return '[' + this[0] + ',' + this[1] + ']';
-}
+};
+
 
 export function pair(x, y) {
     let result = [x, y];
