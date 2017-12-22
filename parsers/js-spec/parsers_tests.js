@@ -285,7 +285,7 @@ describe('parse 3 digits', () => {
     describe('parses any of three digits while showcasing fmap', () => {
         const unpacker = pairOfPairs => {
             return [pairOfPairs[0], pairOfPairs[1][0], pairOfPairs[1][1]];
-        }
+        };
         it('as global method', () => {
             const threeDigitsImpl = fmap(unpacker, threeDigits);
             let parsing = threeDigitsImpl.run('123');
@@ -305,7 +305,9 @@ describe('parse 3 digits', () => {
 
 describe('parse ABC', () => {
     it('parses ABC', () => {
-        const pairAdder = pair => pair[0] + pair[1];
+        const pairAdder = ([x, y]) => {
+            return x + y;
+        };
         const abcP = andThen(pchar('a'),
             andThen(pchar('b'),
                 andThen(pchar('c'), returnP('')).fmap(pairAdder)
