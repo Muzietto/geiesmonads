@@ -283,8 +283,8 @@ describe('parse 3 digits', () => {
         expect(parsing.value[1]).to.be.eql('');
     });
     describe('parses any of three digits while showcasing fmap', () => {
-        const unpacker = pairOfPairs => {
-            return [pairOfPairs[0], pairOfPairs[1][0], pairOfPairs[1][1]];
+        const unpacker = ([x, [y, z]]) => {
+            return [x, y, z];
         };
         it('as global method', () => {
             const threeDigitsImpl = fmap(unpacker, threeDigits);
