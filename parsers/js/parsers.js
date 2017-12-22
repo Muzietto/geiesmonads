@@ -1,26 +1,23 @@
 // cfr. "Understanding Parser Combinators" (F# for Fun and Profit)
 
 import {
-    head,
-    tail,
-} from 'util';
-import {
     Tuple,
-    Position,
 } from 'classes';
 import {Maybe} from 'maybe'; // Just or Nothing
 import {Validation} from 'validation'; // Success or Failure
 
-const charParser = char => str => {
-    if ('' === str) return Validation.Failure(Tuple.Pair('charParser', 'no more input'));
-    if (head(str) === char) return Validation.Success(Tuple.Pair(char, tail(str)));
-    return Validation.Failure(Tuple.Pair('charParser', 'wanted ' + char + '; got ' + head(str)));
+const charParser = char => pos => {
+    const optChar = pos.char();
+    if (optChar.isNothing) return Validation.Failure(Tuple.Triple('charParser', 'no more input', pos));
+    if (optChar.value === char) return Validation.Success(Tuple.Pair(char, pos.incrPos()));
+    return Validation.Failure(Tuple.Triple('charParser', 'wanted ' + char + '; got ' + optChar.value, pos));
 };
 
-const digitParser = digit => str => {
-    if ('' === str) return Validation.Failure(Tuple.Pair('digitParser', 'no more input'));
-    if (parseInt(head(str), 10) === digit) return Validation.Success(Tuple.Pair(digit, tail(str)));
-    return Validation.Failure(Tuple.Pair('digitParser', 'wanted ' + digit + '; got ' + head(str)));
+const digitParser = digit => pos => {
+    const optChar = pos.char();
+    if (optChar.isNothing) return Validation.Failure(Tuple.Triple('digitParser', 'no more input', pos));
+    if (parseInt(optChar.value, 10) === digit) return Validation.Success(Tuple.Pair(digit, pos.incrPos()));
+    return Validation.Failure(Tuple.Triple('digitParser', 'wanted ' + digit + '; got ' + optChar.val(), pos));
 };
 
 export {charParser, digitParser};
