@@ -3,16 +3,10 @@
 import {
     head,
     tail,
-    isSuccess,
-    isFailure,
 } from 'util';
 import {
-    pair,
-    success,
-    failure,
-    some,
-    none,
     Pair,
+    Position,
 } from 'classes';
 import {Maybe} from 'maybe'; // Just or Nothing
 import {Validation} from 'validation'; // Success or Failure

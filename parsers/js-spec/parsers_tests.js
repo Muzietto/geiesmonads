@@ -273,39 +273,39 @@ describe('lift2 for parsers', () => {
     });
 });
 
-describe('parse 3 digits', () => {
-    const parseDigit = anyOf(digits);
-    let threeDigits = andThen(parseDigit, andThen(parseDigit, parseDigit));
-    const parsing = threeDigits.run('123');
-    it('parses any of three digits', () => {
-        expect(parsing.isSuccess).to.be.true;
-        expect(parsing.value[0].toString()).to.be.eql('[1,[2,3]]');
-        expect(parsing.value[1]).to.be.eql('');
-    });
-    describe('parses any of three digits while showcasing fmap', () => {
-        const unpacker = pairOfPairs => {
-            return [pairOfPairs[0], pairOfPairs[1][0], pairOfPairs[1][1]];
-        }
-        it('as global method', () => {
-            const threeDigitsImpl = fmap(unpacker, threeDigits);
-            let parsing = threeDigitsImpl.run('123');
-            expect(parsing.isSuccess).to.be.true;
-            expect(parsing.value[0].toString()).to.be.eql('[1,2,3]');
-            expect(parsing.value[1]).to.be.eql('');
-        });
-        it('as instance method', () => {
-            const threeDigitsInst = threeDigits.fmap(unpacker);
-            let parsing = threeDigitsInst.run('123');
-            expect(parsing.isSuccess).to.be.true;
-            expect(parsing.value[0].toString()).to.be.eql('[1,2,3]');
-            expect(parsing.value[1]).to.be.eql('');
-        });
-    });
-});
+// describe('parse 3 digits', () => {
+//     const parseDigit = anyOf(digits);
+//     let threeDigits = andThen(parseDigit, andThen(parseDigit, parseDigit));
+//     const parsing = threeDigits.run('123');
+//     it('parses any of three digits', () => {
+//         expect(parsing.isSuccess).to.be.true;
+//         expect(parsing.value[0].toString()).to.be.eql('[1,[2,3]]');
+//         expect(parsing.value[1]).to.be.eql('');
+//     });
+//     describe('parses any of three digits while showcasing fmap', () => {
+//         const unpacker = pairOfPairs => {
+//             return [pairOfPairs[0], pairOfPairs[1][0], pairOfPairs[1][1]];
+//         };
+//         it('as global method', () => {
+//             const threeDigitsImpl = fmap(unpacker, threeDigits);
+//             let parsing = threeDigitsImpl.run('123');
+//             expect(parsing.isSuccess).to.be.true;
+//             expect(parsing.value[0].toString()).to.be.eql('[1,2,3]');
+//             expect(parsing.value[1]).to.be.eql('');
+//         });
+//         it('as instance method', () => {
+//             const threeDigitsInst = threeDigits.fmap(unpacker);
+//             let parsing = threeDigitsInst.run('123');
+//             expect(parsing.isSuccess).to.be.true;
+//             expect(parsing.value[0].toString()).to.be.eql('[1,2,3]');
+//             expect(parsing.value[1]).to.be.eql('');
+//         });
+//     });
+// });
 
 describe('parse ABC', () => {
     it('parses ABC', () => {
-        const pairAdder = pair => pair[0] + pair[1];
+        const pairAdder = ({a,b}) => a + b;
         const abcP = andThen(pchar('a'),
             andThen(pchar('b'),
                 andThen(pchar('c'), returnP('')).fmap(pairAdder)
@@ -400,6 +400,11 @@ describe('a parsers for any of a list of chars', () => {
         expect(parsingChoice.value[0]).to.be.eql('anyOf 0123456789');
         expect(parsingChoice.value[1]).to.be.eql('_fail');
     });
+
+    it('will fail if the input is too short', () => {
+        expect(anyOf(lowercases).run('').isFailure).to.be.true;
+        expect(anyOf(digits).run('').isFailure).to.be.true;
+    });
 });
 
 describe('a choice of parsers bound by orElse', () => {
@@ -427,6 +432,11 @@ describe('a choice of parsers bound by orElse', () => {
         expect(parsingChoice.value[0]).to.be.eql('choice /pchar_a/pchar_b/pchar_c/pchar_d');
         expect(parsingChoice.value[1]).to.be.eql('_fail');
     });
+
+    it('will fail if the input is too short', () => {
+        expect(parsersChoice.run('a').isSuccess).to.be.true;
+        expect(parsersChoice.run('').isFailure).to.be.true;
+    });
 });
 
 describe('two parsers bound by orElse', () => {
@@ -450,6 +460,11 @@ describe('two parsers bound by orElse', () => {
         expect(parsingAorB.value[0]).to.be.eql('pchar_a orElse pchar_b');
         expect(parsingAorB.value[1]).to.be.eql('wanted b; got c');
     });
+
+    it('will fail if the input is too short', () => {
+        expect(parserAorB.run('a').isSuccess).to.be.true;
+        expect(parserAorB.run('').isFailure).to.be.true;
+    });
 });
 
 describe('two parsers bound by andThen', () => {
@@ -470,9 +485,33 @@ describe('two parsers bound by andThen', () => {
         expect(parsingAandB.value[0]).to.be.eql('pchar_a andThen pchar_b');
         expect(parsingAandB.value[1]).to.be.eql('wanted b; got c');
     });
+
+    it('will fail if the input is too short', () => {
+        expect(parserAandB.run('a').isFailure).to.be.true;
+        expect(parserAandB.run('ab').isSuccess).to.be.true;
+    });
 });
 
-describe('a simple parser', () => {
+describe('a named character parser', () => {
+    const parserA = pchar('a');
+
+    it('can parse a single char', () => {
+        expect(isParser(parserA)).to.be.true;
+        const parsingA = parserA.run('abc');
+        expect(parsingA.value[0]).to.be.eql('a');
+        expect(parsingA.value[1]).to.be.eql('bc');
+        expect(parsingA.isSuccess).to.be.true;
+    });
+
+    it('can also NOT parse a single char', () => {
+        const parsingB = parserA.run('bcd');
+        expect(parsingB.value[0]).to.be.eql('pchar_a');
+        expect(parsingB.value[1]).to.be.eql('wanted a; got b');
+        expect(parsingB.isFailure).to.be.true;
+    });
+});
+
+describe('a very simple parser for chars or for digits', () => {
     const parserA = charParser('a');
     const parser1 = digitParser(1);
 
@@ -488,6 +527,13 @@ describe('a simple parser', () => {
         expect(parsingB.value[0]).to.be.eql('charParser');
         expect(parsingB.value[1]).to.be.eql('wanted a; got b');
         expect(parsingB.isFailure).to.be.true;
+    });
+
+    it('fails at the end of the stream', () => {
+        const parsingA = parserA('');
+        expect(parsingA.value[0]).to.be.eql('charParser');
+        expect(parsingA.value[1]).to.be.eql('no more input');
+        expect(parsingA.isFailure).to.be.true;
     });
 
     it('can parse a single digit', () => {
@@ -509,49 +555,5 @@ describe('a simple parser', () => {
         expect(parsing3.value[0]).to.be.eql('digitParser');
         expect(parsing3.value[1]).to.be.eql('no more input');
         expect(parsing3.isFailure).to.be.true;
-    });
-});
-
-describe('a slightly more complex parser', () => {
-    const parserA = charParser('a');
-
-    it('can parse a single char', () => {
-        const parsingA = parserA('abc');
-        expect(parsingA.value[0]).to.be.eql('a');
-        expect(parsingA.value[1]).to.be.eql('bc');
-        expect(parsingA.isSuccess).to.be.true;
-    });
-
-    it('fails at the end of the stream', () => {
-        const parsingA = parserA('');
-        expect(parsingA.value[0]).to.be.eql('charParser');
-        expect(parsingA.value[1]).to.be.eql('no more input');
-        expect(parsingA.isFailure).to.be.true;
-    });
-
-    it('can also NOT parse a single char', () => {
-        const parsingB = parserA('bcd');
-        expect(parsingB.value[0]).to.be.eql('charParser');
-        expect(parsingB.value[1]).to.be.eql('wanted a; got b');
-        expect(parsingB.isFailure).to.be.true;
-    });
-});
-
-describe('a named character parser', () => {
-    const parserA = pchar('a');
-
-    it('can parse a single char', () => {
-        expect(isParser(parserA)).to.be.true;
-        const parsingA = parserA.run('abc');
-        expect(parsingA.value[0]).to.be.eql('a');
-        expect(parsingA.value[1]).to.be.eql('bc');
-        expect(parsingA.isSuccess).to.be.true;
-    });
-
-    it('can also NOT parse a single char', () => {
-        const parsingB = parserA.run('bcd');
-        expect(parsingB.value[0]).to.be.eql('pchar_a');
-        expect(parsingB.value[1]).to.be.eql('wanted a; got b');
-        expect(parsingB.isFailure).to.be.true;
     });
 });
