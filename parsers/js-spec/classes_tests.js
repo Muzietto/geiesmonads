@@ -43,7 +43,7 @@ describe('among helper classes', () => {
             expect(apair.type).to.be.eql('pair');
             expect(isPair(apair)).to.be.true;
         });
-        it('are are actually arrays, and therefore allow positional destructuring', () => {
+        it('are actually arrays, and therefore allow positional destructuring', () => {
             const [a, b] = pair(true, 12);
             expect(a).to.be.eql(true);
             expect(b).to.be.eql(12);

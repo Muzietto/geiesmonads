@@ -1,6 +1,5 @@
 import {
     isPair,
-    isTriple,
 } from 'util';
 
 const toString = Array.prototype.toString;
@@ -65,7 +64,7 @@ Tuple.Triple = function (a, b, c) {
 Tuple.prototype.Triple = Tuple.Triple;
 
 /////////////////////////////////////////////////////////
-// deprecated in favour of data.Maybe and data.Validation
+// deprecated in favour of Tuple, data.Maybe and data.Validation
 export function pair(x, y) {
     let result = [x, y];
     result.type = 'pair';
