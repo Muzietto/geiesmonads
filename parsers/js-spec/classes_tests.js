@@ -26,6 +26,7 @@ describe('among helper classes', () => {
         ];
         it('include tables of chars and allow to retrieve char options', () => {
             const pos00 = Position(rows, 0, 0);
+            expect(pos00.isPosition).to.be.true;
             expect(pos00.char().isJust).to.be.true;
             expect(pos00.char().value).to.be.eql(1);
             const pos11 = Position(rows, 1, 1);
@@ -43,6 +44,18 @@ describe('among helper classes', () => {
             expect(pos1010.char().isNothing).to.be.true;
             const pos23 = Position(rows, 2, 2).incrPos();
             expect(pos23.char().isNothing).to.be.true;
+        });
+        it('can be initialized from text strings', () => {
+            const pos00 = Position.fromText("Lorem ipsum dolor sit amet");
+            expect(pos00.char().value).to.be.eql('L');
+            expect(pos00.incrPos().incrPos().incrPos().incrPos()
+                .char().value).to.be.eql('m');
+        });
+        it('can be initialized also from multiline text strings, stripping newlines away', () => {
+            const pos00 = Position.fromText("Lorem \nipsum");
+            expect(pos00.char().value).to.be.eql('L');
+            expect(pos00.incrPos().incrPos().incrPos().incrPos().incrPos().incrPos()
+                .char().value).to.be.eql('i');
         });
     });
 

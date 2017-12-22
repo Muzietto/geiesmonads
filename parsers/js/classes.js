@@ -69,6 +69,13 @@ export function Position(rows = [], row = 0, col = 0) {
     return new _position(rows, row, col);
 }
 
+//Position.prototype = Object.create({});
+Position.fromText = function(text) {
+    const rows = text.split('\n')
+        .map(row => row.split(''));
+    return new _position(rows, 0, 0);
+};
+
 function _position(rows, row, col) {
     this.rows = rows;
     this.row = row;
