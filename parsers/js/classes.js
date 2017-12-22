@@ -10,13 +10,21 @@ Array.prototype.toString = function () {
     return '[' + toString.apply(this) + ']';
 };
 
+export function Tuple() {
+}
+
 export function Pair(a, b) {
     return new _pair(a, b);
 }
 
 function _pair(a, b) {
+    return [a, b];
+}
+
+function _triple(a, b, c) {
     this[0] = a;
     this[1] = b;
+    this[2] = c;
 }
 
 _pair.prototype.isPair = true;
@@ -40,7 +48,8 @@ _position.prototype.char = function () {
     let result = Maybe.Nothing();
     try {
         result = Maybe.Just(this.rows[this.row][this.col]);
-    } catch (err) {}
+    } catch (err) {
+    }
     return result;
 };
 _position.prototype.incrPos = function () {
