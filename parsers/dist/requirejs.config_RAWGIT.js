@@ -3,6 +3,7 @@ var require = {
     paths: {
         'mocha': 'lib/mocha',
         'chai': 'lib/chai',
+        'babel-polyfill': 'lib/polyfill',
     },
     shim: {
         mocha: {

@@ -5,22 +5,22 @@ import {
     tail,
 } from 'util';
 import {
-    Pair,
+    Tuple,
     Position,
 } from 'classes';
 import {Maybe} from 'maybe'; // Just or Nothing
 import {Validation} from 'validation'; // Success or Failure
 
 const charParser = char => str => {
-    if ('' === str) return Validation.Failure(Pair('charParser', 'no more input'));
-    if (head(str) === char) return Validation.Success(Pair(char, tail(str)));
-    return Validation.Failure(Pair('charParser', 'wanted ' + char + '; got ' + head(str)));
+    if ('' === str) return Validation.Failure(Tuple.Pair('charParser', 'no more input'));
+    if (head(str) === char) return Validation.Success(Tuple.Pair(char, tail(str)));
+    return Validation.Failure(Tuple.Pair('charParser', 'wanted ' + char + '; got ' + head(str)));
 };
 
 const digitParser = digit => str => {
-    if ('' === str) return Validation.Failure(Pair('digitParser', 'no more input'));
-    if (parseInt(head(str), 10) === digit) return Validation.Success(Pair(digit, tail(str)));
-    return Validation.Failure(Pair('digitParser', 'wanted ' + digit + '; got ' + head(str)));
+    if ('' === str) return Validation.Failure(Tuple.Pair('digitParser', 'no more input'));
+    if (parseInt(head(str), 10) === digit) return Validation.Success(Tuple.Pair(digit, tail(str)));
+    return Validation.Failure(Tuple.Pair('digitParser', 'wanted ' + digit + '; got ' + head(str)));
 };
 
 export {charParser, digitParser};
@@ -37,24 +37,24 @@ export function pdigit(digit) {
     return parser(str => digitParser(digit)(str), 'pdigit_' + digit);
 }
 
-export function andThen(p1, p2) {
+export function andThenX(p1, p2) {
     const label = p1.label + ' andThen ' + p2.label;
     return parser(function (str) {
         let res1 = p1.run(str);
         if (res1.isSuccess) {
             let res2 = p2.run(res1.value[1]);
             if (res2.isSuccess) {
-                return Validation.Success(Pair(Pair(res1.value[0], res2.value[0]), res2.value[1]));
-            } else return Validation.Failure(Pair(label, res2.value[1]));
-        } else return Validation.Failure(Pair(label, res1.value[1]));
+                return Validation.Success(Tuple.Pair(Tuple.Pair(res1.value[0], res2.value[0]), res2.value[1]));
+            } else return Validation.Failure(Tuple.Pair(label, res2.value[1]));
+        } else return Validation.Failure(Tuple.Pair(label, res1.value[1]));
     }, label);
 }
 
-// using bind - TODO: make it work
-export function andThenBBB(p1, p2) {
+// using bind
+export function andThen(p1, p2) {
     return p1.bind(parsedValue1 => {
         return p2.bind(parsedValue2 => {
-            return returnP(Pair(parsedValue1, parsedValue2));
+            return returnP(Tuple.Pair(parsedValue1, parsedValue2));
         });
     }).setLabel(p1.label + ' andThen ' + p2.label);
 }
@@ -66,14 +66,14 @@ export function orElse(p1, p2) {
         if (res1.isSuccess) return res1;
         const res2 = p2.run(str);
         if (res2.isSuccess) return res2;
-        return Validation.Failure(Pair(label, res2.value[1]));
+        return Validation.Failure(Tuple.Pair(label, res2.value[1]));
     }, label).setLabel(label);
 }
 
-let _fail = parser(str => Validation.Failure(Pair(Pair('parsing failed', '_fail'), '_fail')));
+let _fail = parser(str => Validation.Failure(Tuple.Pair(Tuple.Pair('parsing failed', '_fail'), '_fail')));
 
 // return neutral element instead of message
-let _succeed = parser(str => Validation.Success(Pair(Pair('parsing succeeded', str), '_succeed')));
+let _succeed = parser(str => Validation.Success(Tuple.Pair(Tuple.Pair('parsing succeeded', str), '_succeed')));
 
 export function choice(parsers) {
     return parsers.reduceRight((rest, curr) => orElse(curr, rest), _fail)
@@ -89,19 +89,19 @@ export function fmap(fab, parser1) {
     const label = parser1.label + ' fmap ' + fab.toString();
     return parser(str => {
         let res = parser1.run(str);
-        if (res.isSuccess) return Validation.Success(Pair(fab(res.value[0]), res.value[1]));
-        return Validation.Failure(Pair(label, res.value[1]));
+        if (res.isSuccess) return Validation.Success(Tuple.Pair(fab(res.value[0]), res.value[1]));
+        return Validation.Failure(Tuple.Pair(label, res.value[1]));
     }, label);
 }
 
 export function returnP(value) {
-    return parser(str => Validation.Success(Pair(value, str)), value);
+    return parser(str => Validation.Success(Tuple.Pair(value, str)), value);
 }
 
 // parser(a -> b) -> parser(a) -> parser(b)
 export function applyPx(fP) {
     return function (xP) {
-        return andThen(fP, xP).fmap(pairfx => pairfx[0](pairfx[1]));
+        return andThen(fP, xP).fmap(([f, x]) => f(x));
     };
 }
 
@@ -137,7 +137,7 @@ export function sequenceP(parsers) {
 export function sequenceP2(parsers) {
     return parsers
         .reduceRight((rest, curr) => {
-            return fmap(pair => pair[0] + pair[1], andThen(curr, rest));
+            return fmap(([x, y]) => x + y, andThen(curr, rest));
         }, returnP(''));
 }
 
@@ -149,9 +149,9 @@ export function pstring(str) {
 export function zeroOrMore(xP) { // zeroOrMore :: p a -> [a] -> try [a] = p a -> p [a]
     return str => {
         let res1 = xP.run(str);
-        if (res1.isFailure) return Validation.Success(Pair([], str));
+        if (res1.isFailure) return Validation.Success(Tuple.Pair([], str));
         let resN = zeroOrMore(xP)(res1.value[1]);
-        return Validation.Success(Pair([res1.value[0]].concat(resN.value[0]), resN.value[1]));
+        return Validation.Success(Tuple.Pair([res1.value[0]].concat(resN.value[0]), resN.value[1]));
     };
 }
 
@@ -168,7 +168,7 @@ export function many1(xP) {
         let res1 = xP.run(str);
         if (res1.isFailure) return res1;
         let resN = zeroOrMore(xP)(res1.value[1]);
-        return Validation.Success(Pair([res1.value[0]].concat(resN.value[0]), resN.value[1]));
+        return Validation.Success(Tuple.Pair([res1.value[0]].concat(resN.value[0]), resN.value[1]));
     }, label).setLabel(label);
 }
 
@@ -177,7 +177,7 @@ export function opt(xP) {
     return parser(str => {
         let res = xP.fmap(x => Maybe.Just(x)).run(str);
         if (res.isSuccess) return res;
-        return Validation.Success(Pair(Maybe.Nothing(), str));
+        return Validation.Success(Tuple.Pair(Maybe.Nothing(), str));
     }, label).setLabel(label);
 }
 
@@ -191,14 +191,14 @@ export function optBook(pX) {
 export function discardSecond(p1, p2) {
     const label = p1.label + ' discardSecond ' + p2.label;
     return parser(str => {
-        return andThen(p1, p2).fmap(pair => pair[0]).run(str);
+        return andThen(p1, p2).fmap(([x, y]) => x).run(str);
     }, label).setLabel(label);
 }
 
 export function discardFirst(p1, p2) {
     const label = p1.label + ' discardFirst ' + p2.label;
     return parser(str => {
-        return andThen(p1, p2).fmap(pair => pair[1]).run(str);
+        return andThen(p1, p2).fmap(([x, y]) => y).run(str);
     }, label).setLabel(label);
 }
 
@@ -230,7 +230,7 @@ function _cons(x) {
 function _setLabel(px, newLabel) {
     return parser(str => {
         let result = px.run(str);
-        if (result.isFailure) return Validation.Failure(Pair(newLabel, result.value[1]));
+        if (result.isFailure) return Validation.Failure(Tuple.Pair(newLabel, result.value[1]));
         return result;
     }, newLabel);
 }

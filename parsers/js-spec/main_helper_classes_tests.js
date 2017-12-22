@@ -1,6 +1,6 @@
 import mocha from 'mocha';
 
-require(['classes_tests'], function () {
+require(['babel-polyfill', 'classes_tests'], function () {
     var runner = mocha.run();
 });
 

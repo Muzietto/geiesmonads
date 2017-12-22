@@ -273,42 +273,47 @@ describe('lift2 for parsers', () => {
     });
 });
 
-// describe('parse 3 digits', () => {
-//     const parseDigit = anyOf(digits);
-//     let threeDigits = andThen(parseDigit, andThen(parseDigit, parseDigit));
-//     const parsing = threeDigits.run('123');
-//     it('parses any of three digits', () => {
-//         expect(parsing.isSuccess).to.be.true;
-//         expect(parsing.value[0].toString()).to.be.eql('[1,[2,3]]');
-//         expect(parsing.value[1]).to.be.eql('');
-//     });
-//     describe('parses any of three digits while showcasing fmap', () => {
-//         const unpacker = pairOfPairs => {
-//             return [pairOfPairs[0], pairOfPairs[1][0], pairOfPairs[1][1]];
-//         };
-//         it('as global method', () => {
-//             const threeDigitsImpl = fmap(unpacker, threeDigits);
-//             let parsing = threeDigitsImpl.run('123');
-//             expect(parsing.isSuccess).to.be.true;
-//             expect(parsing.value[0].toString()).to.be.eql('[1,2,3]');
-//             expect(parsing.value[1]).to.be.eql('');
-//         });
-//         it('as instance method', () => {
-//             const threeDigitsInst = threeDigits.fmap(unpacker);
-//             let parsing = threeDigitsInst.run('123');
-//             expect(parsing.isSuccess).to.be.true;
-//             expect(parsing.value[0].toString()).to.be.eql('[1,2,3]');
-//             expect(parsing.value[1]).to.be.eql('');
-//         });
-//     });
-// });
+describe('parse 3 digits', () => {
+    const parseDigit = anyOf(digits);
+    let threeDigits = andThen(parseDigit, andThen(parseDigit, parseDigit));
+    const parsing = threeDigits.run('123');
+    it('parses any of three digits', () => {
+        expect(parsing.isSuccess).to.be.true;
+        expect(parsing.value[0].toString()).to.be.eql('[1,[2,3]]');
+        expect(parsing.value[1]).to.be.eql('');
+    });
+    describe('parses any of three digits while showcasing fmap', () => {
+        const unpacker = ([x, [y, z]]) => {
+            return [x, y, z];
+        };
+        it('as global method', () => {
+            const threeDigitsImpl = fmap(unpacker, threeDigits);
+            let parsing = threeDigitsImpl.run('123');
+            expect(parsing.isSuccess).to.be.true;
+            expect(parsing.value[0].toString()).to.be.eql('[1,2,3]');
+            expect(parsing.value[1]).to.be.eql('');
+        });
+        it('as instance method', () => {
+            const threeDigitsInst = threeDigits.fmap(unpacker);
+            let parsing = threeDigitsInst.run('123');
+            expect(parsing.isSuccess).to.be.true;
+            expect(parsing.value[0].toString()).to.be.eql('[1,2,3]');
+            expect(parsing.value[1]).to.be.eql('');
+        });
+    });
+});
 
 describe('parse ABC', () => {
     it('parses ABC', () => {
-        const pairAdder = ({a,b}) => a + b;
-        const abcP = andThen(pchar('a'),
-            andThen(pchar('b'),
-                andThen(pchar('c'), returnP('')).fmap(pairAdder)
+        const pairAdder = ([x, y]) => x + y;
+        const abcP = andThen(
+            pchar('a'),
+            andThen(
+                pchar('b'),
+                andThen(
+                    pchar('c'),
+                    returnP('')
+                ).fmap(pairAdder)
             ).fmap(pairAdder)
         ).fmap(pairAdder);
         const parsing = abcP.run('abcd');
