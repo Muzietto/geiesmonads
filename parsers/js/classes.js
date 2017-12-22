@@ -1,17 +1,8 @@
+import {Maybe} from 'maybe';
+
 import {
     isPair,
 } from 'util';
-
-import {
-    fmap,
-    returnP,
-    applyP,
-    lift2, // fabc -> pa -> pb -> (returnP fabc) <*> pa <*> pb
-    andThen,
-    orElse,
-    discardFirst,
-    discardSecond,
-} from 'parsers';
 
 const toString = Array.prototype.toString;
 
@@ -30,9 +21,36 @@ function _pair(a, b) {
 
 _pair.prototype.isPair = true;
 _pair.prototype.type = 'pair';
-_pair.prototype.toString = function() {
+_pair.prototype.toString = function () {
     return '[' + this[0] + ',' + this[1] + ']';
+};
+
+export function Position(rows = [], row = 0, col = 0) {
+    return new _position(rows, row, col);
 }
+
+function _position(rows, row, col) {
+    this.rows = rows;
+    this.row = row;
+    this.col = col;
+}
+
+_position.prototype.isPosition = true;
+_position.prototype.char = function () {
+    let result = Maybe.Nothing();
+    try {
+        result = Maybe.Just(this.rows[this.row][this.col]);
+    } catch (err) {}
+    return result;
+};
+_position.prototype.incrPos = function () {
+    const needRowIncrement = (this.col === this.rows[this.row].length - 1);
+    return Position(
+        this.rows,
+        (needRowIncrement ? this.row + 1 : this.row),
+        (needRowIncrement ? 0 : this.col + 1)
+    );
+};
 
 export function pair(x, y) {
     let result = [x, y];

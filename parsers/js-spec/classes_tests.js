@@ -13,9 +13,38 @@ import {
     some,
     none,
     Pair,
+    Position,
 } from 'classes';
 
 describe('among helper classes', () => {
+
+    describe('Position\'s', () => {
+        const rows = [
+            [1, 2, 3],
+            ['a', 'b', 'c', 'd'],
+            ['A', 'B', 'C'],
+        ];
+        it('include tables of chars and allow to retrieve char options', () => {
+            const pos00 = Position(rows, 0, 0);
+            expect(pos00.char().isJust).to.be.true;
+            expect(pos00.char().value).to.be.eql(1);
+            const pos11 = Position(rows, 1, 1);
+            expect(pos11.char().isJust).to.be.true;
+            expect(pos11.char().value).to.be.eql('b');
+        });
+        it('allow to increment the position and retrieve further chars', () => {
+            const pos01 = Position(rows, 0, 0).incrPos();
+            expect(pos01.char().value).to.be.eql(2);
+            const pos20 = Position(rows, 1, 3).incrPos();
+            expect(pos20.char().value).to.be.eql('A');
+        });
+        it('return Nothing when position is beyond the contained rows content', () => {
+            const pos1010 = Position(rows, 10, 10);
+            expect(pos1010.char().isNothing).to.be.true;
+            const pos23 = Position(rows, 2, 2).incrPos();
+            expect(pos23.char().isNothing).to.be.true;
+        });
+    });
 
     describe('somes', () => {
         it('include a value and allow to retrieve it', () => {
