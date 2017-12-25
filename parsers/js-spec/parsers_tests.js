@@ -166,72 +166,72 @@ describe('a parser for one or more occurrences', () => {
 describe('a parser for zero or more occurrences', () => {
     it('can parse a char zero times', () => {
         const zeroOrMoreParser = many(pchar('m'));
-        let parsing = zeroOrMoreParser.run('arco');
+        let parsing = zeroOrMoreParser.run(text('arco'));
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('Validation.Success([[],arco])');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[],row=0;col=0;rest=arco])');
     });
     it('can parse a char many times', () => {
         const zeroOrMoreParser = many(pchar('m'));
-        let parsing = zeroOrMoreParser.run('mmmarco');
+        let parsing = zeroOrMoreParser.run(text('mmmarco'));
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('Validation.Success([[m,m,m],arco])');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[m,m,m],row=0;col=3;rest=arco])');
     });
     it('can parse a char sequence zero times', () => {
         const zeroOrMoreParser = many(pstring('marco'));
-        let parsing = zeroOrMoreParser.run('xmarcomarcociao');
+        let parsing = zeroOrMoreParser.run(text('xmarcomarcociao'));
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('Validation.Success([[],xmarcomarcociao])');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[],row=0;col=0;rest=xmarcomarcociao])');
     });
     it('can parse a char sequence many times', () => {
         const zeroOrMoreParser = many(pstring('marco'));
         let parsing = zeroOrMoreParser.run('marcomarcociao');
         expect(parsing.isSuccess).to.be.true;
         expect(parsing.toString())
-            .to.be.eql('Validation.Success([[[m,a,r,c,o],[m,a,r,c,o]],ciao])');
+            .to.be.eql('Validation.Success([[[m,a,r,c,o],[m,a,r,c,o]],row=0;col=10;rest=ciao])');
     });
     it('can parse whitespaces!!', () => {
         const whitesParser = many(anyOf(whites));
         const twoWords = sequenceP([pstring('ciao'), whitesParser, pstring('mamma')]);
         let parsing = twoWords.run('ciaomammaX');
         expect(parsing.toString())
-            .to.be.eql('Validation.Success([[[c,i,a,o],[],[m,a,m,m,a]],X])');
+            .to.be.eql('Validation.Success([[[c,i,a,o],[],[m,a,m,m,a]],row=0;col=9;rest=X])');
         parsing = twoWords.run('ciao mammaX');
         expect(parsing.toString())
-            .to.be.eql('Validation.Success([[[c,i,a,o],[ ],[m,a,m,m,a]],X])');
+            .to.be.eql('Validation.Success([[[c,i,a,o],[ ],[m,a,m,m,a]],row=0;col=10;rest=X])');
         parsing = twoWords.run('ciao   mammaX');
         expect(parsing.toString())
-            .to.be.eql('Validation.Success([[[c,i,a,o],[ , , ],[m,a,m,m,a]],X])');
+            .to.be.eql('Validation.Success([[[c,i,a,o],[ , , ],[m,a,m,m,a]],row=0;col=12;rest=X])');
         parsing = twoWords.run('ciao \t mammaX');
         expect(parsing.toString())
-            .to.be.eql('Validation.Success([[[c,i,a,o],[ ,\t, ],[m,a,m,m,a]],X])');
+            .to.be.eql('Validation.Success([[[c,i,a,o],[ ,\t, ],[m,a,m,m,a]],row=0;col=12;rest=X])');
     });
 });
 
 describe('a parsing function for zero or more occurrences', () => {
     it('can parse a char zero times', () => {
         const zeroOrMoreParsingFunction = zeroOrMore(pchar('m'));
-        let parsing = zeroOrMoreParsingFunction('arco');
+        let parsing = zeroOrMoreParsingFunction(text('arco'));
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('Validation.Success([[],arco])');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[],row=0;col=0;rest=arco])');
     });
     it('can parse a char many times', () => {
         const zeroOrMoreParsingFunction = zeroOrMore(pchar('m'));
-        let parsing = zeroOrMoreParsingFunction('mmmarco');
+        let parsing = zeroOrMoreParsingFunction(text('mmmarco'));
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('Validation.Success([[m,m,m],arco])');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[m,m,m],row=0;col=3;rest=arco])');
     });
     it('can parse a char sequence zero times', () => {
         const zeroOrMoreParsingFunction = zeroOrMore(pstring('marco'));
-        let parsing = zeroOrMoreParsingFunction('xmarcomarcociao');
+        let parsing = zeroOrMoreParsingFunction(text('xmarcomarcociao'));
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('Validation.Success([[],xmarcomarcociao])');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[],row=0;col=0;rest=xmarcomarcociao])');
     });
     it('can parse a char sequence many times', () => {
         const zeroOrMoreParsingFunction = zeroOrMore(pstring('marco'));
-        let parsing = zeroOrMoreParsingFunction('marcomarcociao');
+        let parsing = zeroOrMoreParsingFunction(text('marcomarcociao'));
         expect(parsing.isSuccess).to.be.true;
         expect(parsing.toString())
-            .to.be.eql('Validation.Success([[[m,a,r,c,o],[m,a,r,c,o]],ciao])');
+            .to.be.eql('Validation.Success([[[m,a,r,c,o],[m,a,r,c,o]],row=0;col=10;rest=ciao])');
     });
 });
 
@@ -241,7 +241,7 @@ describe('a parser for a specific word', () => {
         const marcoParsing = marcoParser.run('marcociao');
         expect(marcoParsing.isSuccess).to.be.true;
         expect(marcoParsing.toString())
-            .to.be.eql('Validation.Success([[m,a,r,c,o],ciao])');
+            .to.be.eql('Validation.Success([[m,a,r,c,o],row=0;col=5;rest=ciao])');
     });
 });
 
@@ -249,7 +249,7 @@ describe('sequences of parsers based on lift2(cons) (aka sequenceP)', () => {
     it('stores matched chars inside an array', () => {
         const abcParser = sequenceP([pchar('a'), pchar('b'), pchar('c'),]);
         expect(abcParser.run('abc').toString())
-            .to.be.eql('Validation.Success([[a,b,c],])');
+            .to.be.eql('Validation.Success([[a,b,c],row=1;col=0;rest=])');
     });
 });
 
@@ -257,7 +257,7 @@ describe('sequences of parsers based on andThen && fmap (aka sequenceP2)', () =>
     it('store matched chars inside a plain string', () => {
         const abcParser = sequenceP2([pchar('a'), pchar('b'), pchar('c'),]);
         expect(abcParser.run('abc').toString())
-            .to.be.eql('Validation.Success([abc,])');
+            .to.be.eql('Validation.Success([abc,row=1;col=0;rest=])');
     });
 });
 
@@ -265,12 +265,12 @@ describe('lift2 for parsers', () => {
     it('operates on the results of two string parsings', () => {
         const addStrings = x => y => x + '+' + y;
         const AplusB = lift2(addStrings)(pchar('a'))(pchar('b'));
-        expect(AplusB.run('abc').toString()).to.be.eql('Validation.Success([a+b,c])');
+        expect(AplusB.run('abc').toString()).to.be.eql('Validation.Success([a+b,row=0;col=2;rest=c])');
     });
     it('adds the results of two digit parsings', () => {
         const addDigits = x => y => x + y;
         const addParser = lift2(addDigits)(pdigit(1))(pdigit(2));
-        expect(addParser.run('1234').toString()).to.be.eql('Validation.Success([3,34])');
+        expect(addParser.run('1234').toString()).to.be.eql('Validation.Success([3,row=0;col=2;rest=34])');
         expect(addParser.run('144').isFailure).to.be.true;
     });
 });
