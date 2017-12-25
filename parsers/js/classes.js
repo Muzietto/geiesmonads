@@ -30,7 +30,7 @@ function _pair(a, b) {
 _pair.prototype.isPair = true;
 _pair.prototype.type = 'pair';
 _pair.prototype.toString = function () {
-    return '[' + this[0] + ',' + this[1] + ']';
+    return '[' + this[0].toString() + ',' + this[1].toString() + ']';
 };
 
 function Triple(a, b, c) {
@@ -52,7 +52,7 @@ function _triple(a, b, c) {
 _triple.prototype.isTriple = true;
 _triple.prototype.type = 'triple';
 _triple.prototype.toString = function () {
-    return '[' + this[0] + ',' + this[1] + ',' + this[2] + ']';
+    return '[' + this[0].toString() + ',' + this[1].toString() + ',' + this[2].toString() + ']';
 };
 
 Tuple.Pair = function (a, b) {
@@ -110,6 +110,11 @@ _position.prototype.rest = function () {
         if (next.isNothing) return [];
         return [next.value].concat(self.incrPos().rest());
     }
+};
+_position.prototype.toString = function () {
+    return 'row=' + this.row
+        + ';col=' + this.col
+        + ';rest=' + this.rest();
 };
 
 ////////////////////////////////////////////////////////////////

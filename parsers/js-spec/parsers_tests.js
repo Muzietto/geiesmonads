@@ -49,25 +49,25 @@ describe('parsing while discarding input', () => {
             .discardFirst(many(anyOf(lowercases)))
             .discardSecond(pchar(')'));
         expect(insideParens.run('(marco)').toString())
-            .to.be.eql('Validation.Success([[m,a,r,c,o],])');
+            .to.be.eql('Validation.Success([[m,a,r,c,o],row=1;col=0;rest=])');
         expect(insideParens.run('()').toString())
-            .to.be.eql('Validation.Success([[],])');
+            .to.be.eql('Validation.Success([[],row=1;col=0;rest=])');
     });
     it('...even using a tailor-made method', () => {
         const insideParens = betweenParens(pstring('marco'));
         expect(insideParens.run('(marco)').toString())
-            .to.be.eql('Validation.Success([[m,a,r,c,o],])');
+            .to.be.eql('Validation.Success([[m,a,r,c,o],row=1;col=0;rest=])');
     });
     it('cherry-picking elements separated by separators', () => {
         const substringsWithCommas = many(many1(anyOf(lowercases)).discardSecond(pchar(',')));
         expect(substringsWithCommas.run('a,b,cd,1').toString())
-            .to.be.eql('Validation.Success([[[a],[b],[c,d]],1])');
+            .to.be.eql('Validation.Success([[[a],[b],[c,d]],row=0;col=7;rest=1])');
     });
     it('...also when inside a lists', () => {
         const substringsWithCommas = many(many1(anyOf(lowercases)).discardSecond(pchar(',')));
         const listElements = between(pchar('['), substringsWithCommas, pchar(']'));
         expect(listElements.run('[a,b,cd,marco,]1').toString())
-            .to.be.eql('Validation.Success([[[a],[b],[c,d],[m,a,r,c,o]],1])');
+            .to.be.eql('Validation.Success([[[a],[b],[c,d],[m,a,r,c,o]],row=0;col=15;rest=1])');
     });
 });
 
@@ -75,14 +75,14 @@ describe('a couple of parsers', () => {
     it('can decide to discard the matches of the first one', () => {
         const discardIntegerSign = pchar('-').discardFirst(pdigit(8));
         let parsing = discardIntegerSign.run('-8x');
-        expect(parsing.toString()).to.be.eql('Validation.Success([8,x])');
+        expect(parsing.toString()).to.be.eql('Validation.Success([8,row=0;col=2;rest=x])');
     });
     it('can decide to discard the matches of the second one', () => {
         const discardSuffix = pstring('marco').discardSecond(many1(anyOf(whites)));
         let parsing = discardSuffix.run('marco faustinelli');
-        expect(parsing.toString()).to.be.eql('Validation.Success([[m,a,r,c,o],faustinelli])');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[m,a,r,c,o],row=0;col=6;rest=faustinelli])');
         parsing = discardSuffix.run('marco                                faustinelli');
-        expect(parsing.toString()).to.be.eql('Validation.Success([[m,a,r,c,o],faustinelli])');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[m,a,r,c,o],row=0;col=37;rest=faustinelli])');
     });
 });
 
@@ -90,9 +90,9 @@ describe('a parser for optional characters', () => {
     it('can capture or not capture a dot', () => {
         const optDotThenA = opt(pchar('.')).andThen(pchar('a'));
         expect(optDotThenA.run('.abc').toString())
-            .to.be.eql('Validation.Success([[Maybe.Just(.),a],bc])');
+            .to.be.eql('Validation.Success([[Maybe.Just(.),a],row=0;col=2;rest=bc])');
         expect(optDotThenA.run('abc').toString())
-            .to.be.eql('Validation.Success([[Maybe.Nothing,a],bc])');
+            .to.be.eql('Validation.Success([[Maybe.Nothing,a],row=0;col=1;rest=bc])');
     });
     it('can parse SIGNED integers!!!', () => {
         const pint = many1(anyOf(digits))
@@ -106,9 +106,9 @@ describe('a parser for optional characters', () => {
     it('can capture or not capture a whole substring', () => {
         const optSubstring = opt(pstring('marco')).andThen(pstring('faustinelli'));
         expect(optSubstring.run('marcofaustinellix').toString())
-            .to.be.eql('Validation.Success([[Maybe.Just([m,a,r,c,o]),[f,a,u,s,t,i,n,e,l,l,i]],x])');
+            .to.be.eql('Validation.Success([[Maybe.Just([m,a,r,c,o]),[f,a,u,s,t,i,n,e,l,l,i]],row=0;col=16;rest=x])');
         expect(optSubstring.run('faustinellix').toString())
-            .to.be.eql('Validation.Success([[Maybe.Nothing,[f,a,u,s,t,i,n,e,l,l,i]],x])');
+            .to.be.eql('Validation.Success([[Maybe.Nothing,[f,a,u,s,t,i,n,e,l,l,i]],row=0;col=11;rest=x])');
     });
 });
 
@@ -124,7 +124,7 @@ describe('a parser for one or more occurrences', () => {
         const oneOrMoreParser = many1(pchar('m'));
         let parsing = oneOrMoreParser.run('mmmarco');
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('Validation.Success([[m,m,m],arco])');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[m,m,m],row=0;col=3;rest=arco])');
     });
     it('cannot parse a char sequence zero times', () => {
         const oneOrMoreParser = many1(pstring('marco'));
@@ -138,16 +138,16 @@ describe('a parser for one or more occurrences', () => {
         let parsing = oneOrMoreParser.run('marcomarcociao');
         expect(parsing.isSuccess).to.be.true;
         expect(parsing.toString())
-            .to.be.eql('Validation.Success([[[m,a,r,c,o],[m,a,r,c,o]],ciao])');
+            .to.be.eql('Validation.Success([[[m,a,r,c,o],[m,a,r,c,o]],row=0;col=10;rest=ciao])');
     });
     it('can parse an integer, no matter how large...', () => {
         const pint = many1(anyOf(digits));
         let parsing = pint.run('12345A');
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('Validation.Success([[1,2,3,4,5],A])');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[1,2,3,4,5],row=0;col=5;rest=A])');
         parsing = pint.run('1B');
         expect(parsing.isSuccess).to.be.true;
-        expect(parsing.toString()).to.be.eql('Validation.Success([[1],B])');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[1],row=0;col=1;rest=B])');
         parsing = pint.run('A12345');
         expect(parsing.isFailure).to.be.true;
         expect(parsing.toString())
@@ -159,7 +159,7 @@ describe('a parser for one or more occurrences', () => {
         let parsing = pint.run('12345A');
         expect(parsing.isSuccess).to.be.true;
         expect(parsing.value[0]).to.be.eql(12345);
-        expect(parsing.value[1]).to.be.eql('A');
+        expect(parsing.value[1].toString()).to.be.eql('row=0;col=5;rest=A');
     });
 });
 
@@ -522,7 +522,7 @@ describe('a named character parser', () => {
     });
 });
 
-describe.only('a very simple parser for chars or for digits', () => {
+describe('a very simple parser for chars or for digits', () => {
     const parserA = charParser('a');
     const parser1 = digitParser(1);
 

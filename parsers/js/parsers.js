@@ -2,11 +2,13 @@
 
 import {
     Tuple,
+    Position,
 } from 'classes';
 import {Maybe} from 'maybe'; // Just or Nothing
 import {Validation} from 'validation'; // Success or Failure
 
 const charParser = char => pos => {
+    if (typeof pos === 'string') pos = Position.fromText(pos);
     const optChar = pos.char();
     if (optChar.isNothing) return Validation.Failure(Tuple.Triple('charParser', 'no more input', pos));
     if (optChar.value === char) return Validation.Success(Tuple.Pair(char, pos.incrPos()));
@@ -14,6 +16,7 @@ const charParser = char => pos => {
 };
 
 const digitParser = digit => pos => {
+    if (typeof pos === 'string') pos = Position.fromText(pos);
     const optChar = pos.char();
     if (optChar.isNothing) return Validation.Failure(Tuple.Triple('digitParser', 'no more input', pos));
     if (parseInt(optChar.value, 10) === digit) return Validation.Success(Tuple.Pair(digit, pos.incrPos()));
