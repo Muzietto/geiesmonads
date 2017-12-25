@@ -35,11 +35,13 @@ import {
 } from 'util';
 import {Maybe} from 'maybe';
 import {Validation} from 'validation';
+import {Position} from 'classes';
 
 const lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',];
 const uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
 const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const whites = [' ', '\t', '\n', '\r'];
+const text = Position.fromText;
 
 describe('parsing while discarding input', () => {
     it('allows to exclude parentheses', () => {
@@ -274,9 +276,13 @@ describe('lift2 for parsers', () => {
 });
 
 describe('parse 3 digits', () => {
-    const parseDigit = anyOf(digits);
-    let threeDigits = andThen(parseDigit, andThen(parseDigit, parseDigit));
-    const parsing = threeDigits.run('123');
+    let parseDigit, threeDigits, parsing;
+
+    before(() => {
+        parseDigit = anyOf(digits);
+        threeDigits = andThen(parseDigit, andThen(parseDigit, parseDigit));
+        parsing = threeDigits.run('123');
+    });
     it('parses any of three digits', () => {
         expect(parsing.isSuccess).to.be.true;
         expect(parsing.value[0].toString()).to.be.eql('[1,[2,3]]');
@@ -516,49 +522,53 @@ describe('a named character parser', () => {
     });
 });
 
-describe('a very simple parser for chars or for digits', () => {
+describe.only('a very simple parser for chars or for digits', () => {
     const parserA = charParser('a');
     const parser1 = digitParser(1);
 
     it('can parse a single char', () => {
-        const parsingA = parserA('abc');
+        const parsingA = parserA(text('abc'));
         expect(parsingA.value[0]).to.be.eql('a');
-        expect(parsingA.value[1]).to.be.eql('bc');
+        expect(parsingA.value[1].rest()).to.be.eql('bc');
         expect(parsingA.isSuccess).to.be.true;
     });
 
     it('can also NOT parse a single char', () => {
-        const parsingB = parserA('bcd');
+        const parsingB = parserA(text('bcd'));
         expect(parsingB.value[0]).to.be.eql('charParser');
         expect(parsingB.value[1]).to.be.eql('wanted a; got b');
+        expect(parsingB.value[2].rest()).to.be.eql('bcd');
         expect(parsingB.isFailure).to.be.true;
     });
 
     it('fails at the end of the stream', () => {
-        const parsingA = parserA('');
+        const parsingA = parserA(text(''));
         expect(parsingA.value[0]).to.be.eql('charParser');
         expect(parsingA.value[1]).to.be.eql('no more input');
+        expect(parsingA.value[2].rest()).to.be.eql('');
         expect(parsingA.isFailure).to.be.true;
     });
 
     it('can parse a single digit', () => {
-        const parsing1 = parser1('123');
+        const parsing1 = parser1(text('123'));
         expect(parsing1.value[0]).to.be.eql(1);
-        expect(parsing1.value[1]).to.be.eql('23');
+        expect(parsing1.value[1].rest()).to.be.eql('23');
         expect(parsing1.isSuccess).to.be.true;
     });
 
     it('can also NOT parse a single digit', () => {
-        const parsing2 = parser1('234');
+        const parsing2 = parser1(text('234'));
         expect(parsing2.value[0]).to.be.eql('digitParser');
         expect(parsing2.value[1]).to.be.eql('wanted 1; got 2');
+        expect(parsing2.value[2].rest()).to.be.eql('234');
         expect(parsing2.isFailure).to.be.true;
     });
 
     it('fails at the end of the stream also when hunting for digits', () => {
-        const parsing3 = parser1('');
+        const parsing3 = parser1(text(''));
         expect(parsing3.value[0]).to.be.eql('digitParser');
         expect(parsing3.value[1]).to.be.eql('no more input');
+        expect(parsing3.value[2].rest()).to.be.eql('');
         expect(parsing3.isFailure).to.be.true;
     });
 });

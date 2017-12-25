@@ -70,7 +70,7 @@ export function Position(rows = [], row = 0, col = 0) {
 }
 
 //Position.prototype = Object.create({});
-Position.fromText = function(text) {
+Position.fromText = function (text) {
     const rows = text.split('\n')
         .map(row => row.split(''));
     return new _position(rows, 0, 0);
@@ -101,6 +101,15 @@ _position.prototype.incrPos = function () {
         (needRowIncrement ? this.row + 1 : this.row),
         (needRowIncrement ? 0 : this.col + 1)
     );
+};
+_position.prototype.rest = function () {
+    const self = this;
+    return rest_helper().join('');
+    function rest_helper() {
+        const next = self.char();
+        if (next.isNothing) return [];
+        return [next.value].concat(self.incrPos().rest());
+    }
 };
 
 ////////////////////////////////////////////////////////////////

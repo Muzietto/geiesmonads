@@ -17,7 +17,7 @@ const digitParser = digit => pos => {
     const optChar = pos.char();
     if (optChar.isNothing) return Validation.Failure(Tuple.Triple('digitParser', 'no more input', pos));
     if (parseInt(optChar.value, 10) === digit) return Validation.Success(Tuple.Pair(digit, pos.incrPos()));
-    return Validation.Failure(Tuple.Triple('digitParser', 'wanted ' + digit + '; got ' + optChar.val(), pos));
+    return Validation.Failure(Tuple.Triple('digitParser', 'wanted ' + digit + '; got ' + optChar.value, pos));
 };
 
 export {charParser, digitParser};

@@ -46,16 +46,20 @@ describe('among helper classes', () => {
             expect(pos23.char().isNothing).to.be.true;
         });
         it('can be initialized from text strings', () => {
-            const pos00 = Position.fromText("Lorem ipsum dolor sit amet");
+            const pos00 = Position.fromText('Lorem ipsum dolor sit amet');
             expect(pos00.char().value).to.be.eql('L');
             expect(pos00.incrPos().incrPos().incrPos().incrPos()
                 .char().value).to.be.eql('m');
         });
         it('can be initialized also from multiline text strings, stripping newlines away', () => {
-            const pos00 = Position.fromText("Lorem \nipsum");
+            const pos00 = Position.fromText('Lorem \nipsum');
             expect(pos00.char().value).to.be.eql('L');
             expect(pos00.incrPos().incrPos().incrPos().incrPos().incrPos().incrPos()
                 .char().value).to.be.eql('i');
+        });
+        it('return strings containing all characters starting from a given position, for the sake of testing', () => {
+            const pos01 = Position.fromText('Lorem').incrPos();
+            expect(pos01.rest()).to.be.eql('orem');
         });
     });
 
