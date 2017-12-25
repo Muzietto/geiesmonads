@@ -27,26 +27,26 @@ export {charParser, digitParser};
 
 export function pchar(char) {
     const label = 'pchar_' + char;
-    let result = function (str) {
-        return charParser(char)(str);
+    let result = function (pos) {
+        return charParser(char)(pos);
     };
     return parser(result, label).setLabel(label);
 }
 
 export function pdigit(digit) {
-    return parser(str => digitParser(digit)(str), 'pdigit_' + digit);
+    return parser(pos => digitParser(digit)(pos), 'pdigit_' + digit);
 }
 
 export function andThenX(p1, p2) {
     const label = p1.label + ' andThen ' + p2.label;
-    return parser(function (str) {
-        let res1 = p1.run(str);
+    return parser(function (pos) {
+        let res1 = p1.run(pos);
         if (res1.isSuccess) {
             let res2 = p2.run(res1.value[1]);
             if (res2.isSuccess) {
                 return Validation.Success(Tuple.Pair(Tuple.Pair(res1.value[0], res2.value[0]), res2.value[1]));
-            } else return Validation.Failure(Tuple.Pair(label, res2.value[1]));
-        } else return Validation.Failure(Tuple.Pair(label, res1.value[1]));
+            } else return Validation.Failure(Tuple.Triple(label, res2.value[1], res2.value[2]));
+        } else return Validation.Failure(Tuple.Triple(label, res1.value[1], res1.value[2]));
     }, label);
 }
 
@@ -61,19 +61,19 @@ export function andThen(p1, p2) {
 
 export function orElse(p1, p2) {
     const label = p1.label + ' orElse ' + p2.label;
-    return parser(str => {
-        const res1 = p1.run(str);
+    return parser(pos => {
+        const res1 = p1.run(pos);
         if (res1.isSuccess) return res1;
-        const res2 = p2.run(str);
+        const res2 = p2.run(pos);
         if (res2.isSuccess) return res2;
-        return Validation.Failure(Tuple.Pair(label, res2.value[1]));
+        return Validation.Failure(Tuple.Triple(label, res2.value[1], res2.value[2]));
     }, label).setLabel(label);
 }
 
-let _fail = parser(str => Validation.Failure(Tuple.Pair(Tuple.Pair('parsing failed', '_fail'), '_fail')));
+let _fail = parser(pos => Validation.Failure(Tuple.Triple('parsing failed', '_fail', pos)));
 
 // return neutral element instead of message
-let _succeed = parser(str => Validation.Success(Tuple.Pair(Tuple.Pair('parsing succeeded', str), '_succeed')));
+let _succeed = parser(pos => Validation.Success(Tuple.Pair(Tuple.Pair('parsing succeeded', pos), '_succeed')));
 
 export function choice(parsers) {
     return parsers.reduceRight((rest, curr) => orElse(curr, rest), _fail)
@@ -90,7 +90,7 @@ export function fmap(fab, parser1) {
     return parser(str => {
         let res = parser1.run(str);
         if (res.isSuccess) return Validation.Success(Tuple.Pair(fab(res.value[0]), res.value[1]));
-        return Validation.Failure(Tuple.Pair(label, res.value[1]));
+        return Validation.Failure(Tuple.Triple(label, res.value[1], res.value[2]));
     }, label);
 }
 
