@@ -12,10 +12,56 @@ import {
     failure,
     some,
     none,
+    Position,
     Tuple,
 } from 'classes';
 
 describe('among helper classes', () => {
+
+    describe('Position\'s', () => {
+        const rows = [
+            [1, 2, 3],
+            ['a', 'b', 'c', 'd'],
+            ['A', 'B', 'C'],
+        ];
+        it('include tables of chars and allow to retrieve char options', () => {
+            const pos00 = Position(rows, 0, 0);
+            expect(pos00.isPosition).to.be.true;
+            expect(pos00.char().isJust).to.be.true;
+            expect(pos00.char().value).to.be.eql(1);
+            const pos11 = Position(rows, 1, 1);
+            expect(pos11.char().isJust).to.be.true;
+            expect(pos11.char().value).to.be.eql('b');
+        });
+        it('allow to increment the position and retrieve further chars', () => {
+            const pos01 = Position(rows, 0, 0).incrPos();
+            expect(pos01.char().value).to.be.eql(2);
+            const pos20 = Position(rows, 1, 3).incrPos();
+            expect(pos20.char().value).to.be.eql('A');
+        });
+        it('return Nothing when position is beyond the contained rows content', () => {
+            const pos1010 = Position(rows, 10, 10);
+            expect(pos1010.char().isNothing).to.be.true;
+            const pos23 = Position(rows, 2, 2).incrPos();
+            expect(pos23.char().isNothing).to.be.true;
+        });
+        it('can be initialized from text strings', () => {
+            const pos00 = Position.fromText('Lorem ipsum dolor sit amet');
+            expect(pos00.char().value).to.be.eql('L');
+            expect(pos00.incrPos().incrPos().incrPos().incrPos()
+                .char().value).to.be.eql('m');
+        });
+        it('can be initialized also from multiline text strings, stripping newlines away', () => {
+            const pos00 = Position.fromText('Lorem \nipsum');
+            expect(pos00.char().value).to.be.eql('L');
+            expect(pos00.incrPos().incrPos().incrPos().incrPos().incrPos().incrPos()
+                .char().value).to.be.eql('i');
+        });
+        it('return strings containing all characters starting from a given position, for the sake of testing', () => {
+            const pos01 = Position.fromText('Lorem').incrPos();
+            expect(pos01.rest()).to.be.eql('orem');
+        });
+    });
 
     describe('somes', () => {
         it('include a value and allow to retrieve it', () => {
@@ -59,6 +105,11 @@ describe('among helper classes', () => {
             expect(apair.isPair).to.be.true;
             expect(apair.toString()).to.be.eql('[true,12]');
         });
+        it('are immutable, and throw if you try to change them', () => {
+            const apair = Tuple.Pair(true, 12);
+            expect(() => {atriple[0] = false;}).to.throw;
+            expect(() => {atriple[1] = 13;}).to.throw;
+        });
         it('are true iterables, and therefore allow positional destructuring', () => {
             const [a, b] = Tuple.Pair(true, 12);
             expect(a).to.be.eql(true);
@@ -75,6 +126,12 @@ describe('among helper classes', () => {
             expect(atriple.type).to.be.eql('triple');
             expect(atriple.isTriple).to.be.true;
             expect(atriple.toString()).to.be.eql('[true,12,a]');
+        });
+        it('are immutable, and throw if you try to change them', () => {
+            const atriple = Tuple.Triple(true, 12, 'a');
+            expect(() => {atriple[0] = false;}).to.throw;
+            expect(() => {atriple[1] = 13;}).to.throw;
+            expect(() => {atriple[2] = 'b';}).to.throw;
         });
         it('are true iterables, and therefore allow positional destructuring', () => {
             const [a, b, c] = Tuple.Triple(true, 12, 'a');
@@ -103,5 +160,4 @@ describe('among helper classes', () => {
             expect(isPair(fail)).to.be.true;
         });
     });
-
 });

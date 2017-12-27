@@ -1,3 +1,5 @@
+import {Maybe} from 'maybe';
+
 import {
     isPair,
 } from 'util';
@@ -22,13 +24,13 @@ function Pair(a, b) {
 Pair.prototype = Object.create(Tuple.prototype);
 
 function _pair(a, b) {
-    this[0] = a;
-    this[1] = b;
+    Object.defineProperty(this, 0, {value: a, writable: false});
+    Object.defineProperty(this, 1, {value: b, writable: false});
 }
 _pair.prototype.isPair = true;
 _pair.prototype.type = 'pair';
 _pair.prototype.toString = function () {
-    return '[' + this[0] + ',' + this[1] + ']';
+    return '[' + this[0].toString() + ',' + this[1].toString() + ']';
 };
 
 function Triple(a, b, c) {
@@ -43,14 +45,14 @@ function Triple(a, b, c) {
 Triple.prototype = Object.create(Tuple.prototype);
 
 function _triple(a, b, c) {
-    this[0] = a;
-    this[1] = b;
-    this[2] = c;
+    Object.defineProperty(this, 0, {value: a, writable: false});
+    Object.defineProperty(this, 1, {value: b, writable: false});
+    Object.defineProperty(this, 2, {value: c, writable: false});
 }
 _triple.prototype.isTriple = true;
 _triple.prototype.type = 'triple';
 _triple.prototype.toString = function () {
-    return '[' + this[0] + ',' + this[1] + ',' + this[2] + ']';
+    return '[' + this[0].toString() + ',' + this[1].toString() + ',' + this[2].toString() + ']';
 };
 
 Tuple.Pair = function (a, b) {
@@ -63,7 +65,59 @@ Tuple.Triple = function (a, b, c) {
 };
 Tuple.prototype.Triple = Tuple.Triple;
 
-/////////////////////////////////////////////////////////
+export function Position(rows = [], row = 0, col = 0) {
+    return new _position(rows, row, col);
+}
+
+//Position.prototype = Object.create({});
+Position.fromText = function (text) {
+    const rows = text.split('\n')
+        .map(row => row.split(''));
+    return new _position(rows, 0, 0);
+};
+
+function _position(rows, row, col) {
+    this.rows = rows;
+    this.row = row;
+    this.col = col;
+}
+
+_position.prototype.isPosition = true;
+_position.prototype.char = function () {
+    let result = Maybe.Nothing();
+    try {
+        const newResultValue = this.rows[this.row][this.col];
+        if (typeof newResultValue !== 'undefined') {
+            result = Maybe.Just(newResultValue);
+        }
+    } catch (err) {
+    }
+    return result;
+};
+_position.prototype.incrPos = function () {
+    const needRowIncrement = (this.col === this.rows[this.row].length - 1);
+    return Position(
+        this.rows,
+        (needRowIncrement ? this.row + 1 : this.row),
+        (needRowIncrement ? 0 : this.col + 1)
+    );
+};
+_position.prototype.rest = function () {
+    const self = this;
+    return rest_helper().join('');
+    function rest_helper() {
+        const next = self.char();
+        if (next.isNothing) return [];
+        return [next.value].concat(self.incrPos().rest());
+    }
+};
+_position.prototype.toString = function () {
+    return 'row=' + this.row
+        + ';col=' + this.col
+        + ';rest=' + this.rest();
+};
+
+////////////////////////////////////////////////////////////////
 // deprecated in favour of Tuple, data.Maybe and data.Validation
 export function pair(x, y) {
     let result = [x, y];
