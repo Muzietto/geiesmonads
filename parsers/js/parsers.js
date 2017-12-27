@@ -230,7 +230,7 @@ function _cons(x) {
 function _setLabel(px, newLabel) {
     return parser(str => {
         let result = px.run(str);
-        if (result.isFailure) return Validation.Failure(Tuple.Pair(newLabel, result.value[1]));
+        if (result.isFailure) return Validation.Failure(Tuple.Triple(newLabel, result.value[1], result.value[2]));
         return result;
     }, newLabel);
 }

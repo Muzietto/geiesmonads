@@ -118,7 +118,7 @@ describe('a parser for one or more occurrences', () => {
         let parsing = oneOrMoreParser.run('arco');
         expect(parsing.isFailure).to.be.true;
         expect(parsing.toString())
-            .to.be.eql('Validation.Failure([many1 pchar_m,wanted m; got a])');
+            .to.be.eql('Validation.Failure([many1 pchar_m,wanted m; got a,row=0;col=0;rest=arco])');
     });
     it('can parse a char many times', () => {
         const oneOrMoreParser = many1(pchar('m'));
@@ -131,7 +131,7 @@ describe('a parser for one or more occurrences', () => {
         let parsing = oneOrMoreParser.run('xmarcomarcociao');
         expect(parsing.isFailure).to.be.true;
         expect(parsing.toString())
-            .to.be.eql('Validation.Failure([many1 pstring marco,wanted m; got x])');
+            .to.be.eql('Validation.Failure([many1 pstring marco,wanted m; got x,row=0;col=0;rest=xmarcomarcociao])');
     });
     it('can parse a char sequence many times', () => {
         const oneOrMoreParser = many1(pstring('marco'));
@@ -151,7 +151,7 @@ describe('a parser for one or more occurrences', () => {
         parsing = pint.run('A12345');
         expect(parsing.isFailure).to.be.true;
         expect(parsing.toString())
-            .to.be.eql('Validation.Failure([many1 anyOf 0123456789,_fail])');
+            .to.be.eql('Validation.Failure([many1 anyOf 0123456789,_fail,A12345])');
     });
     it('can parse an integer into a true integer', () => {
         const pint = many1(anyOf(digits))
@@ -329,7 +329,7 @@ describe('parse ABC', () => {
     });
 });
 
-describe('a parsers for any of a list of chars', () => {
+describe('a parser for any of a list of chars', () => {
 
     it('can parse any lowercase char', () => {
         const lowercasesParser = anyOf(lowercases);
@@ -474,7 +474,7 @@ describe('two parsers bound by orElse', () => {
         expect(parsingAorB.isFailure).to.be.true;
         expect(parsingAorB.value[0]).to.be.eql('pchar_a orElse pchar_b');
         expect(parsingAorB.value[1]).to.be.eql('wanted b; got c');
-        expect(parsingChoice.value[2].rest()).to.be.eql('cde');
+        expect(parsingAorB.value[2].rest()).to.be.eql('cde');
     });
 
     it('will fail if the input is too short', () => {
@@ -492,14 +492,15 @@ describe('two parsers bound by andThen', () => {
         expect(parsingAandB.isSuccess).to.be.true;
         expect(parsingAandB.value[0].toString()).to.be.eql('[a,b]');
         expect(parsingAandB.value[1].rest()).to.be.eql('c');
-        expect(parsingAandB.toString()).to.be.eql('Validation.Success([[a,b],c])');
+        expect(parsingAandB.toString()).to.be.eql('Validation.Success([[a,b],row=0;col=2;rest=c])');
     });
 
     it('can also NOT parse two chars', () => {
         const parsingAandB = parserAandB.run(text('acd'));
         expect(parsingAandB.isFailure).to.be.true;
         expect(parsingAandB.value[0]).to.be.eql('pchar_a andThen pchar_b');
-        expect(parsingAandB.value[1].rest()).to.be.eql('wanted b; got c');
+        expect(parsingAandB.value[1]).to.be.eql('wanted b; got c');
+        expect(parsingAandB.value[2].rest()).to.be.eql('cd');
     });
 
     it('will fail if the input is too short', () => {
