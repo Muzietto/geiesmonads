@@ -24,8 +24,8 @@ function Pair(a, b) {
 Pair.prototype = Object.create(Tuple.prototype);
 
 function _pair(a, b) {
-    this[0] = a;
-    this[1] = b;
+    Object.defineProperty(this, 0, {value: a, writable: false});
+    Object.defineProperty(this, 1, {value: b, writable: false});
 }
 _pair.prototype.isPair = true;
 _pair.prototype.type = 'pair';
@@ -45,9 +45,9 @@ function Triple(a, b, c) {
 Triple.prototype = Object.create(Tuple.prototype);
 
 function _triple(a, b, c) {
-    this[0] = a;
-    this[1] = b;
-    this[2] = c;
+    Object.defineProperty(this, 0, {value: a, writable: false});
+    Object.defineProperty(this, 1, {value: b, writable: false});
+    Object.defineProperty(this, 2, {value: c, writable: false});
 }
 _triple.prototype.isTriple = true;
 _triple.prototype.type = 'triple';

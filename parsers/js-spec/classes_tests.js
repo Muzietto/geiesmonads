@@ -105,6 +105,11 @@ describe('among helper classes', () => {
             expect(apair.isPair).to.be.true;
             expect(apair.toString()).to.be.eql('[true,12]');
         });
+        it('are immutable, and throw if you try to change them', () => {
+            const apair = Tuple.Pair(true, 12);
+            expect(() => {atriple[0] = false;}).to.throw;
+            expect(() => {atriple[1] = 13;}).to.throw;
+        });
         it('are true iterables, and therefore allow positional destructuring', () => {
             const [a, b] = Tuple.Pair(true, 12);
             expect(a).to.be.eql(true);
@@ -121,6 +126,12 @@ describe('among helper classes', () => {
             expect(atriple.type).to.be.eql('triple');
             expect(atriple.isTriple).to.be.true;
             expect(atriple.toString()).to.be.eql('[true,12,a]');
+        });
+        it('are immutable, and throw if you try to change them', () => {
+            const atriple = Tuple.Triple(true, 12, 'a');
+            expect(() => {atriple[0] = false;}).to.throw;
+            expect(() => {atriple[1] = 13;}).to.throw;
+            expect(() => {atriple[2] = 'b';}).to.throw;
         });
         it('are true iterables, and therefore allow positional destructuring', () => {
             const [a, b, c] = Tuple.Triple(true, 12, 'a');
