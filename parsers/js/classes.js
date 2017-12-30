@@ -10,6 +10,24 @@ Array.prototype.toString = function () {
     return '[' + toString.apply(this) + ']';
 };
 
+export function JValue() {
+}
+JValue.prototype.isJValue = true;
+
+function JString(str) {
+    return new _jstring(str);
+}
+JString.prototype = Object.create(JValue.prototype);
+
+function _jstring(str) {
+    Object.defineProperty(this, 'value', {value: str, writable: false});
+}
+_jstring.prototype.isJString = true;
+_jstring.prototype.type = 'jstring';
+_jstring.prototype.toString = function () {
+    return 'JString ' + this.value.toString();
+};
+
 export function Tuple() {
 }
 
