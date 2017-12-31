@@ -78,6 +78,22 @@ describe('among helper classes', () => {
             expect(() => JValue.JNull(undefined)).to.throw;
             expect(() => JValue.JNull(NaN)).to.throw;
         });
+        it('with JArray\'s as parsed JSON arrays', () => {
+            const jarray = JValue.JArray(JValue.JString('a'), JValue.JBool(false), JValue.JNull(null));
+            const jarValue = jarray.value;
+            expect(jarValue[0].value).to.be.eql('a');
+            expect(jarValue[1].value).to.be.eql(false);
+            expect(jarValue[2].value).to.be.eql(null);
+            expect(jarray.toString()).to.be.eql('JArray([JString(a),JBool(false),JNull(null),])');
+            expect(jarray.isJValue).to.be.true;
+            expect(jarray.isJArray).to.be.true;
+            expect(() => {
+                jarray.value = 123;
+            }).to.throw;
+            expect(() => JValue.JArray('')).to.throw;
+            expect(() => JValue.JNull(undefined)).to.throw;
+            expect(() => JValue.JNull(NaN)).to.throw;
+        });
 
     });
 

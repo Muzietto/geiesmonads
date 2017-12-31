@@ -79,13 +79,32 @@ function _jnull(nullValue) {
 }
 _jnull.prototype = Object.create(JValue.prototype);
 _jnull.prototype.isJNull = true;
-_jnull.prototype.type = 'jbool';
+_jnull.prototype.type = 'jnull';
 _jnull.prototype.toString = function () {
     return 'JNull(null)';
 };
 
 JValue.JNull = JNull;
 JValue.prototype.JNull = JValue.JNull;
+
+function JArray(...jValues) {
+    return new _jarray(...jValues);
+}
+
+// TODO make it with iterator and everything
+function _jarray(...jValues) {
+    if (jValues.some(jval => (!jval.isJValue))) throw new Error('JArray: invalid content');
+    Object.defineProperty(this, 'value', {value: [...jValues], writable: false});
+}
+_jarray.prototype = Object.create(JValue.prototype);
+_jarray.prototype.isJArray = true;
+_jarray.prototype.type = 'jarray';
+_jarray.prototype.toString = function () {
+    return 'JArray([' + this.value.reduce((acc, curr) => acc + curr + ',', '') + '])';
+};
+
+JValue.JArray = JArray;
+JValue.prototype.JArray = JValue.JArray;
 
 /////////////////////////////
 export function Tuple() {
