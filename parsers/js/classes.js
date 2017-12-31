@@ -106,6 +106,31 @@ _jarray.prototype.toString = function () {
 JValue.JArray = JArray;
 JValue.prototype.JArray = JValue.JArray;
 
+function JObject(...pairs) {
+    return new _jobject(...pairs);
+}
+
+function _jobject(...pairs) {
+    const self = this;
+    if (pairs.some(pair => {
+        return (!pair.isPair
+            || typeof pair[0] !== 'string'
+            || !pair[1].isJValue)
+        })) throw new Error('JObject: invalid content');
+    pairs.forEach(([key, value]) => {
+        Object.defineProperty(self, key, {value: value, writable: false});
+    });
+}
+_jobject.prototype = Object.create(JValue.prototype);
+_jobject.prototype.isJObject = true;
+_jobject.prototype.type = 'jobject';
+_jobject.prototype.toString = function () {
+    return 'JObject({' + OBJ + '})';
+};
+
+JValue.JObject = JObject;
+JValue.prototype.JObject = JValue.JObject;
+
 /////////////////////////////
 export function Tuple() {
 }

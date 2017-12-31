@@ -91,8 +91,34 @@ describe('among helper classes', () => {
                 jarray.value = 123;
             }).to.throw;
             expect(() => JValue.JArray('')).to.throw;
-            expect(() => JValue.JNull(undefined)).to.throw;
-            expect(() => JValue.JNull(NaN)).to.throw;
+            expect(() => JValue.JArray(undefined)).to.throw;
+            expect(() => JValue.JArray(NaN)).to.throw;
+        });
+        it('with JObjects\'s as parsed JSON objects', () => {
+            const jobject = JValue.JObject(
+                Tuple.Pair('string', JValue.JString('a')),
+                Tuple.Pair('boolean', JValue.JBool(false)),
+                Tuple.Pair('null', JValue.JNull(null))
+            );
+            expect(jobject['string'].value).to.be.eql('a');
+            expect(jobject['boolean'].value).to.be.eql(false);
+            expect(jobject['null'].value).to.be.eql(null);
+            //expect(jobject.toString()).to.be.eql('JArray([JString(a),JBool(false),JNull(null),])');
+            expect(jobject.isJValue).to.be.true;
+            expect(jobject.isJObject).to.be.true;
+            expect(() => {
+                jobject.string = 'abc';
+            }).to.throw;
+            expect(() => JValue.JObject(JValue.JObject(
+                Tuple.Pair('string', JValue.JString('a')),
+                Tuple.Pair('boolean', false), // value must be a JValue
+                Tuple.Pair('null', JValue.JNull(null))
+            ))).to.throw;
+            expect(() => JValue.JObject(JValue.JObject(
+                Tuple.Pair('string', JValue.JString('a')),
+                Tuple.Pair(123, JValue.JNull(null)) // key must be a string
+            ))).to.throw;
+            expect(() => JValue.JNull(Tuple.Triple(1,2,3))).to.throw;
         });
 
     });
