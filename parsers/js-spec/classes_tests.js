@@ -14,9 +14,39 @@ import {
     none,
     Position,
     Tuple,
+    JValue,
 } from 'classes';
 
 describe('among helper classes', () => {
+
+    describe('JValue\'s are parsed JSON values', () => {
+        describe('with JString\'s as parsed JSON string values', () => {
+            const jstring = JValue.JString('abc');
+            it('that are retrievable', () => {
+                expect(jstring.value).to.be.eql('abc');
+                expect(jstring.toString()).to.be.eql('JString abc');
+            });
+            it('that are immutable', () => {
+                expect(() => {
+                    jstring.value = 'def';
+                }).to.throw;
+            });
+            it('that gotta be strings', () => {
+                expect(() => JValue.JString(123)).to.throw;
+            });
+        });
+        it('with JNumber\'s as parsed JSON float values', () => {
+            const jnumber = JValue.JNumber(123.45e-23);
+            expect(jnumber.value).to.be.eql(123.45e-23);
+            expect(jnumber.toString()).to.be.eql('JNumber 1.2345e-21');
+            expect(() => {
+                jnumber.value = 123;
+            }).to.throw;
+            expect(() => JValue.JNumber('x')).to.throw;
+            expect(() => JValue.JNumber(NaN)).to.throw;
+        });
+
+    });
 
     describe('Position\'s', () => {
         const rows = [
@@ -107,8 +137,12 @@ describe('among helper classes', () => {
         });
         it('are immutable, and throw if you try to change them', () => {
             const apair = Tuple.Pair(true, 12);
-            expect(() => {atriple[0] = false;}).to.throw;
-            expect(() => {atriple[1] = 13;}).to.throw;
+            expect(() => {
+                atriple[0] = false;
+            }).to.throw;
+            expect(() => {
+                atriple[1] = 13;
+            }).to.throw;
         });
         it('are true iterables, and therefore allow positional destructuring', () => {
             const [a, b] = Tuple.Pair(true, 12);
@@ -129,9 +163,15 @@ describe('among helper classes', () => {
         });
         it('are immutable, and throw if you try to change them', () => {
             const atriple = Tuple.Triple(true, 12, 'a');
-            expect(() => {atriple[0] = false;}).to.throw;
-            expect(() => {atriple[1] = 13;}).to.throw;
-            expect(() => {atriple[2] = 'b';}).to.throw;
+            expect(() => {
+                atriple[0] = false;
+            }).to.throw;
+            expect(() => {
+                atriple[1] = 13;
+            }).to.throw;
+            expect(() => {
+                atriple[2] = 'b';
+            }).to.throw;
         });
         it('are true iterables, and therefore allow positional destructuring', () => {
             const [a, b, c] = Tuple.Triple(true, 12, 'a');

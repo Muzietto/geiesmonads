@@ -20,6 +20,7 @@ function JString(str) {
 JString.prototype = Object.create(JValue.prototype);
 
 function _jstring(str) {
+    if (typeof str !== 'string') throw new Error('JString: invalid value');
     Object.defineProperty(this, 'value', {value: str, writable: false});
 }
 _jstring.prototype.isJString = true;
@@ -31,7 +32,26 @@ _jstring.prototype.toString = function () {
 JValue.JString = JString;
 JValue.prototype.JString = JValue.JString;
 
+function JNumber(float) {
+    return new _jnumber(float);
+}
+JNumber.prototype = Object.create(JValue.prototype);
 
+function _jnumber(float) {
+    if (typeof float !== 'number'
+        || isNaN(float)) throw new Error('JNumber: invalid value');
+    Object.defineProperty(this, 'value', {value: float, writable: false});
+}
+_jnumber.prototype.isJNumber = true;
+_jnumber.prototype.type = 'jnumber';
+_jnumber.prototype.toString = function () {
+    return 'JNumber ' + this.value.toString();
+};
+
+JValue.JNumber = JNumber;
+JValue.prototype.JNumber = JValue.JNumber;
+
+/////////////////////////////
 export function Tuple() {
 }
 
