@@ -28,6 +28,10 @@ _jstring.prototype.toString = function () {
     return 'JString ' + this.value.toString();
 };
 
+JValue.JString = JString;
+JValue.prototype.JString = JValue.JString;
+
+
 export function Tuple() {
 }
 
@@ -73,15 +77,11 @@ _triple.prototype.toString = function () {
     return '[' + this[0].toString() + ',' + this[1].toString() + ',' + this[2].toString() + ']';
 };
 
-Tuple.Pair = function (a, b) {
-    return new Pair(a, b);
-};
-Tuple.prototype.Pair = Tuple.Pair;
+Tuple.Pair = Pair;
+Tuple.prototype.Pair = Pair;
 
-Tuple.Triple = function (a, b, c) {
-    return new Triple(a, b, c);
-};
-Tuple.prototype.Triple = Tuple.Triple;
+Tuple.Triple = Triple;
+Tuple.prototype.Triple = Triple;
 
 export function Position(rows = [], row = 0, col = 0) {
     return new _position(rows, row, col);
