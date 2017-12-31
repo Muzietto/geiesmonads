@@ -24,7 +24,7 @@ describe('among helper classes', () => {
             const jstring = JValue.JString('abc');
             it('that are retrievable', () => {
                 expect(jstring.value).to.be.eql('abc');
-                expect(jstring.toString()).to.be.eql('JString abc');
+                expect(jstring.toString()).to.be.eql('JString(abc)');
             });
             it('that are immutable', () => {
                 expect(() => {
@@ -34,16 +34,49 @@ describe('among helper classes', () => {
             it('that gotta be strings', () => {
                 expect(() => JValue.JString(123)).to.throw;
             });
+            it('that gotta by types with a supertype', () => {
+                const jstring = JValue.JString('123');
+                expect(jstring.isJValue).to.be.true;
+                expect(jstring.isJString).to.be.true;
+            });
         });
         it('with JNumber\'s as parsed JSON float values', () => {
             const jnumber = JValue.JNumber(123.45e-23);
             expect(jnumber.value).to.be.eql(123.45e-23);
-            expect(jnumber.toString()).to.be.eql('JNumber 1.2345e-21');
+            expect(jnumber.toString()).to.be.eql('JNumber(1.2345e-21)');
+            expect(jnumber.isJValue).to.be.true;
+            expect(jnumber.isJNumber).to.be.true;
             expect(() => {
                 jnumber.value = 123;
             }).to.throw;
             expect(() => JValue.JNumber('x')).to.throw;
             expect(() => JValue.JNumber(NaN)).to.throw;
+        });
+        it('with JBool\'s as parsed JSON boolean values', () => {
+            const jbool = JValue.JBool(true);
+            expect(jbool.value).to.be.true;
+            expect(jbool.toString()).to.be.eql('JBool(true)');
+            expect(jbool.isJValue).to.be.true;
+            expect(jbool.isJBool).to.be.true;
+            expect(() => {
+                jbool.value = false;
+            }).to.throw;
+            expect(() => JValue.JBool('x')).to.throw;
+            expect(() => JValue.JBool(123)).to.throw;
+            expect(() => JValue.JBool(NaN)).to.throw;
+        });
+        it('with JNull\'s as parsed JSON null values', () => {
+            const jnull = JValue.JNull(null);
+            expect(jnull.value).to.be.null;
+            expect(jnull.toString()).to.be.eql('JNull(null)');
+            expect(jnull.isJValue).to.be.true;
+            expect(jnull.isJNull).to.be.true;
+            expect(() => {
+                jnull.value = 123;
+            }).to.throw;
+            expect(() => JValue.JNull('')).to.throw;
+            expect(() => JValue.JNull(undefined)).to.throw;
+            expect(() => JValue.JNull(NaN)).to.throw;
         });
 
     });

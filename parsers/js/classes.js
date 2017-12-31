@@ -17,16 +17,16 @@ JValue.prototype.isJValue = true;
 function JString(str) {
     return new _jstring(str);
 }
-JString.prototype = Object.create(JValue.prototype);
 
 function _jstring(str) {
     if (typeof str !== 'string') throw new Error('JString: invalid value');
     Object.defineProperty(this, 'value', {value: str, writable: false});
 }
+_jstring.prototype = Object.create(JValue.prototype);
 _jstring.prototype.isJString = true;
 _jstring.prototype.type = 'jstring';
 _jstring.prototype.toString = function () {
-    return 'JString ' + this.value.toString();
+    return 'JString(' + this.value.toString() + ')';
 };
 
 JValue.JString = JString;
@@ -35,21 +35,57 @@ JValue.prototype.JString = JValue.JString;
 function JNumber(float) {
     return new _jnumber(float);
 }
-JNumber.prototype = Object.create(JValue.prototype);
 
 function _jnumber(float) {
     if (typeof float !== 'number'
         || isNaN(float)) throw new Error('JNumber: invalid value');
     Object.defineProperty(this, 'value', {value: float, writable: false});
 }
+_jnumber.prototype = Object.create(JValue.prototype);
 _jnumber.prototype.isJNumber = true;
 _jnumber.prototype.type = 'jnumber';
 _jnumber.prototype.toString = function () {
-    return 'JNumber ' + this.value.toString();
+    return 'JNumber(' + this.value.toString() + ')';
 };
 
 JValue.JNumber = JNumber;
 JValue.prototype.JNumber = JValue.JNumber;
+
+function JBool(bool) {
+    return new _jbool(bool);
+}
+
+function _jbool(bool) {
+    if (typeof bool !== 'boolean') throw new Error('JBool: invalid value');
+    Object.defineProperty(this, 'value', {value: bool, writable: false});
+}
+_jbool.prototype = Object.create(JValue.prototype);
+_jbool.prototype.isJBool = true;
+_jbool.prototype.type = 'jbool';
+_jbool.prototype.toString = function () {
+    return 'JBool(' + this.value.toString() + ')';
+};
+
+JValue.JBool = JBool;
+JValue.prototype.JBool = JValue.JBool;
+
+function JNull(nullValue) {
+    return new _jnull(nullValue);
+}
+
+function _jnull(nullValue) {
+    if (nullValue !== null) throw new Error('JNull: invalid value');
+    Object.defineProperty(this, 'value', {value: nullValue, writable: false});
+}
+_jnull.prototype = Object.create(JValue.prototype);
+_jnull.prototype.isJNull = true;
+_jnull.prototype.type = 'jbool';
+_jnull.prototype.toString = function () {
+    return 'JNull(null)';
+};
+
+JValue.JNull = JNull;
+JValue.prototype.JNull = JValue.JNull;
 
 /////////////////////////////
 export function Tuple() {
