@@ -3,8 +3,10 @@ import {
     Tuple,
 } from 'classes';
 import {
+    parser,
     charParser,
     digitParser,
+    predicateBasedParser,
     pchar,
     pdigit,
     andThen,
@@ -35,4 +37,4 @@ const JTrueP = pstring('true').fmap(_ => JValue.JBool(true));
 const JFalseP = pstring('false').fmap(_ => JValue.JBool(false));
 export const JBoolP = JTrueP.orElse(JFalseP).setLabel('bool');
 
-
+export const junescapedCharP = parser(predicateBasedParser(char => (char !== '\\' && char !== '"'), 'junescapedCharP'));

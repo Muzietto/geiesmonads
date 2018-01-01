@@ -2,7 +2,13 @@ import {expect} from 'chai';
 import {
     JNullP,
     JBoolP,
+    junescapedCharP,
 } from 'json_parsers';
+import {
+    Position,
+} from 'classes';
+
+const text = Position.fromText;
 
 describe('building a JSON parser', () => {
     describe('a parser for JNull\'s', () => {
@@ -28,6 +34,15 @@ describe('building a JSON parser', () => {
         });
         it('fails to parse anything else', () => {
             expect(JBoolP.run('trux').isFailure).to.be.true;
+        });
+    });
+    describe('a parser for JSON unescaped chars', () => {
+        it('parses an unescaped character and returns a Success', () => {
+            expect(junescapedCharP.run(text('a')).isSuccess).to.be.true;
+            expect(junescapedCharP.run(text('A')).isSuccess).to.be.true;
+            expect(junescapedCharP.run(text('1')).isSuccess).to.be.true;
+            expect(junescapedCharP.run(text('"')).isFailure).to.be.true;
+            expect(junescapedCharP.run(text('\\')).isFailure).to.be.true;
         });
     });
 });

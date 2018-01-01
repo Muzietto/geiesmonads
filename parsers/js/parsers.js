@@ -23,7 +23,15 @@ const digitParser = digit => pos => {
     return Validation.Failure(Tuple.Triple('digitParser', 'wanted ' + digit + '; got ' + optChar.value, pos));
 };
 
-export {charParser, digitParser};
+const predicateBasedParser = (pred, label) => pos => {
+    if (typeof pos === 'string') pos = Position.fromText(pos);
+    const optChar = pos.char();
+    if (optChar.isNothing) return Validation.Failure(Tuple.Triple(label, 'no more input', pos));
+    if (pred(optChar.value)) return Validation.Success(Tuple.Pair(optChar.value, pos.incrPos()));
+    return Validation.Failure(Tuple.Triple(label, 'unexpected char: ' + optChar.value, pos));
+};
+
+export {charParser, digitParser, predicateBasedParser};
 
 export function pchar(char) {
     const label = 'pchar_' + char;
