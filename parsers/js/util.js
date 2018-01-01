@@ -83,9 +83,9 @@ export function isUndefined(expr) {
 }
 
 function isXxx(type) {
-    return function(expr) {
+    return function (expr) {
         return (typeof expr === type);
-    }
+    };
 }
 
 export function last(stringOrArray) {
@@ -119,11 +119,29 @@ export function exceptTheLast(arra) {
 
 export function reversed(arra) {
     return arra.reduceRight((rest, elem, index) => {
-        return rest.concat([elem])
+        return rest.concat([elem]);
     }, []);
 }
 
 export function enumeration(length) {
     if (!isNumber(length)) return [];
-    return Array.from(Array(length).keys())
+    return Array.from(Array(length).keys());
 }
+
+const addOne = x => x + 1;
+
+const timesTwo = x => x * 2;
+
+// make x -> addOne -> addOne -> timesTwo
+// y = (x + 2) * 2
+
+const composable = [timesTwo, addOne, addOne];
+const pipable = [addOne, addOne, timesTwo];
+
+const composed = composable.reduce((acc, curr) => {
+    return x => acc(curr(x));
+}, x => x);
+
+const piped = pipable.reduce((acc, curr) => {
+    return x => curr(acc(x));
+}, x => x);
