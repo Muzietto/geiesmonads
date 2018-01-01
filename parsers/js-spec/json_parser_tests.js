@@ -2,7 +2,8 @@ import {expect} from 'chai';
 import {
     JNullP,
     JBoolP,
-    junescapedCharP,
+    jUnescapedCharP,
+    jEscapedCharP,
 } from 'json_parsers';
 import {
     Position,
@@ -38,11 +39,21 @@ describe('building a JSON parser', () => {
     });
     describe('a parser for JSON unescaped chars', () => {
         it('parses an unescaped character and returns a Success', () => {
-            expect(junescapedCharP.run(text('a')).isSuccess).to.be.true;
-            expect(junescapedCharP.run(text('A')).isSuccess).to.be.true;
-            expect(junescapedCharP.run(text('1')).isSuccess).to.be.true;
-            expect(junescapedCharP.run(text('"')).isFailure).to.be.true;
-            expect(junescapedCharP.run(text('\\')).isFailure).to.be.true;
+            expect(jUnescapedCharP.run(text('a')).isSuccess).to.be.true;
+            expect(jUnescapedCharP.run(text('A')).isSuccess).to.be.true;
+            expect(jUnescapedCharP.run(text('1')).isSuccess).to.be.true;
+            expect(jUnescapedCharP.run(text('"')).isFailure).to.be.true;
+            expect(jUnescapedCharP.run(text('\\')).isFailure).to.be.true;
+        });
+    });
+    describe('a parser for JSON escaped chars', () => {
+        it('parses an escaped character and returns a Success', () => {
+            expect(jEscapedCharP.run(text('\b')).isSuccess).to.be.true;
+            expect(jEscapedCharP.run(text('\f')).isSuccess).to.be.true;
+//            expect(jEscapedCharP.run(text('\n')).isSuccess).to.be.true;
+            expect(jEscapedCharP.run(text('\r')).isSuccess).to.be.true;
+            expect(jEscapedCharP.run(text('\t')).isSuccess).to.be.true;
+            expect(jEscapedCharP.run(text('a')).isFailure).to.be.true;
         });
     });
 });
