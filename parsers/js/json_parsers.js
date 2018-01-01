@@ -48,4 +48,5 @@ const escapedJSONChars = [
     '\r',
     '\t',
 ];
-export const jEscapedCharP = choice(escapedJSONChars.map(pchar));
+export const jEscapedCharP = choice(escapedJSONChars.map(pchar)).setLabel('escaped char');
+
