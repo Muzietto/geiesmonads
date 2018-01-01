@@ -31,3 +31,8 @@ import {
 
 export const JNullP = pstring('null').fmap(_ => JValue.JNull(null)).setLabel('null');
 
+const JTrueP = pstring('true').fmap(_ => JValue.JBool(true));
+const JFalseP = pstring('false').fmap(_ => JValue.JBool(false));
+export const JBoolP = JTrueP.orElse(JFalseP).setLabel('bool');
+
+
