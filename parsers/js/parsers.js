@@ -170,6 +170,12 @@ export function many(xP) {
     }, label).setLabel(label);
 }
 
+export function manyChars(xP) {
+    return many(xP)
+        .fmap(arra => arra.join(''))
+        .setLabel('manyChars ' + xP.label);
+}
+
 export function many1(xP) {
     const label = 'many1 ' + xP.label;
     return parser(str => {
@@ -178,6 +184,12 @@ export function many1(xP) {
         let resN = zeroOrMore(xP)(res1.value[1]);
         return Validation.Success(Tuple.Pair([res1.value[0]].concat(resN.value[0]), resN.value[1]));
     }, label).setLabel(label);
+}
+
+export function manyChars1(xP) {
+    return many1(xP)
+        .fmap(arra => arra.join(''))
+        .setLabel('manyChars1 ' + xP.label);
 }
 
 export function opt(xP) {

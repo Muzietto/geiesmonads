@@ -18,6 +18,8 @@ import {
     zeroOrMore,
     many,
     many1,
+    manyChars,
+    manyChars1,
     opt,
     optBook,
     discardFirst,
@@ -420,11 +422,17 @@ describe('a parser for zero or more occurrences', () => {
         expect(parsing.isSuccess).to.be.true;
         expect(parsing.toString()).to.be.eql('Validation.Success([[],row=0;col=0;rest=arco])');
     });
-    it('can parse a char many times', () => {
+    it('can parse a char many times and return an array', () => {
         const zeroOrMoreParser = many(pchar('m'));
         let parsing = zeroOrMoreParser.run(text('mmmarco'));
         expect(parsing.isSuccess).to.be.true;
         expect(parsing.toString()).to.be.eql('Validation.Success([[m,m,m],row=0;col=3;rest=arco])');
+    });
+    it('can parse a char many times and return a string', () => {
+        const zeroOrMoreParser = manyChars(pchar('m'));
+        let parsing = zeroOrMoreParser.run(text('mmmarco'));
+        expect(parsing.isSuccess).to.be.true;
+        expect(parsing.toString()).to.be.eql('Validation.Success([mmm,row=0;col=3;rest=arco])');
     });
     it('can parse a char sequence zero times', () => {
         const zeroOrMoreParser = many(pstring('marco'));
@@ -465,11 +473,17 @@ describe('a parser for one or more occurrences', () => {
         expect(parsing.toString())
             .to.be.eql('Validation.Failure([many1 pchar_m,wanted m; got a,row=0;col=0;rest=arco])');
     });
-    it('can parse a char many times', () => {
+    it('can parse a char many times and return an array', () => {
         const oneOrMoreParser = many1(pchar('m'));
         let parsing = oneOrMoreParser.run('mmmarco');
         expect(parsing.isSuccess).to.be.true;
         expect(parsing.toString()).to.be.eql('Validation.Success([[m,m,m],row=0;col=3;rest=arco])');
+    });
+    it('can parse a char many times and return a string', () => {
+        const oneOrMoreParser = manyChars1(pchar('m'));
+        let parsing = oneOrMoreParser.run('mmmarco');
+        expect(parsing.isSuccess).to.be.true;
+        expect(parsing.toString()).to.be.eql('Validation.Success([mmm,row=0;col=3;rest=arco])');
     });
     it('cannot parse a char sequence zero times', () => {
         const oneOrMoreParser = many1(pstring('marco'));
