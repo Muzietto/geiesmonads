@@ -92,7 +92,7 @@ function JArray(...jValues) {
 }
 
 // TODO make it with iterator and everything
-function _jarray(...jValues) {
+function _jarray(...jValues) {  // args become a REAL array
     if (jValues.some(jval => (!jval.isJValue))) throw new Error('JArray: invalid content');
     Object.defineProperty(this, 'value', {value: [...jValues], writable: false});
 }

@@ -109,3 +109,25 @@ export const JNumberP = jNumberStringP
     .fmap(parseFloat)
     .fmap(JValue.JNumber)
     .setLabel('JSON number parser');
+
+const arrayValueP = JNullP
+    .orElse(JBoolP)
+    .orElse(JStringP)
+    .orElse(JNumberP);
+
+const trimmedCommaP = opt(manyChars(pchar(' ')))
+    .discardFirst(pchar(','))
+    .discardSecond(opt(manyChars(pchar(' '))));
+
+const emptyArrayP = pstring('[]').fmap(_ => JValue.JArray());
+const fullArrayP = pchar('[')
+    .discardFirst(andThen(
+        arrayValueP,
+        many(trimmedCommaP.discardFirst(arrayValueP))
+    ).fmap(([value, values]) => [value].concat(values)))
+    .discardSecond(pchar(']'))
+    .fmap(([xs]) => JValue.JArray(xs));
+
+export const JArrayP = emptyArrayP
+    .orElse(fullArrayP)
+    .setLabel('JSON array parser');

@@ -8,6 +8,7 @@ import {
     JStringP,
     jNumberStringP,
     JNumberP,
+    JArrayP,
 } from 'json_parsers';
 import {
     Position,
@@ -115,6 +116,22 @@ describe('building a JSON parser', () => {
             expect(JNumberP.run(text('-123e2')).value[0].value).to.be.eql(-123e2);
             expect(JNumberP.run(text('-123e-2')).value[0].value).to.be.eql(-123e-2);
             expect(JNumberP.run(text('-123.234e-2')).value[0].value).to.be.eql(-123.234e-2);
+        });
+    });
+    describe('a parser for arrays discards square brackets', () => {
+        describe('and distills into JValue.JArray\'s', () => {
+            it('nothing if that\'s the case', () => {
+                const jarra = '[]';
+                const run = JArrayP.run(text(jarra));
+                expect(run.isSuccess).to.be.true;
+                expect(run.value[0].isJArray).to.be.true;
+            });
+            it('nulls and bools', () => {
+                const jarra = '[true ,   false , null,      true]';
+                const run = JArrayP.run(text(jarra));
+                expect(run.isSuccess).to.be.true;
+                expect(run.value[0].isJArray).to.be.true;
+            });
         });
     });
 });
