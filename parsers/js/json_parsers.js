@@ -74,3 +74,28 @@ export const jStringP = doublequote
     .fmap(res => JValue.JString(res))
     .setLabel('JSON string parser');
 
+const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+const digitsP = many(anyOf(digits));
+const digits1P = many1(anyOf(digits));
+
+const optionalPlusMinusP = opt(pchar('-').orElse(pchar('+')));
+const optionalMinusP = opt(pchar('-'));
+
+const boxedJust = x => x.isNothing ? [''] : [x.value];
+const unboxedJust = x => x.isNothing ? [''] : x.value;
+const unboxedNothing = x => x.isNothing ? '' : x.value;
+
+const exponentialP = choice([pchar('e'), pchar('E')])
+    .andThen(optionalPlusMinusP)//.fmap(boxedJust)
+    .andThen(digits1P)
+    .fmap(([[ee, optPM], digs]) => [ee, (unboxedNothing(optPM))].concat(digs).join(''));
+
+export const jNumberP = sequenceP([
+    optionalMinusP.fmap(boxedJust),
+    digits1P,
+    opt(pchar('.').andThen(digits1P).fmap(([dot, digs]) => [dot].concat(digs)))
+        .fmap(unboxedJust),
+    opt(exponentialP).fmap(boxedJust)
+]).fmap(res => res.reduce((acc, curr) => acc.concat(curr), []).join(''))
+    .setLabel('JSON number parser');

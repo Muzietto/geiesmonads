@@ -6,6 +6,7 @@ import {
     jEscapedCharP,
     jUnicodeCharP,
     jStringP,
+    jNumberP,
 } from 'json_parsers';
 import {
     Position,
@@ -79,6 +80,18 @@ describe('building a JSON parser', () => {
             expect(run.isSuccess).to.be.true;
             expect(run.value[0].isJString).to.be.true;
             expect(run.value[0].value).to.be.eql('test 16 string');
+        });
+    });
+    describe('a parser for numbers inside JSON files', () => {
+        it('parses simple integers and returns Success\'es', () => {
+            expect(jNumberP.run(text('123')).value[0]).to.be.eql('123');
+            expect(jNumberP.run(text('123.12')).value[0]).to.be.eql('123.12');
+            expect(jNumberP.run(text('-123')).value[0]).to.be.eql('-123');
+            expect(jNumberP.run(text('-123.12')).value[0]).to.be.eql('-123.12');
+            expect(jNumberP.run(text('123e2')).value[0]).to.be.eql('123e2');
+            expect(jNumberP.run(text('-123e2')).value[0]).to.be.eql('-123e2');
+            expect(jNumberP.run(text('-123e-2')).value[0]).to.be.eql('-123e-2');
+            expect(jNumberP.run(text('-123.234e-2')).value[0]).to.be.eql('-123.234e-2');
         });
     });
 });
