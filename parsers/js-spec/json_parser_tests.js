@@ -69,10 +69,16 @@ describe('building a JSON parser', () => {
     });
     describe('a parser for doublequoted JSON strings', () => {
         it('parses a lot of characters and returns a JValue.JString', () => {
-            const run = jStringP.run(text('"test string"x'));
+            const run = jStringP.run(text('\"test string\"')); // works also with unescaped doublequotes
             expect(run.isSuccess).to.be.true;
             expect(run.value[0].isJString).to.be.true;
             expect(run.value[0].value).to.be.eql('test string');
+        });
+        it('handles unicodes very roughly, and no escaped chars yet...', () => {
+            const run = jStringP.run(text('\"test \\u0010 string\"'));
+            expect(run.isSuccess).to.be.true;
+            expect(run.value[0].isJString).to.be.true;
+            expect(run.value[0].value).to.be.eql('test 16 string');
         });
     });
 });

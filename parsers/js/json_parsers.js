@@ -65,11 +65,11 @@ export const jUnicodeCharP = pchar('\\')
     .fmap(([[[a, b], c], d]) => parseInt('' + a + b + c + d, 16))
     .setLabel('unicode char');
 
-const jCharP = jUnescapedCharP.orElse(jEscapedCharP).orElse(jUnicodeCharP);
+const jCharP = jUnescapedCharP/*.orElse(jEscapedCharP)*/.orElse(jUnicodeCharP);
 const doublequote = pchar('"').setLabel('doublequote');
 
 export const jStringP = doublequote
-    .discardFirst(manyChars(jUnescapedCharP))
+    .discardFirst(manyChars(jCharP))
     .discardSecond(doublequote)
     .fmap(res => JValue.JString(res))
     .setLabel('JSON string parser');
