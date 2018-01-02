@@ -84,6 +84,12 @@ describe('building a JSON parser', () => {
     });
     describe('a parser for numbers inside JSON files', () => {
         it('parses simple integers and returns Success\'es', () => {
+            expect(jNumberP.run(text('0')).value[0]).to.be.eql('0');
+            expect(jNumberP.run(text('0.1')).value[0]).to.be.eql('0.1');
+            expect(jNumberP.run(text('-0')).value[0]).to.be.eql('-0');
+            expect(jNumberP.run(text('-0.1')).value[0]).to.be.eql('-0.1');
+            expect(jNumberP.run(text('0.1234e145')).value[0]).to.be.eql('0.1234e145');
+            expect(jNumberP.run(text('-0.1234e-145')).value[0]).to.be.eql('-0.1234e-145');
             expect(jNumberP.run(text('123')).value[0]).to.be.eql('123');
             expect(jNumberP.run(text('123.12')).value[0]).to.be.eql('123.12');
             expect(jNumberP.run(text('-123')).value[0]).to.be.eql('-123');
