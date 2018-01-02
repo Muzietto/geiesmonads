@@ -5,8 +5,9 @@ import {
     jUnescapedCharP,
     jEscapedCharP,
     jUnicodeCharP,
-    jStringP,
-    jNumberP,
+    JStringP,
+    jNumberStringP,
+    JNumberP,
 } from 'json_parsers';
 import {
     Position,
@@ -70,34 +71,50 @@ describe('building a JSON parser', () => {
     });
     describe('a parser for doublequoted JSON strings', () => {
         it('parses a lot of characters and returns a JValue.JString', () => {
-            const run = jStringP.run(text('\"test string\"')); // works also with unescaped doublequotes
+            const run = JStringP.run(text('\"test string\"')); // works also with unescaped doublequotes
             expect(run.isSuccess).to.be.true;
             expect(run.value[0].isJString).to.be.true;
             expect(run.value[0].value).to.be.eql('test string');
         });
         it('handles unicodes very roughly, and no escaped chars yet...', () => {
-            const run = jStringP.run(text('\"test \\u0010 string\"'));
+            const run = JStringP.run(text('\"test \\u0010 string\"'));
             expect(run.isSuccess).to.be.true;
             expect(run.value[0].isJString).to.be.true;
             expect(run.value[0].value).to.be.eql('test 16 string');
         });
     });
     describe('a parser for numbers inside JSON files', () => {
-        it('parses simple integers and returns Success\'es', () => {
-            expect(jNumberP.run(text('0')).value[0]).to.be.eql('0');
-            expect(jNumberP.run(text('0.1')).value[0]).to.be.eql('0.1');
-            expect(jNumberP.run(text('-0')).value[0]).to.be.eql('-0');
-            expect(jNumberP.run(text('-0.1')).value[0]).to.be.eql('-0.1');
-            expect(jNumberP.run(text('0.1234e145')).value[0]).to.be.eql('0.1234e145');
-            expect(jNumberP.run(text('-0.1234e-145')).value[0]).to.be.eql('-0.1234e-145');
-            expect(jNumberP.run(text('123')).value[0]).to.be.eql('123');
-            expect(jNumberP.run(text('123.12')).value[0]).to.be.eql('123.12');
-            expect(jNumberP.run(text('-123')).value[0]).to.be.eql('-123');
-            expect(jNumberP.run(text('-123.12')).value[0]).to.be.eql('-123.12');
-            expect(jNumberP.run(text('123e2')).value[0]).to.be.eql('123e2');
-            expect(jNumberP.run(text('-123e2')).value[0]).to.be.eql('-123e2');
-            expect(jNumberP.run(text('-123e-2')).value[0]).to.be.eql('-123e-2');
-            expect(jNumberP.run(text('-123.234e-2')).value[0]).to.be.eql('-123.234e-2');
+        it('parses strings and returns Success\'es', () => {
+            expect(jNumberStringP.run(text('0')).value[0]).to.be.eql('0');
+            expect(jNumberStringP.run(text('0.1')).value[0]).to.be.eql('0.1');
+            expect(jNumberStringP.run(text('-0')).value[0]).to.be.eql('-0');
+            expect(jNumberStringP.run(text('-0.1')).value[0]).to.be.eql('-0.1');
+            expect(jNumberStringP.run(text('0.1234e145')).value[0]).to.be.eql('0.1234e145');
+            expect(jNumberStringP.run(text('-0.1234e-145')).value[0]).to.be.eql('-0.1234e-145');
+            expect(jNumberStringP.run(text('123')).value[0]).to.be.eql('123');
+            expect(jNumberStringP.run(text('123.12')).value[0]).to.be.eql('123.12');
+            expect(jNumberStringP.run(text('-123')).value[0]).to.be.eql('-123');
+            expect(jNumberStringP.run(text('-123.12')).value[0]).to.be.eql('-123.12');
+            expect(jNumberStringP.run(text('123e2')).value[0]).to.be.eql('123e2');
+            expect(jNumberStringP.run(text('-123e2')).value[0]).to.be.eql('-123e2');
+            expect(jNumberStringP.run(text('-123e-2')).value[0]).to.be.eql('-123e-2');
+            expect(jNumberStringP.run(text('-123.234e-2')).value[0]).to.be.eql('-123.234e-2');
+        });
+        it('parses strings and returns JNumber\'s', () => {
+            expect(JNumberP.run(text('0')).value[0].value).to.be.eql(0);
+            expect(JNumberP.run(text('0.1')).value[0].value).to.be.eql(0.1);
+            expect(JNumberP.run(text('-0')).value[0].value).to.be.eql(-0);
+            expect(JNumberP.run(text('-0.1')).value[0].value).to.be.eql(-0.1);
+            expect(JNumberP.run(text('0.1234e145')).value[0].value).to.be.eql(0.1234e145);
+            expect(JNumberP.run(text('-0.1234e-145')).value[0].value).to.be.eql(-0.1234e-145);
+            expect(JNumberP.run(text('123')).value[0].value).to.be.eql(123);
+            expect(JNumberP.run(text('123.12')).value[0].value).to.be.eql(123.12);
+            expect(JNumberP.run(text('-123')).value[0].value).to.be.eql(-123);
+            expect(JNumberP.run(text('-123.12')).value[0].value).to.be.eql(-123.12);
+            expect(JNumberP.run(text('123e2')).value[0].value).to.be.eql(123e2);
+            expect(JNumberP.run(text('-123e2')).value[0].value).to.be.eql(-123e2);
+            expect(JNumberP.run(text('-123e-2')).value[0].value).to.be.eql(-123e-2);
+            expect(JNumberP.run(text('-123.234e-2')).value[0].value).to.be.eql(-123.234e-2);
         });
     });
 });

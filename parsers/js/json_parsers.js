@@ -68,7 +68,7 @@ export const jUnicodeCharP = pchar('\\')
 const jCharP = jUnescapedCharP/*.orElse(jEscapedCharP)*/.orElse(jUnicodeCharP);
 const doublequote = pchar('"').setLabel('doublequote');
 
-export const jStringP = doublequote
+export const JStringP = doublequote
     .discardFirst(manyChars(jCharP))
     .discardSecond(doublequote)
     .fmap(res => JValue.JString(res))
@@ -95,11 +95,17 @@ const exponentialP = choice([pchar('e'), pchar('E')])
     .andThen(digits1P)
     .fmap(([[ee, optPM], digs]) => [ee, (unboxedNothing(optPM))].concat(digs).join(''));
 
-export const jNumberP = sequenceP([
+// returns Success(string)
+export const jNumberStringP = sequenceP([
     optionalMinusP.fmap(boxedJust),
     digits1P,
     opt(pchar('.').andThen(digits1P).fmap(([dot, digs]) => [dot].concat(digs)))
         .fmap(unboxedJust),
     opt(exponentialP).fmap(boxedJust)
-]).fmap(res => res.reduce((acc, curr) => acc.concat(curr), []).join(''))
+]).fmap(res => res.reduce((acc, curr) => acc.concat(curr), []).join(''));
+
+// returns Success(parseFloat(string))
+export const JNumberP = jNumberStringP
+    .fmap(parseFloat)
+    .fmap(JValue.JNumber)
     .setLabel('JSON number parser');
