@@ -23,6 +23,8 @@ import {
     zeroOrMore,
     many,
     many1,
+    manyChars,
+    manyChars1,
     opt,
     optBook,
     discardFirst,
@@ -54,7 +56,7 @@ const hexDigitsP = choice([
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F',
 ].map(pchar));
 
-export const jUnicodeChar = pchar('\\')
+export const jUnicodeCharP = pchar('\\')
     .discardFirst(pchar('u'))
     .discardFirst(hexDigitsP) //returns a
     .andThen(hexDigitsP) //returns b
@@ -62,3 +64,13 @@ export const jUnicodeChar = pchar('\\')
     .andThen(hexDigitsP) //returns d
     .fmap(([[[a, b], c], d]) => parseInt('' + a + b + c + d, 16))
     .setLabel('unicode char');
+
+const jCharP = jUnescapedCharP.orElse(jEscapedCharP).orElse(jUnicodeCharP);
+const doublequote = pchar('"').setLabel('doublequote');
+
+export const jStringP = doublequote
+    .discardFirst(manyChars(jUnescapedCharP))
+    .discardSecond(doublequote)
+    .fmap(res => JValue.JString(res))
+    .setLabel('JSON string parser');
+

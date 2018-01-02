@@ -4,7 +4,8 @@ import {
     JBoolP,
     jUnescapedCharP,
     jEscapedCharP,
-    jUnicodeChar,
+    jUnicodeCharP,
+    jStringP,
 } from 'json_parsers';
 import {
     Position,
@@ -59,11 +60,19 @@ describe('building a JSON parser', () => {
     });
     describe('a parser for escaped 4-digits unicode chars', () => {
         it('parses an escaped character and returns a Success', () => {
-            const run = jUnicodeChar.run(text('\\u1a2e'));
+            const run = jUnicodeCharP.run(text('\\u1a2e'));
             expect(run.isSuccess).to.be.true;
             expect(run.value[0]).to.be.eql(6702);
-            expect(jUnicodeChar.run(text('\\u0010')).value[0]).to.be.eql(16);
-            expect(jUnicodeChar.run(text('\\u000F')).value[0]).to.be.eql(15);
+            expect(jUnicodeCharP.run(text('\\u0010')).value[0]).to.be.eql(16);
+            expect(jUnicodeCharP.run(text('\\u000F')).value[0]).to.be.eql(15);
+        });
+    });
+    describe('a parser for doublequoted JSON strings', () => {
+        it('parses a lot of characters and returns a JValue.JString', () => {
+            const run = jStringP.run(text('"test string"x'));
+            expect(run.isSuccess).to.be.true;
+            expect(run.value[0].isJString).to.be.true;
+            expect(run.value[0].value).to.be.eql('test string');
         });
     });
 });
