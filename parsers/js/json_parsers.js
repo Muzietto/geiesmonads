@@ -75,7 +75,11 @@ export const jStringP = doublequote
     .setLabel('JSON string parser');
 
 const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+const digits19 = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
+// improvable all over the place by:
+// - using manyChars to process lists into strings right away
+// - discarding e/E's and dots, and composing the final number from NUMERICAL pieces
 const digitsP = many(anyOf(digits));
 const digits1P = many1(anyOf(digits));
 
