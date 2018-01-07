@@ -95,15 +95,15 @@ export function anyOf(chars) {
 
 export function fmap(fab, parser1) {
     const label = parser1.label + ' fmap ' + fab.toString();
-    return parser(str => {
-        let res = parser1.run(str);
+    return parser(pos => {
+        let res = parser1.run(pos);
         if (res.isSuccess) return Validation.Success(Tuple.Pair(fab(res.value[0]), res.value[1]));
         return Validation.Failure(Tuple.Triple(label, res.value[1], res.value[2]));
     }, label);
 }
 
 export function returnP(value) {
-    return parser(str => Validation.Success(Tuple.Pair(value, str)), value);
+    return parser(pos => Validation.Success(Tuple.Pair(value, pos)), value);
 }
 
 // parser(a -> b) -> parser(a) -> parser(b)
@@ -155,9 +155,9 @@ export function pstring(str) {
 }
 
 export function zeroOrMore(xP) { // zeroOrMore :: p a -> [a] -> try [a] = p a -> p [a]
-    return str => {
-        let res1 = xP.run(str);
-        if (res1.isFailure) return Validation.Success(Tuple.Pair([], str));
+    return pos => {
+        let res1 = xP.run(pos);
+        if (res1.isFailure) return Validation.Success(Tuple.Pair([], pos));
         let resN = zeroOrMore(xP)(res1.value[1]);
         return Validation.Success(Tuple.Pair([res1.value[0]].concat(resN.value[0]), resN.value[1]));
     };
@@ -165,8 +165,8 @@ export function zeroOrMore(xP) { // zeroOrMore :: p a -> [a] -> try [a] = p a ->
 
 export function many(xP) {
     const label = 'many ' + xP.label;
-    return parser(str => {
-        return zeroOrMore(xP)(str);
+    return parser(pos => {
+        return zeroOrMore(xP)(pos);
     }, label).setLabel(label);
 }
 
@@ -178,8 +178,8 @@ export function manyChars(xP) {
 
 export function many1(xP) {
     const label = 'many1 ' + xP.label;
-    return parser(str => {
-        let res1 = xP.run(str);
+    return parser(pos => {
+        let res1 = xP.run(pos);
         if (res1.isFailure) return res1;
         let resN = zeroOrMore(xP)(res1.value[1]);
         return Validation.Success(Tuple.Pair([res1.value[0]].concat(resN.value[0]), resN.value[1]));
@@ -194,10 +194,10 @@ export function manyChars1(xP) {
 
 export function opt(xP) {
     const label = 'opt ' + xP.label;
-    return parser(str => {
-        let res = xP.fmap(x => Maybe.Just(x)).run(str);
+    return parser(pos => {
+        let res = xP.fmap(x => Maybe.Just(x)).run(pos);
         if (res.isSuccess) return res;
-        return Validation.Success(Tuple.Pair(Maybe.Nothing(), str));
+        return Validation.Success(Tuple.Pair(Maybe.Nothing(), pos));
     }, label).setLabel(label);
 }
 
@@ -210,15 +210,15 @@ export function optBook(pX) {
 
 export function discardSecond(p1, p2) {
     const label = p1.label + ' discardSecond ' + p2.label;
-    return parser(str => {
-        return andThen(p1, p2).fmap(([x, y]) => x).run(str);
+    return parser(pos => {
+        return andThen(p1, p2).fmap(([x, y]) => x).run(pos);
     }, label).setLabel(label);
 }
 
 export function discardFirst(p1, p2) {
     const label = p1.label + ' discardFirst ' + p2.label;
-    return parser(str => {
-        return andThen(p1, p2).fmap(([x, y]) => y).run(str);
+    return parser(pos => {
+        return andThen(p1, p2).fmap(([x, y]) => y).run(pos);
     }, label).setLabel(label);
 }
 
@@ -243,8 +243,8 @@ export function betweenParens(px) {
 
 export function bindP(famb, px) {
     let label = 'unknown';
-    return parser(str => {
-        const res = px.run(str);
+    return parser(pos => {
+        const res = px.run(pos);
         if (res.isFailure) return res;
         return famb(res.value[0]).run(res.value[1]);
     }, label).setLabel(label);
@@ -257,8 +257,8 @@ function _cons(x) {
 }
 
 function _setLabel(px, newLabel) {
-    return parser(str => {
-        let result = px.run(str);
+    return parser(pos => {
+        let result = px.run(pos);
         if (result.isFailure) return Validation.Failure(Tuple.Triple(newLabel, result.value[1], result.value[2]));
         return result;
     }, newLabel);
@@ -269,8 +269,8 @@ export function parser(fn, label) {
     return {
         type: 'parser',
         label: label,
-        run(str) {
-            return fn(str);
+        run(pos) {
+            return fn(pos);
         },
         apply(px) {
             return applyP(this)(px);
@@ -278,7 +278,7 @@ export function parser(fn, label) {
         },
         fmap(fab) {
             //return fmap(fab, this);
-            //return bindP(str => returnP(fab(str)), this);
+            //return bindP(pos => returnP(fab(pos)), this);
             return this.bind(parsedValue => returnP(fab(parsedValue)));
         },
         andThen(px) {
