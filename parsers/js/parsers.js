@@ -222,6 +222,15 @@ export function discardFirst(p1, p2) {
     }, label).setLabel(label);
 }
 
+export function sepBy1Book(px, sep) {
+    return px.andThen(many(sep.discardFirst(px))).fmap(([r, rlist]) => [r].concat(rlist));
+}
+
+// my version works just fine...
+export function sepBy1(valueP, separatorP) {
+    return many(many1(valueP).discardSecond(opt(separatorP)));
+}
+
 export function between(p1, p2, p3) {
     return p1.discardFirst(p2).discardSecond(p3)
         .setLabel('between ' + p1.label + '/' + p2.label + '/' + p3.label);

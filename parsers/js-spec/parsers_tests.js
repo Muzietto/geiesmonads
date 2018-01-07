@@ -24,6 +24,7 @@ import {
     optBook,
     discardFirst,
     discardSecond,
+    sepBy1,
     between,
     betweenParens,
 } from 'parsers';
@@ -588,5 +589,28 @@ describe('parsing while discarding input', () => {
         const listElements = between(pchar('['), substringsWithCommas, pchar(']'));
         expect(listElements.run('[a,b,cd,marco,]1').toString())
             .to.be.eql('Validation.Success([[[a],[b],[c,d],[m,a,r,c,o]],row=0;col=15;rest=1])');
+    });
+    describe('thanks to the specific sepBy1 operator', () => {
+        const valuesP = anyOf(lowercases);
+        const commaP = pchar(',');
+        it('cherry-picking elements separated by separators', () => {
+            expect(sepBy1(valuesP, commaP).run('a,b,cd,1').toString())
+                .to.be.eql('Validation.Success([[[a],[b],[c,d]],row=0;col=7;rest=1])');
+        });
+        it('...also when inside a lists', () => {
+            const listElements = between(pchar('['), sepBy1(valuesP, commaP), pchar(']'));
+            expect(listElements.run('[a,b,cd,marco,]').toString())
+                .to.be.eql('Validation.Success([[[a],[b],[c,d],[m,a,r,c,o]],row=1;col=0;rest=])');
+        });
+        it('...lists with no elements', () => {
+            const listElements = between(pchar('['), sepBy1(valuesP, commaP), pchar(']'));
+            expect(listElements.run('[]').toString())
+                .to.be.eql('Validation.Success([[],row=1;col=0;rest=])');
+        });
+        it('...lists with just one element', () => {
+            const listElements = between(pchar('['), sepBy1(valuesP, commaP), pchar(']'));
+            expect(listElements.run('[a]').toString())
+                .to.be.eql('Validation.Success([[[a]],row=1;col=0;rest=])');
+        });
     });
 });
