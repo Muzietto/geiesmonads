@@ -3,6 +3,9 @@ import {
     Tuple,
 } from 'classes';
 import {
+    Validation,
+} from 'validation';
+import {
     parser,
     charParser,
     digitParser,
@@ -110,10 +113,7 @@ export const JNumberP = jNumberStringP
     .fmap(JValue.JNumber)
     .setLabel('JSON number parser');
 
-const arrayValueP = JNullP
-    .orElse(JBoolP)
-    .orElse(JStringP)
-    .orElse(JNumberP);
+let [arrayParser, parserRef] = parserForwardedToRef();
 
 const trimmedCommaP = opt(manyChars(pchar(' ')))
     .discardFirst(pchar(','))
@@ -122,8 +122,8 @@ const trimmedCommaP = opt(manyChars(pchar(' ')))
 const emptyArrayP = pstring('[]').fmap(_ => JValue.JArray());
 const fullArrayP = pchar('[')
     .discardFirst(andThen(
-        arrayValueP,
-        many(trimmedCommaP.discardFirst(arrayValueP))
+        arrayParser,
+        many(trimmedCommaP.discardFirst(arrayParser))
     ).fmap(([value, values]) => [value].concat(values)))
     .discardSecond(pchar(']'))
     .fmap(([xs]) => JValue.JArray(xs));
@@ -131,3 +131,22 @@ const fullArrayP = pchar('[')
 export const JArrayP = emptyArrayP
     .orElse(fullArrayP)
     .setLabel('JSON array parser');
+
+parserRef = JNullP
+    .orElse(JBoolP)
+    .orElse(JStringP)
+    .orElse(JNumberP)
+    .orElse(JArrayP);
+
+function parserForwardedToRef() {
+
+    const dummyParser = parser(pos =>
+            Validation.Failure(Tuple.Triple('unfixed forwarded parser', '_fail', pos)),
+        'dummyParser');
+
+    let parserRef = dummyParser;
+
+    const wrapperParser = parser(pos => parserRef.run(pos), 'wrapperParser');
+
+    return Tuple.Pair(wrapperParser, parserRef);
+}
