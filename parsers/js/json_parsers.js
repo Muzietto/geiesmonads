@@ -34,6 +34,7 @@ import {
     discardSecond,
     between,
     betweenParens,
+    sepBy1,
 } from 'parsers';
 
 export const JNullP = pstring('null').fmap(_ => JValue.JNull(null)).setLabel('null');
@@ -113,30 +114,23 @@ export const JNumberP = jNumberStringP
     .fmap(JValue.JNumber)
     .setLabel('JSON number parser');
 
-let [arrayParser, parserRef] = parserForwardedToRef();
+let [jValueP, parserRef] = parserForwardedToRef();
 
-const trimmedCommaP = opt(manyChars(pchar(' ')))
-    .discardFirst(pchar(','))
-    .discardSecond(opt(manyChars(pchar(' '))));
+const leftSquareParensP = pchar('[').discardSecond(many(pchar(' ')));
+const rightSquareParensP = pchar(']').discardSecond(many(pchar(' ')));
+const commaP = pchar(',').discardSecond(many(pchar(' ')));
+const jvalueP = jValueP.discardSecond(many(pchar(' ')));
+const jvaluesP = sepBy1(jvalueP, commaP);
 
-const emptyArrayP = pstring('[]').fmap(_ => JValue.JArray());
-const fullArrayP = pchar('[')
-    .discardFirst(andThen(
-        arrayParser,
-        many(trimmedCommaP.discardFirst(arrayParser))
-    ).fmap(([value, values]) => [value].concat(values)))
-    .discardSecond(pchar(']'))
-    .fmap(([xs]) => JValue.JArray(xs));
-
-export const JArrayP = emptyArrayP
-    .orElse(fullArrayP)
+export const JArrayP = between(leftSquareParensP, jvaluesP, rightSquareParensP)
+    .fmap(JValue.JArray)
     .setLabel('JSON array parser');
 
-parserRef = JNullP
-    .orElse(JBoolP)
-    .orElse(JStringP)
-    .orElse(JNumberP)
-    .orElse(JArrayP);
+// parserRef = JNullP
+//     .orElse(JBoolP)
+//     .orElse(JStringP)
+//     .orElse(JNumberP)
+//     .orElse(JArrayP);
 
 function parserForwardedToRef() {
 
@@ -146,7 +140,9 @@ function parserForwardedToRef() {
 
     let parserRef = dummyParser;
 
-    const wrapperParser = parser(pos => parserRef.run(pos), 'wrapperParser');
+    const wrapperParser = parser(pos => {
+        return parserRef.run(pos);
+        }, 'wrapperParser');
 
     return Tuple.Pair(wrapperParser, parserRef);
 }

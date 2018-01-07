@@ -45,7 +45,7 @@ export function pdigit(digit) {
     return parser(pos => digitParser(digit)(pos), 'pdigit_' + digit);
 }
 
-export function andThenX(p1, p2) {
+export function andThen(p1, p2) {
     const label = p1.label + ' andThen ' + p2.label;
     return parser(function (pos) {
         let res1 = p1.run(pos);
@@ -59,7 +59,7 @@ export function andThenX(p1, p2) {
 }
 
 // using bind
-export function andThen(p1, p2) {
+export function andThenBind(p1, p2) {
     return p1.bind(parsedValue1 => {
         return p2.bind(parsedValue2 => {
             return returnP(Tuple.Pair(parsedValue1, parsedValue2));

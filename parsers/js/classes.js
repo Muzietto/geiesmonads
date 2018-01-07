@@ -93,8 +93,12 @@ function JArray(...jValues) {
 
 // TODO make it with iterator and everything
 function _jarray(...jValues) {  // args become a REAL array
-    if (jValues.some(jval => (!jval.isJValue))) throw new Error('JArray: invalid content');
-    Object.defineProperty(this, 'value', {value: [...jValues], writable: false});
+    if (typeof jValue === 'undefined') { // empty JSON array
+        Object.defineProperty(this, 'value', {value: [], writable: false});
+    } else {
+        if (jValues.some(jval => (!jval.isJValue))) throw new Error('JArray: invalid content');
+        Object.defineProperty(this, 'value', {value: [...jValues], writable: false});
+    }
 }
 _jarray.prototype = Object.create(JValue.prototype);
 _jarray.prototype.isJArray = true;
@@ -113,9 +117,9 @@ function JObject(...pairs) {
 function _jobject(...pairs) {
     const self = this;
     if (pairs.some(pair => {
-        return (!pair.isPair
+            return (!pair.isPair
             || typeof pair[0] !== 'string'
-            || !pair[1].isJValue)
+            || !pair[1].isJValue);
         })) throw new Error('JObject: invalid content');
     pairs.forEach(([key, value]) => {
         Object.defineProperty(self, key, {value: value, writable: false});
