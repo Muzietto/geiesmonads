@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>PC Live Examples</title>
+    <link rel="stylesheet" type="text/css" href="dist/lib/mocha.css">
+
+    <script type="text/javascript">
+        // https://stackoverflow.com/questions/20256760/javascript-console-log-to-html/35449256#35449256
+        (function () {
+            var old = console.log;
+            var logger = undefined;
+            console.log = function () {
+                if (!logger) logger = document.getElementById('mocha');
+                for (var i = 0; i < arguments.length; i++) {
+                    if (typeof arguments[i] == 'object') {
+                        logger.innerHTML += (JSON && JSON.stringify ? JSON.stringify(arguments[i], undefined, 2) : arguments[i]) + '<br />';
+                    } else {
+                        logger.innerHTML += arguments[i] + '<br />';
+                    }
+                }
+            };
+        })();
+    </script>
+
+    <script type="text/javascript" src="dist/requirejs.config.js"></script>
+    <script src="dist/lib/require.js" data-main="main_examples.js"></script>
+</head>
+<body>
+<h1 style="margin-left:20px;">Parser Combinators Live Examples</h1>
+<pre id="mocha"></pre>
+</body>
+</html>

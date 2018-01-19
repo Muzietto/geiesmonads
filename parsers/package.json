@@ -4,8 +4,8 @@
   "description": "parser combinators in ES6",
   "main": "index.js",
   "scripts": {
-    "parsersw": "./node_modules/.bin/babel --plugins=transform-es2015-modules-amd ./js ./js-spec --out-dir ./dist --source-maps inline -w",
-    "parsers": "./node_modules/.bin/babel --plugins=transform-es2015-modules-amd ./js ./js-spec --out-dir ./dist --source-maps inline"
+    "parsersw": "./node_modules/.bin/babel --plugins=transform-es2015-modules-amd ./js ./examples ./js-spec --out-dir ./dist --source-maps inline -w",
+    "parsers": "./node_modules/.bin/babel --plugins=transform-es2015-modules-amd ./js ./examples ./js-spec --out-dir ./dist --source-maps inline"
   },
   "author": "Marco Faustinelli",
   "license": "MIT",
