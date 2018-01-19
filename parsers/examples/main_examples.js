@@ -1,5 +1,10 @@
 // just a loader for babel-polyfill
 
-require(['babel-polyfill', '01_hello_world', '02_chemical_formulas'], function () {
+require([
+    'babel-polyfill',
+    '01_hello_world',
+    '02_chemical_formulas',
+    '03_words_to_numbers',
+], function () {
 });
 
