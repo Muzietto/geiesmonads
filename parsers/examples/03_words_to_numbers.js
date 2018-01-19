@@ -102,11 +102,17 @@ logToScreen('thirteen', unitsP);
 const tens = Object.keys(tens_values).map(value => pstring(value).fmap(_ => tens_values[value]));
 const tensP1 = choice(tens);
 // tens = [tens, skip(maybe(lex("-"))), maybe(units, default: 0)] |> bind(sum)
+const tensP2 = tensP1.discardSecond(opt(pchar('-'))).andThen(opt(unitsP)).fmap(([a, mb]) => (mb.isJust) ? a + mb.value : a);
 // tens = [tens, units] |> one_of
-const tensP = choice([tensP1]);
+const tensP = choice([tensP1, tensP2]);
 
+console.log('Using tensP');
 logToScreen('twenty', tensP);
+logToScreen('twentythree', tensP);
+logToScreen('twenty-three', tensP);
 logToScreen('ninety', tensP);
+logToScreen('ninetyseven', tensP);
+logToScreen('ninety-seven', tensP);
 
 // hundreds = lex("hundred") |> replace_with(100)
 const hundredsP1 = pstring('hundred').fmap(_ => 100);
@@ -114,6 +120,7 @@ const hundredsP1 = pstring('hundred').fmap(_ => 100);
 // hundreds = [hundreds, skip(maybe(lex("and"))), maybe(tens, default: 0)] |> bind(sum)
 const hundredsP = choice([hundredsP1]);
 
+console.log('Using hundredsP');
 logToScreen('hundred', hundredsP);
 
 // scales = one_of(for {word, value} <- scale_values, do: lex(word) |> replace_with(value))
