@@ -10,9 +10,9 @@ File [parsers.js](https://github.com/Muzietto/geiesmonads/blob/master/parsers/js
 
 Test page is [here](http://rawgit.com/Muzietto/geiesmonads/master/parsers/Mocha_Parser_Combinators_Tests_RAWGIT.html).
 
-Live examples page is [here](http://rawgit.com/Muzietto/geiesmonads/master/parsers/Mocha_Parser_Combinators_Tests_RAWGIT.html).
+Live examples page is [here](http://rawgit.com/Muzietto/geiesmonads/master/parsers/Console_Parser_Examples_RAWGIT.html).
 
-A [JSON parser](https://github.com/Muzietto/geiesmonads/blob/master/parsers/js/json_parsers.js) is under construction, and it is tested [here](http://rawgit.com/Muzietto/geiesmonads/master/parsers/Console_Parser_Examples_RAWGIT.html).
+A [JSON parser](https://github.com/Muzietto/geiesmonads/blob/master/parsers/js/json_parsers.js) is under construction, and it is tested [here](http://rawgit.com/Muzietto/geiesmonads/master/parsers/Mocha_JSON_Parser_Tests_RAWGIT.html).
 
 NB - with a big credit due to [Understanding Parser Combinators](https://fsharpforfunandprofit.com/posts/understanding-parser-combinators/).
 
