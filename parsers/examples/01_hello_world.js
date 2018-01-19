@@ -55,7 +55,7 @@ const terminatorP = many1(pchar('!'));
 const greetingsP = wordP.discardSecond(separatorP).andThen(wordP).discardSecond(terminatorP);
 
 console.log('01_hello_world.js');
-console.log('parser is: wordP.discardSecond(separatorP).andThen(wordP).discardSecond(terminatorP);');
+console.log('Using wordP.discardSecond(separatorP).andThen(wordP).discardSecond(terminatorP);');
 
 logToScreen('Hello,World!');
 // # >> {:ok, ["Hello", "World"]}
@@ -67,5 +67,5 @@ logToScreen('Hello    ,    World!!!!!!!!!!');
 // # >> {:ok, ["Hello", "World"]}
 
 function logToScreen(str0) {
-    console.log(str0 + ' --> ' + greetingsP.run(str0).value[0].toString());
+    console.log('"' + str0 + '" --> ' + greetingsP.run(str0).value[0].toString());
 }
