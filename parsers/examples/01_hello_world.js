@@ -43,7 +43,7 @@ import {
 } from 'parsers';
 
 // word = while(letters, at_least: 1)
-const wordP = many1(letterP);
+const wordP = many1(letterP).fmap(arra => arra.join(''));
 
 // separator = lex(",") |> skip
 const separatorP = between(many(whiteP), pchar(','), many(whiteP));
