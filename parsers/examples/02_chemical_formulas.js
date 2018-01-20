@@ -40,6 +40,8 @@ import {
     letterP,
     digitP,
     whiteP,
+    tapP,
+    logP,
 } from 'parsers';
 
 console.log('\n02_chemical_formulas.js');
