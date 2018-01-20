@@ -192,12 +192,15 @@ export function manyChars1(xP) {
         .setLabel('manyChars1 ' + xP.label);
 }
 
-export function opt(xP) {
-    const label = 'opt ' + xP.label;
+export function opt(xP, defaultValue) {
+    const isDefault = (typeof defaultValue !== 'undefined');
+    const label = 'opt ' + xP.label
+        + isDefault ? 'default=' + defaultValue : '';
     return parser(pos => {
-        let res = xP.fmap(x => Maybe.Just(x)).run(pos);
+        let res = xP.fmap(Maybe.Just).run(pos);
         if (res.isSuccess) return res;
-        return Validation.Success(Tuple.Pair(Maybe.Nothing(), pos));
+        let outcome = (isDefault) ? Maybe.Just(defaultValue) : Maybe.Nothing();
+        return Validation.Success(Tuple.Pair(outcome, pos));
     }, label).setLabel(label);
 }
 
