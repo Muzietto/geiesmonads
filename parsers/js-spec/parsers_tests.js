@@ -590,6 +590,13 @@ describe('a logger for parsers', () => {
             .discardFirst(pdigit(8));
         let parsing = logIntermediateResult.run('-8x');
     });
+    it('can log a result that\'s going to be discarded', () => {
+        console.log = msg => {
+            expect(msg).to.be.eql([' ', ' ']);
+        };
+        const discardSuffix = pstring('marco').discardSecond(logP(many1(anyOf(whites))));
+        let parsing = discardSuffix.run('marco  faustinelli');
+    });
     console.log = storedLog;
 });
 
