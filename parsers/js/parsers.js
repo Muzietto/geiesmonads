@@ -253,6 +253,17 @@ export function bindP(famb, px) {
     }, label).setLabel(label);
 }
 
+export function tapP(px, fn) {
+    return px.bind(res => {
+        fn(res);
+        return returnP(res);
+    });
+}
+
+export function logP(px) {
+    return tapP(px, console.log);
+}
+
 function _cons(x) {
     return function (xs) {
         return [x].concat(xs);

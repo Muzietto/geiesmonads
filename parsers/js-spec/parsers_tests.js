@@ -27,6 +27,8 @@ import {
     sepBy1,
     between,
     betweenParens,
+    tapP,
+    logP,
 } from 'parsers';
 import {
     isPair,
@@ -567,6 +569,28 @@ describe('a couple of parsers', () => {
         parsing = discardSuffix.run('marco                                faustinelli');
         expect(parsing.toString()).to.be.eql('Validation.Success([[m,a,r,c,o],row=0;col=37;rest=faustinelli])');
     });
+});
+
+describe('a tapper for parsers', () => {
+    it('can do things with a result that\'s going to be discarded', () => {
+        const tapIntoDiscardIntegerSign = tapP(pchar('-'), res => {
+            expect(res).to.be.eql('-');
+        }).discardFirst(pdigit(8));
+        let parsing = tapIntoDiscardIntegerSign.run('-8x');
+    });
+});
+
+describe('a logger for parsers', () => {
+    let storedLog = console.log;
+    it('can log intermediate parsing results', () => {
+        console.log = msg => {
+            expect(msg).to.be.eql('-');
+        };
+        const logIntermediateResult = logP(pchar('-'))
+            .discardFirst(pdigit(8));
+        let parsing = logIntermediateResult.run('-8x');
+    });
+    console.log = storedLog;
 });
 
 describe('parsing while discarding input', () => {
