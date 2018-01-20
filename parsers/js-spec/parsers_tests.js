@@ -531,6 +531,11 @@ describe('a parser for optional characters', () => {
         expect(optDotThenA.run('abc').toString())
             .to.be.eql('Validation.Success([[Maybe.Nothing,a],row=0;col=1;rest=bc])');
     });
+    it('can capture a dot or provide a default alternative', () => {
+        const optDotWithDefaultThenA = opt(pchar('.'), 'ALTERNATIVE').andThen(pchar('a'));
+        expect(optDotWithDefaultThenA.run('abc').toString())
+            .to.be.eql('Validation.Success([[Maybe.Just(ALTERNATIVE),a],row=0;col=1;rest=bc])');
+    });
     it('can parse SIGNED integers!!!', () => {
         const pint = many1(anyOf(digits))
             .fmap(l => parseInt(l.reduce((acc, curr) => acc + curr, ''), 10));
