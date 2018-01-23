@@ -88,11 +88,6 @@ const scale_values = {
 
 console.log('\n03_words_to_numbers.js');
 
-// mul = fn ns -> Enum.reduce(ns, 1, &Kernel.*/2) end
-const productReducer = arra => arra.reduce((acc, curr) => acc * curr, 1);
-// sum = fn ns -> Enum.reduce(ns, 0, &Kernel.+/2) end
-const sumReducer = arra => arra.reduce((acc, curr) => acc + curr, 0);
-
 // units = one_of(for {word, value} <- unit_values, do: lex(word) |> replace_with(value))
 const units = Object.keys(unit_values).reverse()
     .map(value => pword(value).fmap(_ => unit_values[value]));
@@ -130,7 +125,7 @@ logToScreen('seventeen', tensP);
 const hundredsP1 = pword('hundred').fmap(_ => 100);
 // hundreds = [tens, maybe(hundreds, default: 1)] |> bind(mul)
 const hundredsP2 = opt(tensP, 1)
-    .andThen(opt(hundredsP1, 100)).fmap(([mt, mh]) => mt.value * mh.value)
+    .andThen(hundredsP1).fmap(([mt, h]) => mt.value * h)
     .setLabel('hundredsP2');
 // hundreds = [hundreds, skip(maybe(lex("and"))), maybe(tens, default: 0)] |> bind(sum)
 const hundredsP = hundredsP2
@@ -141,8 +136,9 @@ const hundredsP = hundredsP2
     .setLabel('hundredsP');
 
 console.log('Using hundredsP');
-// logToScreen('hundred', hundredsP);
-//logToScreen('one hundred', hundredsP);
+logToScreen('one', hundredsP);
+logToScreen('hundred', hundredsP);
+logToScreen('one hundred', hundredsP);
 logToScreen('hundredten', hundredsP);
 logToScreen('hundred ten', hundredsP);
 logToScreen('hundred eleven', hundredsP);
@@ -152,6 +148,7 @@ logToScreen('two hundred and ten', hundredsP);
 logToScreen('nine hundred and twentyfour', hundredsP);
 logToScreen('nine hundred and twenty-four', hundredsP);
 logToScreen('nine hundred and twenty four', hundredsP);
+logToScreen('twelve hundred and twenty-two', hundredsP);
 
 // scales = one_of(for {word, value} <- scale_values, do: lex(word) |> replace_with(value))
 const scales = Object.keys(scale_values).map(value => pword(value)
@@ -165,47 +162,79 @@ logToScreen('trillion', scalesP);
 
 // number = [one_of([hundreds, tens]), maybe(scales, default: 1)] |> bind(mul)
 // number = number |> separated_by(maybe(lex("and"))) |> bind(sum)
-//
-//
+
+const numberP1 = choice([hundredsP, tensP])
+    .andThen(opt(scalesP, 1)).fmap(([n, ms]) => {/*debugger;*/
+        return n * ms.value;
+    })
+    .setLabel('numberP1');
+const numberP = numberP1.discardSecond(opt(pword('and')))
+    .andThen(opt(hundredsP, 0)).fmap(([n, mh]) => {/*debugger;*/
+        return n + mh.value;
+    })
+    .setLabel('numberP');
+console.log('Using (choice(hundredsP, tensP).andThen(opt(scalesP, 1)).fmap(([n, ms]) => n * ms.value)).discardSecond(opt(pword(\'and\'))).andThen(opt(hundredsP, 0)).fmap(([n, mh]) => n + mh.value);');
+
+logToScreen('one', numberP);
 // parse("one", number) |> IO.inspect
 // # >> {:ok, 1}
+logToScreen('twenty', numberP);
 // parse("twenty", number) |> IO.inspect
 // # >> {:ok, 20}
+logToScreen('twenty-two', numberP);
 // parse("twenty-two", number) |> IO.inspect
 // # >> {:ok, 22}
+logToScreen('seventy-seven', numberP);
 // parse("seventy-seven", number) |> IO.inspect
 // # >> {:ok, 77}
+logToScreen('one hundred', numberP);
 // parse("one hundred", number) |> IO.inspect
 // # >> {:ok, 100}
+logToScreen('one hundred twenty', numberP);
 // parse("one hundred twenty", number) |> IO.inspect
 // # >> {:ok, 120}
+logToScreen('one hundred and twenty', numberP);
 // parse("one hundred and twenty", number) |> IO.inspect
 // # >> {:ok, 120}
+logToScreen('one hundred and twenty-two', numberP);
 // parse("one hundred and twenty-two", number) |> IO.inspect
 // # >> {:ok, 122}
+logToScreen('one hundred and twenty three', numberP);
 // parse("one hundred and twenty three", number) |> IO.inspect
 // # >> {:ok, 123}
+logToScreen('twelve hundred and twenty-two', numberP);
 // parse("twelve hundred and twenty-two", number) |> IO.inspect
 // # >> {:ok, 1222}
+logToScreen('one thousand', numberP);
 // parse("one thousand", number) |> IO.inspect
 // # >> {:ok, 1000}
+logToScreen('twenty thousand', numberP);
 // parse("twenty thousand", number) |> IO.inspect
 // # >> {:ok, 20000}
+logToScreen('twenty-two thousand', numberP);
 // parse("twenty-two thousand", number) |> IO.inspect
 // # >> {:ok, 22000}
+logToScreen('one hundred thousand', numberP);
 // parse("one hundred thousand", number) |> IO.inspect
 // # >> {:ok, 100000}
+logToScreen('twelve hundred and twenty-two thousand', numberP);
 // parse("twelve hundred and twenty-two thousand", number) |> IO.inspect
 // # >> {:ok, 1222000}
+logToScreen('one hundred and twenty three million', numberP);
 // parse("one hundred and twenty three million", number) |> IO.inspect
 // # >> {:ok, 123000000}
+logToScreen('one hundred and twenty three million and three', numberP);
 // parse("one hundred and twenty three million and three", number) |> IO.inspect
 // # >> {:ok, 123000003}
+logToScreen('seventy-seven thousand eight hundred and nineteen', numberP);
 // parse("seventy-seven thousand eight hundred and nineteen", number) |> IO.inspect
 // # >> {:ok, 77819}
+logToScreen('seven hundred seventy-seven thousand seven hundred and seventy-seven', numberP);
 // parse("seven hundred seventy-seven thousand seven hundred and seventy-seven", number) |> IO.inspect
 // # >> {:ok, 777777}
 
 function logToScreen(str, parser) {
-    console.log('"' + str + '" --> ' + parser.run(str).value[0].toString());
+    const result = parser.run(str);
+    const outcome = (result.isSuccess) ? result.value[0].toString() : 'Failure';
+    console.log('"' + str + '" --> ' + outcome);
 }
