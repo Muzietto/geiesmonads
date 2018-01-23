@@ -57,7 +57,7 @@ const terminatorP = many1(pchar('!'));
 // greetings = sequence_of([word, separator, word, terminator])
 const greetingsP = wordP.discardSecond(separatorP).andThen(wordP).discardSecond(terminatorP);
 
-console.log('01_hello_world.js');
+console.log('\n01_hello_world.js');
 console.log('Using wordP.discardSecond(separatorP).andThen(wordP).discardSecond(terminatorP);');
 
 logToScreen('Hello,World!');
