@@ -29,6 +29,7 @@ import {
     betweenParens,
     tapP,
     logP,
+    pword,
 } from 'parsers';
 import {
     isPair,
@@ -380,13 +381,23 @@ describe('sequences of parsers based on lift2(cons) (aka sequenceP)', () => {
     });
 });
 
-describe('a parser for a specific word', () => {
+describe('a parser for a specific sequence of chars', () => {
     it('is easy to create with sequenceP', () => {
         const marcoParser = pstring('marco');
         const marcoParsing = marcoParser.run('marcociao');
         expect(marcoParsing.isSuccess).to.be.true;
         expect(marcoParsing.toString())
             .to.be.eql('Validation.Success([[m,a,r,c,o],row=0;col=5;rest=ciao])');
+    });
+});
+
+describe.only('a parser for a specific word', () => {
+    it('detects and ignores whitespaces around it', () => {
+        const marcoParser = pword('marco');
+        const marcoParsing = marcoParser.run('  marco ciao');
+        expect(marcoParsing.isSuccess).to.be.true;
+        expect(marcoParsing.toString())
+            .to.be.eql('Validation.Success([[m,a,r,c,o],row=0;col=8;rest=ciao])');
     });
 });
 

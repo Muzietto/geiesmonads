@@ -93,6 +93,12 @@ export function anyOf(chars) {
         .setLabel('anyOf ' + chars.reduce((acc, curr) => acc + curr, ''));
 }
 
+export const lowercaseP = anyOf(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',]);
+export const uppercaseP = anyOf(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',]);
+export const letterP = lowercaseP.orElse(uppercaseP);
+export const digitP = anyOf(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
+export const whiteP = anyOf([' ', '\t', '\n', '\r']);
+
 export function fmap(fab, parser1) {
     const label = parser1.label + ' fmap ' + fab.toString();
     return parser(pos => {
@@ -195,7 +201,7 @@ export function manyChars1(xP) {
 export function opt(xP, defaultValue) {
     const isDefault = (typeof defaultValue !== 'undefined');
     const label = 'opt ' + xP.label
-        + isDefault ? 'default=' + defaultValue : '';
+        + (isDefault ? '(default=' + defaultValue + ')' : '');
     return parser(pos => {
         let res = xP.fmap(Maybe.Just).run(pos);
         if (res.isSuccess) return res;
@@ -261,7 +267,14 @@ export function tapP(px, fn) {
 }
 
 export function logP(px) {
-    return tapP(px, console.log);
+    return tapP(px, res => console.log(px.label + ':' + res));
+}
+
+export function pword(word) {
+    return opt(many(whiteP))
+        .discardFirst(pstring(word))
+        .discardSecond(opt(many(whiteP)))
+        .setLabel('pword ' + word);
 }
 
 function _cons(x) {
@@ -315,9 +328,3 @@ export function parser(fn, label) {
         }
     };
 }
-
-export const lowercaseP = anyOf(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',]);
-export const uppercaseP = anyOf(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',]);
-export const letterP = lowercaseP.orElse(uppercaseP);
-export const digitP = anyOf(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
-export const whiteP = anyOf([' ', '\t', '\n', '\r']);
