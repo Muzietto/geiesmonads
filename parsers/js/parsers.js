@@ -88,9 +88,9 @@ export function choice(parsers) {
         .setLabel('choice ' + parsers.reduce((acc, curr) => acc + '/' + curr.label, ''));
 }
 
-export function anyOf(chars) {
-    return choice(chars.map(pchar))
-        .setLabel('anyOf ' + chars.reduce((acc, curr) => acc + curr, ''));
+export function anyOf(charsArray) {
+    return choice(charsArray.map(pchar))
+        .setLabel('anyOf ' + charsArray.reduce((acc, curr) => acc + curr, ''));
 }
 
 export const lowercaseP = anyOf(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',]);
