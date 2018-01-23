@@ -40,6 +40,9 @@ import {
     letterP,
     digitP,
     whiteP,
+    tapP,
+    logP,
+    pword,
 } from 'parsers';
 
 const unit_values = {
@@ -91,43 +94,72 @@ const productReducer = arra => arra.reduce((acc, curr) => acc * curr, 1);
 const sumReducer = arra => arra.reduce((acc, curr) => acc + curr, 0);
 
 // units = one_of(for {word, value} <- unit_values, do: lex(word) |> replace_with(value))
-const units = Object.keys(unit_values).map(value => pstring(value).fmap(_ => unit_values[value]));
-const unitsP = choice(units);
+const units = Object.keys(unit_values).reverse()
+    .map(value => pword(value).fmap(_ => unit_values[value]));
+const unitsP = choice(units).setLabel('unitsP');
 
-console.log('Using choice(Object.keys(unit_values).map(value => pstring(value).fmap(_ => unit_values[value])));');
+console.log('Using choice(Object.keys(unit_values).map(value => pword(value).fmap(_ => unit_values[value])));');
 logToScreen('one', unitsP);
 logToScreen('thirteen', unitsP);
+logToScreen('eighteen', unitsP);
 
 // tens = one_of(for {word, value} <- tens_values, do: lex(word) |> replace_with(value))
-const tens = Object.keys(tens_values).map(value => pstring(value).fmap(_ => tens_values[value]));
+const tens = Object.keys(tens_values).map(value => pword(value).fmap(_ => tens_values[value]));
 const tensP1 = choice(tens);
 // tens = [tens, skip(maybe(lex("-"))), maybe(units, default: 0)] |> bind(sum)
-const tensP2 = tensP1.discardSecond(opt(pchar('-'))).andThen(opt(unitsP)).fmap(([a, mb]) => (mb.isJust) ? a + mb.value : a);
+const tensP2 = tensP1.discardSecond(opt(pchar('-')))
+    .andThen(opt(unitsP, 0)).fmap(([a, mb]) => {
+        return a + mb.value;
+    }).setLabel('tensP2');
 // tens = [tens, units] |> one_of
-const tensP = choice([tensP1, tensP2]);
+const tensP = choice([tensP2, unitsP]);
 
 console.log('Using tensP');
+logToScreen('ten', tensP);
+logToScreen('eleven', tensP);
 logToScreen('twenty', tensP);
-logToScreen('twentythree', tensP);
+logToScreen('twentyfour', tensP);
+logToScreen('twenty four', tensP);
 logToScreen('twenty-three', tensP);
 logToScreen('ninety', tensP);
 logToScreen('ninetyseven', tensP);
 logToScreen('ninety-seven', tensP);
+logToScreen('seventeen', tensP);
 
 // hundreds = lex("hundred") |> replace_with(100)
-const hundredsP1 = pstring('hundred').fmap(_ => 100);
+const hundredsP1 = pword('hundred').fmap(_ => 100);
 // hundreds = [tens, maybe(hundreds, default: 1)] |> bind(mul)
+const hundredsP2 = opt(tensP, 1)
+    .andThen(opt(hundredsP1, 100)).fmap(([mt, mh]) => mt.value * mh.value)
+    .setLabel('hundredsP2');
 // hundreds = [hundreds, skip(maybe(lex("and"))), maybe(tens, default: 0)] |> bind(sum)
-const hundredsP = choice([hundredsP1]);
+const hundredsP = hundredsP2
+    .discardSecond(opt(pword('and')))
+    .andThen(opt(tensP, 0)).fmap(([h, mt]) => {
+        return h + mt.value;
+    })
+    .setLabel('hundredsP');
 
 console.log('Using hundredsP');
-logToScreen('hundred', hundredsP);
+// logToScreen('hundred', hundredsP);
+//logToScreen('one hundred', hundredsP);
+logToScreen('hundredten', hundredsP);
+logToScreen('hundred ten', hundredsP);
+logToScreen('hundred eleven', hundredsP);
+logToScreen('one hundredeleven', hundredsP);
+logToScreen('one hundred and ten', hundredsP);
+logToScreen('two hundred and ten', hundredsP);
+logToScreen('nine hundred and twentyfour', hundredsP);
+logToScreen('nine hundred and twenty-four', hundredsP);
+logToScreen('nine hundred and twenty four', hundredsP);
 
 // scales = one_of(for {word, value} <- scale_values, do: lex(word) |> replace_with(value))
-const scales = Object.keys(scale_values).map(value => pstring(value).fmap(_ => scale_values[value]));
+const scales = Object.keys(scale_values).map(value => pword(value)
+    .fmap(_ => scale_values[value]).setLabel('scale_value(' + value + ')'));
 const scalesP = choice(scales);
 
-console.log('Using choice(Object.keys(scale_values).map(value => pstring(value).fmap(_ => scale_values[value])));');
+console.log('Using choice(Object.keys(scale_values).map(value => pword(value).fmap(_ => scale_values[value])));');
+logToScreen('thousand', scalesP);
 logToScreen('million', scalesP);
 logToScreen('trillion', scalesP);
 
