@@ -42,6 +42,7 @@ import {
     whiteP,
     tapP,
     logP,
+    pword,
 } from 'parsers';
 
 console.log('\n02_chemical_formulas.js');

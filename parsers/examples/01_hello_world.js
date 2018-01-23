@@ -41,7 +41,8 @@ import {
     digitP,
     whiteP,
     tapP,
-    logP
+    logP,
+    pword,
 } from 'parsers';
 
 // word = while(letters, at_least: 1)
