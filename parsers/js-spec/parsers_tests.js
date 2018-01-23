@@ -399,6 +399,13 @@ describe.only('a parser for a specific word', () => {
         expect(marcoParsing.toString())
             .to.be.eql('Validation.Success([[m,a,r,c,o],row=0;col=8;rest=ciao])');
     });
+    it('has no problem if the whitespaces aren\'t there', () => {
+        const marcoParser = pword('marco');
+        const marcoParsing = marcoParser.run('marcociao');
+        expect(marcoParsing.isSuccess).to.be.true;
+        expect(marcoParsing.toString())
+            .to.be.eql('Validation.Success([[m,a,r,c,o],row=0;col=5;rest=ciao])');
+    });
 });
 
 describe('a parsing function for zero or more occurrences', () => {
