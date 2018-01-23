@@ -464,7 +464,7 @@ describe('a parser for zero or more occurrences', () => {
         expect(parsing.isSuccess).to.be.true;
         expect(parsing.toString()).to.be.eql('Validation.Success([mmm,row=0;col=3;rest=arco])');
     });
-    it.only('can parse a char exactly n times and return a string (or fail)', () => {
+    it('can parse a char exactly n times and return a string (or fail)', () => {
         const exactlyThree = manyChars(pchar('m'), 3);
         let parsing = exactlyThree.run(text('mmmarco'));
         expect(parsing.isSuccess).to.be.true;
@@ -620,7 +620,7 @@ describe('a logger for parsers', () => {
     let storedLog = console.log;
     it('can log intermediate parsing results', () => {
         console.log = msg => {
-            expect(msg).to.be.eql('-');
+            expect(msg).to.be.eql('pchar_-:-');
         };
         const logIntermediateResult = logP(pchar('-'))
             .discardFirst(pdigit(8));
@@ -628,7 +628,7 @@ describe('a logger for parsers', () => {
     });
     it('can log a result that\'s going to be discarded', () => {
         console.log = msg => {
-            expect(msg).to.be.eql([' ', ' ']);
+            expect(msg).to.be.eql('many1 anyOf  \t\n\r:[ , ]');
         };
         const discardSuffix = pstring('marco').discardSecond(logP(many1(anyOf(whites))));
         let parsing = discardSuffix.run('marco  faustinelli');
