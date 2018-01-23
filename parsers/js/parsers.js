@@ -169,17 +169,28 @@ export function zeroOrMore(xP) { // zeroOrMore :: p a -> [a] -> try [a] = p a ->
     };
 }
 
-export function many(xP) {
-    const label = 'many ' + xP.label;
+export function many(xP, times) {
+    const times_defined = (typeof times !== 'undefined');
+    const label = 'many ' + xP.label
+        + ((times_defined) ? ' times=' + times : '');
     return parser(pos => {
-        return zeroOrMore(xP)(pos);
+        const res = zeroOrMore(xP)(pos);
+        if (times_defined) {//debugger;
+            if (res.isFailure) return res;
+            const resultLength = res.value[0].length;
+            return (resultLength === times)
+                ? res
+                : Validation.Failure(Tuple.Triple(label, 'times param wanted ' + times + '; got ' + resultLength, pos));
+        }
+        return res;
     }, label).setLabel(label);
 }
 
-export function manyChars(xP) {
-    return many(xP)
+export function manyChars(xP, times) {
+    return many(xP, times)
         .fmap(arra => arra.join(''))
-        .setLabel('manyChars ' + xP.label);
+        .setLabel('manyChars ' + xP.label
+            + ((typeof times !== 'undefined') ? ' times=' + times : ''));
 }
 
 export function many1(xP) {

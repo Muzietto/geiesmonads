@@ -449,11 +449,29 @@ describe('a parser for zero or more occurrences', () => {
         expect(parsing.isSuccess).to.be.true;
         expect(parsing.toString()).to.be.eql('Validation.Success([[m,m,m],row=0;col=3;rest=arco])');
     });
+    it('can parse a char exactly n times and return an array (or fail)', () => {
+        const exactlyThree = many(pchar('m'), 3);
+        let parsing = exactlyThree.run(text('mmmarco'));
+        expect(parsing.isSuccess).to.be.true;
+        expect(parsing.toString()).to.be.eql('Validation.Success([[m,m,m],row=0;col=3;rest=arco])');
+        parsing = exactlyThree.run(text('mmmmarco'));
+        expect(parsing.isFailure).to.be.true;
+        expect(parsing.toString()).to.be.eql('Validation.Failure([many pchar_m times=3,times param wanted 3; got 4,row=0;col=0;rest=mmmmarco])');
+    });
     it('can parse a char many times and return a string', () => {
         const zeroOrMoreParser = manyChars(pchar('m'));
         let parsing = zeroOrMoreParser.run(text('mmmarco'));
         expect(parsing.isSuccess).to.be.true;
         expect(parsing.toString()).to.be.eql('Validation.Success([mmm,row=0;col=3;rest=arco])');
+    });
+    it.only('can parse a char exactly n times and return a string (or fail)', () => {
+        const exactlyThree = manyChars(pchar('m'), 3);
+        let parsing = exactlyThree.run(text('mmmarco'));
+        expect(parsing.isSuccess).to.be.true;
+        expect(parsing.toString()).to.be.eql('Validation.Success([mmm,row=0;col=3;rest=arco])');
+        parsing = exactlyThree.run(text('mmmmarco'));
+        expect(parsing.isFailure).to.be.true;
+        expect(parsing.toString()).to.be.eql('Validation.Failure([manyChars pchar_m times=3,times param wanted 3; got 4,row=0;col=0;rest=mmmmarco])');
     });
     it('can parse a char sequence zero times', () => {
         const zeroOrMoreParser = many(pstring('marco'));
