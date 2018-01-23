@@ -391,7 +391,7 @@ describe('a parser for a specific sequence of chars', () => {
     });
 });
 
-describe.only('a parser for a specific word', () => {
+describe('a parser for a specific word', () => {
     it('detects and ignores whitespaces around it', () => {
         const marcoParser = pword('marco');
         const marcoParsing = marcoParser.run('  marco ciao');
