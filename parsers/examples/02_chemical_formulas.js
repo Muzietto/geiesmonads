@@ -1,3 +1,5 @@
+// cfr. https://github.com/gabrielelana/paco/blob/master/examples/02_chemical_formulas.exs
+
 import {
     JValue,
     Tuple,
