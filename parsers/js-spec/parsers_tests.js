@@ -30,6 +30,7 @@ import {
     tapP,
     logP,
     pword,
+    trimP,
 } from 'parsers';
 import {
     isPair,
@@ -388,6 +389,19 @@ describe('a parser for a specific sequence of chars', () => {
         expect(marcoParsing.isSuccess).to.be.true;
         expect(marcoParsing.toString())
             .to.be.eql('Validation.Success([[m,a,r,c,o],row=0;col=5;rest=ciao])');
+    });
+});
+
+describe.only('a trimmer of parsers', () => {
+    it('can ignore whitespaces around a single char', () => {
+        const trimmer = trimP(pchar('a'));
+        expect(trimmer.run('  a    ').toString())
+            .to.be.eql('Validation.Success([a,row=1;col=0;rest=])');
+    });
+    it('can ignore whitespaces around a sequence of two chars', () => {
+        const trimmer = trimP(pchar('a').andThen(pchar('b')));
+        expect(trimmer.run('  ab    ').toString())
+            .to.be.eql('Validation.Success([[a,b],row=1;col=0;rest=])');
     });
 });
 

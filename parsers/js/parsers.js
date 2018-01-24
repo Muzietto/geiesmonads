@@ -282,10 +282,15 @@ export function logP(px) {
 }
 
 export function pword(word) {
-    return opt(many(whiteP))
-        .discardFirst(pstring(word))
-        .discardSecond(opt(many(whiteP)))
+    return trim(pstring(word))
         .setLabel('pword ' + word);
+}
+
+export function trimP(pX) {
+    return opt(many(whiteP))
+        .discardFirst(pX)
+        .discardSecond(opt(many(whiteP)))
+        .setLabel('trim ' + pX.label);
 }
 
 function _cons(x) {
