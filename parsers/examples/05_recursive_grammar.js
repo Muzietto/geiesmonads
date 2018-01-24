@@ -170,15 +170,13 @@ const expressionP = parser(pos => {
     const factorP = orElse(numberP2, betweenParens(expressionP));
     const multipliedsP = parser(pos => factorP
         .discardSecond(trimP(pchar('*')))
-        .andThen(orElse(multipliedsP, factorP))
-        .fmap(([f1, f2]) => f1 * f2)
-        .setLabel('multipliedsP').run(pos));
+        .andThen(choice([multipliedsP, dividedsP, factorP]))
+        .fmap(([f1, f2]) => f1 * f2).run(pos), 'multipliedsP');
     const dividedsP = parser(pos => factorP
         .discardSecond(trimP(pchar('/')))
-        .andThen(orElse(dividedsP, factorP))
-        .fmap(([f1, f2]) => f1 / f2)
-        .setLabel('dividedsP').run(pos));
-    return orElse(multipliedsP, dividedsP).run(pos);
+        .andThen(choice([multipliedsP, dividedsP, factorP]))
+        .fmap(([f1, f2]) => f1 / f2).run(pos), 'dividedsP');
+    return choice([multipliedsP, dividedsP, factorP]).run(pos);
 });
 
 // # We need to force the `separated_by` combinator to match at least 1 separator
@@ -186,113 +184,30 @@ const expressionP = parser(pos => {
 // # to never parse divisions
 //
 logToScreen('42 * 2', expressionP);
-logToScreen('42 * 2 * 2', expressionP);
-logToScreen('42 * 2 / 2', expressionP);
 // parse("42 * 2", expression) |> IO.inspect
 // # >> {:ok, [42, 2]}
+logToScreen('42 * 2 * 2', expressionP);
 // parse("42 * 2 * 2", expression) |> IO.inspect
 // # >> {:ok, [42, 2, 2]}
+logToScreen('42 / 2', expressionP);
 // parse("42 / 2", expression) |> IO.inspect
 // # >> {:ok, [42, 2]}
-//
-// # We have a problem
-//
-// parse("42", expression) |> IO.inspect
-// # >> {:error, "expected one of [\"*\", \"/\"] at 1:3 but got the end of input"}
-//
-// # We have lost the power to match single numbers because the only parser we
-// # have requires at least one operator, we need to provide a parser for plain
-// # numbers
-//
-// expression =
-//   recursive(
-//     fn(e) ->
-//       multipliables = one_of([number, e |> surrounded_by("(", ")")])
-//       one_of([
-//         multipliables |> separated_by("*", at_least: 2),
-//         multipliables |> separated_by("/", at_least: 2),
-//         multipliables
-//       ])
-//     end)
-//
-// parse("42 * 2", expression) |> IO.inspect
-// # >> {:ok, [42, 2]}
-// parse("42 / 2", expression) |> IO.inspect
-// # >> {:ok, [42, 2]}
+logToScreen('42', expressionP);
 // parse("42", expression) |> IO.inspect
 // # >> {:ok, 42}
-//
-// # Unfortunately we have another problem
-//
-// parse("42 * 2 / 2", expression) |> IO.inspect
-// # >> {:ok, [42, 2]}
-//
-// # The last expression should have been `{:ok, [42, 2, 2]}` why we didn't get a
-// # parser error? Parsing a part of the whole input is perfectly fine, if you
-// # want to make sure that your parser match the whole input we need to make sure
-// # that what follows is the end of input
-// expression =
-//   recursive(
-//     fn(e) ->
-//       multipliables = one_of([number, e |> surrounded_by("(", ")")])
-//       one_of([
-//         multipliables |> separated_by("*", at_least: 2),
-//         multipliables |> separated_by("/", at_least: 2),
-//         multipliables
-//       ])
-//     end)
-//   |> followed_by(eof)
-//
-// parse("42 * 2 / 2", expression) |> IO.inspect
-// # >> {:error, "expected the end of input at 1:8"}
-//
-// # Now it's clear, the `/` is not recognized... the problem is that once the
-// # multiplication alternative matched thanks to the first `*` what follows could
-// # only be: a continuation of the same multiplication, a number or an expression
-// # surrounded by parentheses, but not a division. In fact puting parentheses
-// # around the division solves the problem
-//
-// parse("42 * (2 * 2)", expression) |> IO.inspect
-// # >> {:ok, [42, [2, 2]]}
-//
-// # How do we solve this? Moving the `one_of` combinator inside the
-// # `separated_by` combinator will solve this and other problems we had before
-//
-// expression =
-//   recursive(
-//     fn(e) ->
-//       multipliables = one_of([number, e |> surrounded_by("(", ")")])
-//       multipliables |> separated_by(one_of(["*", "/"]))
-//     end)
-//   |> followed_by(eof)
-//
+logToScreen('16', expressionP);
 // parse("16", expression) |> IO.inspect
 // # >> {:ok, [16]}
+logToScreen('16*2', expressionP);
 // parse("16 * 2", expression) |> IO.inspect
 // # >> {:ok, [16, 2]}
+logToScreen('16/2', expressionP);
 // parse("16 / 2", expression) |> IO.inspect
 // # >> {:ok, [16, 2]}
-// parse("16 * 2 / 2", expression) |> IO.inspect
-// # >> {:ok, [16, 2, 2]}
-//
-// # The only downside is that we need to keep the separator because now we can't
-// # discern between multiplication and division, to do this we will use the
-// # `keep` combinator that cancels the effect of the `skip` combinator used
-// # inside the `separated_by` combinator.
-//
-// expression =
-//   recursive(
-//     fn(e) ->
-//       multipliables = one_of([number, e |> surrounded_by("(", ")")])
-//       multipliables |> separated_by(keep(one_of(["*", "/"])))
-//     end)
-//   |> followed_by(eof)
-//
-// parse("42 * 2", expression) |> IO.inspect
-// # >> {:ok, [42, "*", 2]}
-// parse("42 / 2", expression) |> IO.inspect
-// # >> {:ok, [42, "/", 2]}
-//
+logToScreen('42 * 2 / 2', expressionP);
+logToScreen('42 / 2 * 2', expressionP);
+logToScreen('84 / 2 / 2', expressionP);
+
 // # Now we can start to reduce the expression with the help of
 // # `Paco.Transform.separated_by` transformer which is going to make our job
 // # easier
