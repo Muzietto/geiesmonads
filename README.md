@@ -14,7 +14,7 @@ Live examples page is [here](http://rawgit.com/Muzietto/geiesmonads/master/parse
 
 A [JSON parser](https://github.com/Muzietto/geiesmonads/blob/master/parsers/js/json_parsers.js) is under construction, and it is tested [here](http://rawgit.com/Muzietto/geiesmonads/master/parsers/Mocha_JSON_Parser_Tests_RAWGIT.html).
 
-NB - with a big credit due to [Understanding Parser Combinators](https://fsharpforfunandprofit.com/posts/understanding-parser-combinators/).
+NB - with a big credit due to [Understanding Parser Combinators](https://fsharpforfunandprofit.com/posts/understanding-parser-combinators/) and to [Paco](https://github.com/gabrielelana/paco).
 
 New with RELEASE 2.2
 --------------------
