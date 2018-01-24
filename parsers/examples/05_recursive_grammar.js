@@ -204,9 +204,9 @@ logToScreen('16*2', expressionP);
 logToScreen('16/2', expressionP);
 // parse("16 / 2", expression) |> IO.inspect
 // # >> {:ok, [16, 2]}
-logToScreen('42 * 2 / 2', expressionP);
+logToScreen('(42 * 2) / 2', expressionP);
 logToScreen('42 / 2 * 2', expressionP);
-logToScreen('84 / 2 / 2', expressionP);
+logToScreen('(84 / 2) / 2', expressionP);
 
 // # Now we can start to reduce the expression with the help of
 // # `Paco.Transform.separated_by` transformer which is going to make our job
