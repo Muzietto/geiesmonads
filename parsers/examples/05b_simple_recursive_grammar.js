@@ -69,6 +69,7 @@ const expressionP = parser(pos => choice([prefixP, trimP(betweenParens(expressio
 //     case (lhs, rhs) => Pair(lhs, rhs)
 //   }
 
+console.log('\n05b_simple_recursive_grammar');
 logToScreen('hello seattle', expressionP);
 logToScreen('hello world', expressionP);
 logToScreen('goodbye world', expressionP);

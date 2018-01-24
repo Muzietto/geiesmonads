@@ -75,6 +75,7 @@ import {
 
 const numberP1 = manyChars1(digitP).fmap(parseFloat).setLabel('manyChars1(digitP).fmap(parseFloat)');
 
+console.log('\n05_recursive_grammar.js');
 logToScreen('42', numberP1);
 // parse("42", number) |> IO.inspect
 // # >> {:ok, 42}
@@ -169,14 +170,16 @@ logToScreen('(  42  )', expressionP1);
 const expressionP = parser(pos => {
     const factorP = orElse(numberP2, betweenParens(expressionP));
     const multipliedsP = parser(pos => factorP
-        .discardSecond(trimP(pchar('*')))
-        .andThen(choice([multipliedsP, dividedsP, factorP]))
-        .fmap(([f1, f2]) => f1 * f2).run(pos), 'multipliedsP');
-    const dividedsP = parser(pos => factorP
-        .discardSecond(trimP(pchar('/')))
-        .andThen(choice([multipliedsP, dividedsP, factorP]))
-        .fmap(([f1, f2]) => f1 / f2).run(pos), 'dividedsP');
-    return choice([multipliedsP, dividedsP, factorP]).run(pos);
+        .andThen(trimP(orElse(pchar('*'), pchar('/'))))
+        .andThen(choice([multipliedsP, factorP]))
+        .fmap(([[f1, op], f2]) => (op === '*') ? f1 * f2 : Math.round(f1 / f2))
+        .run(pos), 'multipliedsP');
+    const summedsP = parser(pos => factorP
+        .andThen(trimP(orElse(pchar('+'), pchar('-'))))
+        .andThen(choice([summedsP, factorP]))
+        .fmap(([[f1, op], f2]) => (op === '+') ? f1 + f2 : f1 - f2)
+        .run(pos), 'summedsP');
+    return choice([multipliedsP, summedsP, factorP]).run(pos);
 });
 
 // # We need to force the `separated_by` combinator to match at least 1 separator
@@ -184,12 +187,15 @@ const expressionP = parser(pos => {
 // # to never parse divisions
 //
 logToScreen('42 * 2', expressionP);
+logToScreen('42 + 2', expressionP);
 // parse("42 * 2", expression) |> IO.inspect
 // # >> {:ok, [42, 2]}
 logToScreen('42 * 2 * 2', expressionP);
+logToScreen('42 - 2 - 2', expressionP);
 // parse("42 * 2 * 2", expression) |> IO.inspect
 // # >> {:ok, [42, 2, 2]}
 logToScreen('42 / 2', expressionP);
+logToScreen('42 - 2', expressionP);
 // parse("42 / 2", expression) |> IO.inspect
 // # >> {:ok, [42, 2]}
 logToScreen('42', expressionP);
@@ -199,14 +205,17 @@ logToScreen('16', expressionP);
 // parse("16", expression) |> IO.inspect
 // # >> {:ok, [16]}
 logToScreen('16*2', expressionP);
+logToScreen('16+2', expressionP);
 // parse("16 * 2", expression) |> IO.inspect
 // # >> {:ok, [16, 2]}
 logToScreen('16/2', expressionP);
+logToScreen('16-2', expressionP);
 // parse("16 / 2", expression) |> IO.inspect
 // # >> {:ok, [16, 2]}
 logToScreen('(42 * 2) / 2', expressionP);
 logToScreen('42 / 2 * 2', expressionP);
 logToScreen('(84 / 2) / 2', expressionP);
+logToScreen('(84 / 2) - (2 + 2)', expressionP);
 
 // # Now we can start to reduce the expression with the help of
 // # `Paco.Transform.separated_by` transformer which is going to make our job
@@ -255,47 +264,77 @@ logToScreen('(84 / 2) / 2', expressionP);
 //   |> followed_by(eof)
 //
 //
+logToScreen('42 + 2', expressionP);
 // parse("42 + 2", expression) |> IO.inspect
 // # >> {:ok, 44}
+logToScreen('42 - 2', expressionP);
 // parse("42 - 2", expression) |> IO.inspect
 // # >> {:ok, 40}
 //
 // # What about the operators precedence?
+logToScreen('42 - 2 * 5', expressionP);
 // parse("42 - 2 * 5", expression) |> IO.inspect
 // # >> {:ok, 32}
+logToScreen('(42 - 2) * 5', expressionP);
 // parse("(42 - 2) * 5", expression) |> IO.inspect
 // # >> {:ok, 200}
 //
 // # It works! Let's check if all it's ok
 //
+logToScreen('42', expressionP);
 // parse("42", expression) |> IO.inspect
 // # >> {:ok, 42}
+logToScreen('(42)', expressionP);
 // parse("(42)", expression) |> IO.inspect
 // # >> {:ok, 42}
+logToScreen('42 + 2', expressionP);
 // parse("42 + 2", expression) |> IO.inspect
 // # >> {:ok, 44}
+logToScreen('42 + 2 - 2', expressionP);
 // parse("42 + 2 - 2", expression) |> IO.inspect
 // # >> {:ok, 42}
+logToScreen('(42) + (2)', expressionP);
 // parse("(42) + (2)", expression) |> IO.inspect
 // # >> {:ok, 44}
+logToScreen('42 * 2 + 1', expressionP);
 // parse("42 * 2 + 1", expression) |> IO.inspect
 // # >> {:ok, 85}
+logToScreen('42 * (2 + 1)', expressionP);
 // parse("42 * (2 + 1)", expression) |> IO.inspect
 // # >> {:ok, 126}
+logToScreen('(42 + 2) / (3 - 1)', expressionP);
 // parse("(42 + 2) / (3 - 1)", expression) |> IO.inspect
 // # >> {:ok, 22}
+logToScreen('((42 + 2) / (3 - 1))', expressionP);
 // parse("((42 + 2) / (3 - 1))", expression) |> IO.inspect
 // # >> {:ok, 22}
+logToScreen('42 + 2 * 3 + 100', expressionP);
 // parse("42 + 2 * 3 + 100", expression) |> IO.inspect
 // # >> {:ok, 148}
+logToScreen('((42+2)/(3-1))', expressionP);
+logToScreen('(((42+2)/(3-1)))', expressionP);
 // parse("((42+2)/(3-1))", expression) |> IO.inspect
 // # >> {:ok, 22}
+logToScreen('9 - 12 - 6', expressionP);
 // parse("9 - 12 - 6", expression) |> IO.inspect
 // # >> {:ok, -9}
+logToScreen('9 - (12 - 6)', expressionP);
 // parse("9 - (12 - 6)", expression) |> IO.inspect
 // # >> {:ok, 3}
+logToScreen('1+1*2', expressionP);
+logToScreen('1 + 1 * 2', expressionP);
+logToScreen('1+(1*2)', expressionP);
+logToScreen('(1+1*2)', expressionP);
+logToScreen('(1+(1*2))', expressionP);
+logToScreen('(3*4*5)', expressionP);
+logToScreen('(1+1*2)+(3*4*5)', expressionP);
+logToScreen('(1+1*2)+(3*4*5)/20', expressionP);
+logToScreen('(1+(1*2))+(3*4*5)/20', expressionP);
+logToScreen('(1+(1*2))+((3*4*5)/20)', expressionP);
 // parse("(1+1*2)+(3*4*5)/20", expression) |> IO.inspect
 // # >> {:ok, 6}
+logToScreen('((1+1*2)+(3*4*5))/3', expressionP);
+logToScreen('((1+(1*2))+(3*4*5))/3', expressionP);
 // parse("((1+1*2)+(3*4*5))/3", expression) |> IO.inspect
 // # >> {:ok, 21}
 //
@@ -323,6 +362,6 @@ logToScreen('(84 / 2) / 2', expressionP);
 
 function logToScreen(str, parser) {
     const result = parser.run(Position.fromText(str));
-    const outcome = (result.isSuccess) ? result.value[0].toString() : 'Failure: ' + result.value[0].toString();
+    const outcome = (result.isSuccess) ? result.value[0].toString() : 'Failure: ' + result.value[0].toString() + result.value[1].toString();
     console.log('"' + str + '" --> ' + outcome);
 }
