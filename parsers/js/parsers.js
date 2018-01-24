@@ -282,7 +282,7 @@ export function logP(px) {
 }
 
 export function pword(word) {
-    return trim(pstring(word))
+    return trimP(pstring(word))
         .setLabel('pword ' + word);
 }
 

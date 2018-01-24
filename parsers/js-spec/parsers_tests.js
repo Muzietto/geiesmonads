@@ -392,7 +392,7 @@ describe('a parser for a specific sequence of chars', () => {
     });
 });
 
-describe.only('a trimmer of parsers', () => {
+describe('a trimmer of parsers', () => {
     it('can ignore whitespaces around a single char', () => {
         const trimmer = trimP(pchar('a'));
         expect(trimmer.run('  a    ').toString())
