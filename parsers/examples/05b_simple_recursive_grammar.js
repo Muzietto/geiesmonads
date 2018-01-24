@@ -61,31 +61,25 @@ const suffixP = pword('world')
     .fmap(arra => arra.join(''))
     .setLabel('suffixP');
 
-//   val ws = P( " ".rep(1) )
-const wsP = pchar(' ');
-
-//   val parened = P( "(" ~ parser ~ ")" )
-const parenedP = trimP(betweenParens(parser(pos => xxx.run(pos), 'parser function')));
-
-const xxx = choice([prefixP, parenedP])
-    .andThen(choice([suffixP, parenedP]))
-    .fmap(([a, b]) => Tuple.Pair(a, b));
+const expressionP = parser(pos => choice([prefixP, trimP(betweenParens(expressionP))])
+    .andThen(choice([suffixP, trimP(betweenParens(expressionP))]))
+    .fmap(([a, b]) => Tuple.Pair(a, b)).run(pos));
 
 //   val parser: Parser[Phrase] = P( (parened | prefix) ~ ws ~ (parened | suffix) ).map{
 //     case (lhs, rhs) => Pair(lhs, rhs)
 //   }
 
-logToScreen('hello seattle', xxx);
-logToScreen('hello world', xxx);
-logToScreen('goodbye world', xxx);
+logToScreen('hello seattle', expressionP);
+logToScreen('hello world', expressionP);
+logToScreen('goodbye world', expressionP);
 // @ parser.parse("hello seattle")
 // res66: Parsed[Phrase] = Success(
 //   Pair(Word("hello"), Word("seattle")),
 //   13
 // )
 //
-logToScreen('hello (goodbye seattle)', xxx);
-logToScreen('(hello world) seattle', xxx);
+logToScreen('hello (goodbye seattle)', expressionP);
+logToScreen('(hello world) seattle', expressionP);
 // @ parser.parse("hello (goodbye seattle)")
 // res67: Parsed[Phrase] = Success(
 //   Pair(
@@ -95,7 +89,7 @@ logToScreen('(hello world) seattle', xxx);
 //   23
 // )
 //
-logToScreen('(hello  world) (goodbye seattle)', xxx);
+logToScreen('(hello  world) (goodbye seattle)', expressionP);
 // @ parser.parse("(hello  world)   (goodbye seattle)")
 // res68: Parsed[Phrase] = Success(
 //   Pair(
@@ -105,7 +99,7 @@ logToScreen('(hello  world) (goodbye seattle)', xxx);
 //   34
 // )
 //
-logToScreen('(hello  world) ((goodbye seattle) world)', xxx);
+logToScreen('(hello  world) ((goodbye seattle) world)', expressionP);
 // @ parser.parse("(hello  world)  ((goodbye seattle) world)")
 // res69: Parsed[Phrase] = Success(
 //   Pair(
