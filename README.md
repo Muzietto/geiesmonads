@@ -8,11 +8,11 @@ Special Challenge: parser combinators in JavaScript!!!
 ------------------------------------------------------
 File [parsers.js](https://github.com/Muzietto/geiesmonads/blob/master/parsers/js/parsers.js) contains an implementation of __chainable parser combinators__, featuring both __applicative__ and __monadic__ interfaces.
 
-Test page is [here](http://rawgit.com/Muzietto/geiesmonads/master/parsers/Mocha_Parser_Combinators_Tests_RAWGIT.html).
+Test page is [here](https://rawgit.com/Muzietto/geiesmonads/master/parsers/Mocha_Parser_Combinators_Tests_RAWGIT.html).
 
-Live examples page is [here](http://rawgit.com/Muzietto/geiesmonads/master/parsers/Console_Parser_Examples_RAWGIT.html).
+Live examples page is [here](https://rawgit.com/Muzietto/geiesmonads/master/parsers/Console_Parser_Examples_RAWGIT.html).
 
-A [JSON parser](https://github.com/Muzietto/geiesmonads/blob/master/parsers/js/json_parsers.js) is under construction, and it is tested [here](http://rawgit.com/Muzietto/geiesmonads/master/parsers/Mocha_JSON_Parser_Tests_RAWGIT.html).
+A [JSON parser](https://github.com/Muzietto/geiesmonads/blob/master/parsers/js/json_parsers.js) is under construction, and it is tested [here](https://rawgit.com/Muzietto/geiesmonads/master/parsers/Mocha_JSON_Parser_Tests_RAWGIT.html).
 
 NB - with a big credit due to [Understanding Parser Combinators](https://fsharpforfunandprofit.com/posts/understanding-parser-combinators/) and to [Paco](https://github.com/gabrielelana/paco).
 
@@ -20,7 +20,7 @@ New with RELEASE 2.2
 --------------------
 File [geiesmonads_es6_reader.js](https://github.com/Muzietto/geiesmonads/blob/master/es6/geiesmonads_es6_reader.js) contains an implementation of a __chainable reader monad__.
 
-Test page is [here](http://rawgit.com/Muzietto/geiesmonads/master/MochaGeiesmonadsES6_Reader_Test.htm).
+Test page is [here](https://rawgit.com/Muzietto/geiesmonads/master/MochaGeiesmonadsES6_Reader_Test.htm).
 
 NB - with a big credit due to [Don't Fear the Reader](https://passy.svbtle.com/dont-fear-the-reader).
 
