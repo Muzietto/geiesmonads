@@ -9,7 +9,7 @@ MONAD.reader = (() => { // rm a = rm ctx a = rm (ctx -> a)
       return farmb(a)(ctx); // rm b ctx :: b
     });
     return thisreader;
-  }
+  };
 
   return { // NB writing 'rm a' or 'rm ctx a' is the same
     UNIT: a => monad(_ => a), // UNIT :: a -> rm a = a -> rm (ctx -> a)
