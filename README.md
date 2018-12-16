@@ -56,7 +56,7 @@ TRAINING
 --------
 - We start with experiments with `Identity` and `Maybe` monad. We verify the three laws for both of them.
 - We improve on the design and create a chainable `Maybe` monad.
-- We implement a state monad along the lines of [[2]](http://jabberwocky.eu/2012/11/02/monads-for-dummies/) and [[3]](http://igstan.ro/posts/2011-05-02-understanding-monads-with-javascript.html) and [verify the three laws also for that](http://rawgit.com/Muzietto/quindici/geiesmonads/YUIGeiesmonads_TRAIN_Test.htm).
+- We implement a state monad along the lines of [[2]](http://jabberwocky.eu/2012/11/02/monads-for-dummies/) and [[3]](http://igstan.ro/posts/2011-05-02-understanding-monads-with-javascript.html) and [verify the three laws also for that](https://muzietto.github.io/geiesmonads/YUIGeiesmonads_TRAIN_Test.htm).
 See files [geiesmonads_0.1.js](https://github.com/Muzietto/geiesmonads/blob/master/js/geiesmonads_0.1.js) and [geiesmonads_0.2.js](https://github.com/Muzietto/geiesmonads/blob/master/js/geiesmonads_0.2.js).
 
 ORIGINAL CONTRIBUTION: Implementation of a __chainable state monad__.
