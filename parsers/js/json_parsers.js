@@ -55,6 +55,8 @@ const escapedJSONChars = [
     '\t',
 ];
 export const jEscapedCharP = choice(escapedJSONChars.map(pchar)).setLabel('escaped char');
+// actually here it is done differently:
+// https://fsharpforfunandprofit.com/posts/understanding-parser-combinators-4/#escaped-characters
 
 const hexDigitsP = choice([
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F',
