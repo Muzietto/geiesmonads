@@ -15,6 +15,7 @@ import {
     sequenceP,
     sequenceP2,
     pstring,
+    stringP,
     zeroOrMore,
     many,
     many1,
@@ -389,6 +390,13 @@ describe('a parser for a specific sequence of chars', () => {
         expect(marcoParsing.isSuccess).to.be.true;
         expect(marcoParsing.toString())
             .to.be.eql('Validation.Success([[m,a,r,c,o],row=0;col=5;rest=ciao])');
+    });
+    it('has a version that returns strings', () => {
+        const marcoParser = stringP('marco');
+        const marcoParsing = marcoParser.run('marcociao');
+        expect(marcoParsing.isSuccess).to.be.true;
+        expect(marcoParsing.toString())
+            .to.be.eql('Validation.Success([marco,row=0;col=5;rest=ciao])');
     });
 });
 

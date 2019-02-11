@@ -184,6 +184,12 @@ export function pstring(str) {
         .setLabel('pstring ' + str);
 }
 
+export function stringP(str) {
+  return pstring(str)
+    .fmap(res => res.join(''))
+    .setLabel('stringP ' + str);
+}
+
 export function zeroOrMore(xP) { // zeroOrMore :: p a -> [a] -> try [a] = p a -> p [a]
     return pos => {
         let res1 = xP.run(pos);
