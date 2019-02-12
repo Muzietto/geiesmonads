@@ -166,6 +166,10 @@ describe('among helper classes', () => {
             const pos01 = Position.fromText('Lorem').incrPos();
             expect(pos01.rest()).to.be.eql('orem');
         });
+        it('returns rest === \'\' when we get to the end', () => {
+            const pos01 = Position.fromText('L').incrPos();
+            expect(pos01.rest()).to.be.eql('');
+        });
     });
 
     describe('somes', () => {
