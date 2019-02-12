@@ -59,9 +59,7 @@ export {charParser, digitParser, predicateBasedParser};
 
 export function pchar(char) {
     const label = 'pchar_' + char;
-    let result = function (pos) {
-        return charParser(char)(pos);
-    };
+    const result = pos => charParser(char)(pos);
     return parser(result, label).setLabel(label);
 }
 
