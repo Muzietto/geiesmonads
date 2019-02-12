@@ -24,10 +24,6 @@ SOFTWARE.
 
 import {Maybe} from 'maybe';
 
-import {
-    isPair,
-} from 'util';
-
 export function Tuple() {
 }
 
