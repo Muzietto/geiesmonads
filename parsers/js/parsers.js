@@ -100,10 +100,9 @@ export function orElse(p1, p2) {
   }, label).setLabel(label);
 }
 
-export const fail = parser(pos => Validation.Failure(Tuple.Triple('parsing failed', 'fail', pos)));
+export const fail = parser(pos => Validation.Failure(Tuple.Triple('', 'fail', pos)));
 
-// return neutral element instead of message
-export const succeed = parser(pos => Validation.Success(Tuple.Pair(Tuple.Pair('parsing succeeded', pos), 'succeed')));
+export const succeed = parser(pos => Validation.Success(Tuple.Pair(Tuple.Pair('', pos), 'succeed')));
 
 export function choice(parsers) {
   return parsers.reduceRight((rest, curr) => orElse(curr, rest), fail)
