@@ -67,6 +67,21 @@ export function pdigit(digit) {
   return parser(pos => digitParser(digit)(pos), 'pdigit_' + digit);
 }
 
+export function precededByP(c1, c2) {
+  const label = c2 + ' preceded by ' + c1;
+  return parser(pos => {
+    const res2 = pchar(c2).run(pos);
+    if (res2.isSuccess) {
+      const res1 = pchar(c1).run(res2.value[1].decrPos(2));
+      if (res1.isSuccess) {
+        return Validation.Success(Tuple.Pair(c2, res2.value[1]));
+      }
+      return Validation.Failure(Tuple.Triple(label, res1.value[1], res1.value[2]));
+    }
+    return Validation.Failure(Tuple.Triple(label, res2.value[1], res2.value[2]));
+  }, label);
+}
+
 export function andThen(p1, p2) {
   const label = p1.label + ' andThen ' + p2.label;
   return parser(pos => {

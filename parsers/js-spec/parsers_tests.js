@@ -32,6 +32,7 @@ import {
     logP,
     pword,
     trimP,
+    precededByP,
 } from 'parsers';
 import {
     isPair,
@@ -299,8 +300,25 @@ describe('a parser for any of a list of chars', () => {
         expect(anyOf(digits).run(text('')).isFailure).to.be.true;
     });
 });
-describe('parse ABC', () => {
-    it('parses ABC', () => {
+describe('a parser that considers precedences', () => {
+  const XafterY = precededByP('Y', 'X');
+
+  it('can parse X preceded by Y (even if Y has been consumed by the parser before)', () => {
+    const YXp = many1(choice([pchar('Y'), XafterY]));
+    const parsingYX = YXp.run(text('YX'));
+    expect(parsingYX.isSuccess).to.be.true;
+    expect(parsingYX.toString()).to.be.eql('Validation.Success([[Y,X],row=1;col=0;rest=])')
+  });
+  it.only('halts when X is not preceded by Y', () => {
+    const AXp = many1(choice([pchar('A'), XafterY]));
+    const parsingAX = AXp.run(text('AX'));
+    expect(parsingAX.isSuccess).to.be.true;
+    expect(parsingAX.value[1].rest()).to.be.eql('X');
+  });
+});
+
+describe('a parser for abc', () => {
+    it('parses abc', () => {
         const pairAdder = ([x, y]) => x + y;
         const abcP = andThen(
             pchar('a'),
