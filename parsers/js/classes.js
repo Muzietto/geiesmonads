@@ -216,13 +216,35 @@ _position.prototype.char = function () {
     }
     return result;
 };
-_position.prototype.incrPos = function () {
-    const needRowIncrement = (this.col === this.rows[this.row].length - 1);
-    return Position(
+_position.prototype.incrPos = function (times = 0) {
+    const needsRowIncrement = (this.col === this.rows[this.row].length - 1);
+    return times
+     ? incrPosHelper(this, times)
+     : Position(
         this.rows,
-        (needRowIncrement ? this.row + 1 : this.row),
-        (needRowIncrement ? 0 : this.col + 1)
+        (needsRowIncrement ? this.row + 1 : this.row),
+        (needsRowIncrement ? 0 : this.col + 1)
     );
+
+    function incrPosHelper(pos, times = 0) {
+      if (times === 0) return pos;
+      return incrPosHelper(pos.incrPos(), times - 1)
+    }
+};
+_position.prototype.decrPos = function (times = 0) {
+    const needsRowDecrement = (this.col === 0);
+    return times
+     ? decrPosHelper(this, times)
+     : Position(
+        this.rows,
+        (needsRowDecrement ? this.row - 1 : this.row),
+        (needsRowDecrement ? this.rows[this.row -1].length - 1 : this.col - 1)
+    );
+
+    function decrPosHelper(pos, times = 0) {
+      if (times === 0) return pos;
+      return decrPosHelper(pos.decrPos(), times - 1)
+    }
 };
 _position.prototype.rest = function () {
     const self = this;

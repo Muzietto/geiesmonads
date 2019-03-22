@@ -143,6 +143,16 @@ describe('among helper classes', () => {
             expect(pos01.char().value).to.be.eql(2);
             const pos20 = Position(rows, 1, 3).incrPos();
             expect(pos20.char().value).to.be.eql('A');
+            const pos22 = Position(rows, 1, 3).incrPos(3);
+            expect(pos22.char().value).to.be.eql('C');
+        });
+        it('allow to decrement the position and retrieve further chars', () => {
+            const pos01 = Position(rows, 0, 2).decrPos();
+            expect(pos01.char().value).to.be.eql(2);
+            const pos13 = Position(rows, 2, 0).decrPos();
+            expect(pos13.char().value).to.be.eql('d');
+            const pos02 = Position(rows, 2, 0).decrPos(5);
+            expect(pos02.char().value).to.be.eql(3);
         });
         it('return Nothing when position is beyond the contained rows content', () => {
             const pos1010 = Position(rows, 10, 10);
