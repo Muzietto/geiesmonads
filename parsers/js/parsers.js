@@ -75,8 +75,10 @@ export function andThen(p1, p2) {
       const res2 = p2.run(res1.value[1]);
       if (res2.isSuccess) {
         return Validation.Success(Tuple.Pair(Tuple.Pair(res1.value[0], res2.value[0]), res2.value[1]));
-      } return Validation.Failure(Tuple.Triple(label, res2.value[1], res2.value[2]));
-    } return Validation.Failure(Tuple.Triple(label, res1.value[1], res1.value[2]));
+      }
+      return Validation.Failure(Tuple.Triple(label, res2.value[1], res2.value[2]));
+    }
+    return Validation.Failure(Tuple.Triple(label, res1.value[1], res1.value[2]));
   }, label);
 }
 
