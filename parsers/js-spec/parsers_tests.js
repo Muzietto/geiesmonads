@@ -33,6 +33,7 @@ import {
     pword,
     trimP,
     precededByP,
+    notPrecededByP,
 } from 'parsers';
 import {
     isPair,
@@ -300,20 +301,34 @@ describe('a parser for any of a list of chars', () => {
         expect(anyOf(digits).run(text('')).isFailure).to.be.true;
     });
 });
-describe('a parser that considers precedences', () => {
-  const XafterY = precededByP('Y', 'X');
 
+describe('parsers that considers precedences', () => {
+  const XafterY = precededByP('Y', 'X');
   it('can parse X preceded by Y (even if Y has been consumed by the parser before)', () => {
     const YXp = many1(choice([pchar('Y'), XafterY]));
     const parsingYX = YXp.run(text('YX'));
     expect(parsingYX.isSuccess).to.be.true;
     expect(parsingYX.toString()).to.be.eql('Validation.Success([[Y,X],row=1;col=0;rest=])')
   });
-  it.only('halts when X is not preceded by Y', () => {
+  it('halt when X is not preceded by Y', () => {
     const AXp = many1(choice([pchar('A'), XafterY]));
     const parsingAX = AXp.run(text('AX'));
     expect(parsingAX.isSuccess).to.be.true;
     expect(parsingAX.value[1].rest()).to.be.eql('X');
+  });
+
+  const XnotAfterY = notPrecededByP('Y', 'X');
+  it('can parse X not preceded by Y (even if the previous char has been consumed by the parser before)', () => {
+    const AXp = many1(choice([pchar('A'), XnotAfterY]));
+    const parsingAX = AXp.run(text('AX'));
+    expect(parsingAX.isSuccess).to.be.true;
+    expect(parsingAX.toString()).to.be.eql('Validation.Success([[A,X],row=1;col=0;rest=])')
+  });
+  it('halt when X is preceded by Y', () => {
+    const YXp = many1(choice([pchar('Y'), XnotAfterY]));
+    const parsingYX = YXp.run(text('YX'));
+    expect(parsingYX.isSuccess).to.be.true;
+    expect(parsingYX.value[1].rest()).to.be.eql('X');
   });
 });
 
