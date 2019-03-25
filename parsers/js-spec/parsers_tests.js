@@ -34,6 +34,8 @@ import {
     trimP,
     precededByP,
     notPrecededByP,
+    startOfInputP,
+    endOfInputP,
 } from 'parsers';
 import {
     isPair,
@@ -123,6 +125,27 @@ describe('a named character parser', () => {
     });
 });
 
+describe('a parser for the start of the input', () => {
+  it('succeeds at the start of the stream', () => {
+    expect(startOfInputP.run(Position.fromText('abc')).isSuccess).to.be.true;
+  });
+  it('fails halfway through the stream', () => {
+    const laterInTheStream = sequenceP([pchar('a'), startOfInputP]);
+    expect(laterInTheStream.run(Position.fromText('abc')).isFailure).to.be.true;
+  });
+});
+
+describe.only('a parser for the end of the input', () => {
+  it('succeeds at the end of the stream', () => {
+    const finallyInTheStream = sequenceP([pchar('a'), endOfInputP]);
+    expect(finallyInTheStream.run(Position.fromText('ab')).isSuccess).to.be.true;
+  });
+  it('fails halfway through the stream', () => {
+    const laterInTheStream = sequenceP([pchar('a'), startOfInputP]);
+    expect(laterInTheStream.run(Position.fromText('abc')).isFailure).to.be.true;
+  });
+});
+
 describe('two parsers bound by andThen', () => {
     const parserAandB = andThen(pchar('a'), pchar('b'));
 
@@ -201,7 +224,7 @@ describe('a choice of parsers bound by orElse', () => {
         const parsingChoice = parsersChoice.run(text('x'));
         expect(parsingChoice.isFailure).to.be.true;
         expect(parsingChoice.value[0]).to.be.eql('choice /pchar_a/pchar_b/pchar_c/pchar_d');
-        expect(parsingChoice.value[1]).to.be.eql('_fail');
+        expect(parsingChoice.value[1]).to.be.eql('fail');
         expect(parsingChoice.value[2].rest()).to.be.eql('x');
     });
 
@@ -236,7 +259,7 @@ describe('a parser for any of a list of chars', () => {
         parsingChoice = lowercasesParser.run(text('Y'));
         expect(parsingChoice.isFailure).to.be.true;
         expect(parsingChoice.value[0]).to.be.eql('anyOf abcdefghijklmnopqrstuvwxyz');
-        expect(parsingChoice.value[1]).to.be.eql('_fail');
+        expect(parsingChoice.value[1]).to.be.eql('fail');
         expect(parsingChoice.value[2].rest()).to.be.eql('Y');
     });
 
@@ -264,7 +287,7 @@ describe('a parser for any of a list of chars', () => {
         parsingChoice = uppercasesParser.run(text('s'));
         expect(parsingChoice.isFailure).to.be.true;
         expect(parsingChoice.value[0]).to.be.eql('anyOf ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-        expect(parsingChoice.value[1]).to.be.eql('_fail');
+        expect(parsingChoice.value[1]).to.be.eql('fail');
         expect(parsingChoice.value[2].rest()).to.be.eql('s');
     });
 
@@ -292,7 +315,7 @@ describe('a parser for any of a list of chars', () => {
         parsingChoice = digitsParser.run(text('s'));
         expect(parsingChoice.isFailure).to.be.true;
         expect(parsingChoice.value[0]).to.be.eql('anyOf 0123456789');
-        expect(parsingChoice.value[1]).to.be.eql('_fail');
+        expect(parsingChoice.value[1]).to.be.eql('fail');
         expect(parsingChoice.value[2].rest()).to.be.eql('s');
     });
 
@@ -302,33 +325,50 @@ describe('a parser for any of a list of chars', () => {
     });
 });
 
-describe('parsers that considers precedences', () => {
-  const XafterY = precededByP('Y', 'X');
-  it('can parse X preceded by Y (even if Y has been consumed by the parser before)', () => {
-    const YXp = many1(choice([pchar('Y'), XafterY]));
-    const parsingYX = YXp.run(text('YX'));
-    expect(parsingYX.isSuccess).to.be.true;
-    expect(parsingYX.toString()).to.be.eql('Validation.Success([[Y,X],row=1;col=0;rest=])')
-  });
-  it('halt when X is not preceded by Y', () => {
-    const AXp = many1(choice([pchar('A'), XafterY]));
-    const parsingAX = AXp.run(text('AX'));
-    expect(parsingAX.isSuccess).to.be.true;
-    expect(parsingAX.value[1].rest()).to.be.eql('X');
+describe('parsers that consider precedences', () => {
+
+  describe('can parse X preceded by Y', () => {
+    const XafterY = precededByP('Y', 'X');
+    it('even if Y has been consumed by the parser before', () => {
+      const YXp = many1(choice([pchar('Y'), XafterY]));
+      const parsingYX = YXp.run(text('YX'));
+      expect(parsingYX.isSuccess).to.be.true;
+      expect(parsingYX.toString()).to.be.eql('Validation.Success([[Y,X],row=1;col=0;rest=])')
+    });
+    it('and halt when X is not preceded by Y', () => {
+      const AXp = many1(choice([pchar('A'), XafterY]));
+      const parsingAX = AXp.run(text('AX'));
+      expect(parsingAX.isSuccess).to.be.true;
+      expect(parsingAX.value[1].rest()).to.be.eql('X');
+    });
+    it('and fail when X is at the start of the string', () => {
+      const AXp = many1(choice([pchar('A'), XafterY]));
+      const parsingAX = AXp.run(text('XA'));
+      expect(parsingAX.isFailure).to.be.true;
+    });
   });
 
-  const XnotAfterY = notPrecededByP('Y', 'X');
-  it('can parse X not preceded by Y (even if the previous char has been consumed by the parser before)', () => {
-    const AXp = many1(choice([pchar('A'), XnotAfterY]));
-    const parsingAX = AXp.run(text('AX'));
-    expect(parsingAX.isSuccess).to.be.true;
-    expect(parsingAX.toString()).to.be.eql('Validation.Success([[A,X],row=1;col=0;rest=])')
-  });
-  it('halt when X is preceded by Y', () => {
-    const YXp = many1(choice([pchar('Y'), XnotAfterY]));
-    const parsingYX = YXp.run(text('YX'));
-    expect(parsingYX.isSuccess).to.be.true;
-    expect(parsingYX.value[1].rest()).to.be.eql('X');
+  describe('can parse X not preceded by Y', () => {
+    const XnotAfterY = notPrecededByP('Y', 'X');
+
+    it('even if the previous char has been consumed by the parser before', () => {
+      const AXp = many1(choice([pchar('A'), XnotAfterY]));
+      const parsingAX = AXp.run(text('AX'));
+      expect(parsingAX.isSuccess).to.be.true;
+      expect(parsingAX.toString()).to.be.eql('Validation.Success([[A,X],row=1;col=0;rest=])')
+    });
+    it('and halt when X is the first char in the string', () => {
+      const AXp = many1(choice([pchar('A'), XnotAfterY]));
+      const parsingAX = AXp.run(text('XA'));
+      expect(parsingAX.isSuccess).to.be.true;
+      expect(parsingAX.toString()).to.be.eql('Validation.Success([[X,A],row=1;col=0;rest=])')
+    });
+    it('and halt when X is preceded by Y', () => {
+      const YXp = many1(choice([pchar('Y'), XnotAfterY]));
+      const parsingYX = YXp.run(text('YX'));
+      expect(parsingYX.isSuccess).to.be.true;
+      expect(parsingYX.value[1].rest()).to.be.eql('X');
+    });
   });
 });
 
@@ -604,7 +644,7 @@ describe('a parser for one or more occurrences', () => {
         parsing = pint.run('A12345');
         expect(parsing.isFailure).to.be.true;
         expect(parsing.toString())
-            .to.be.eql('Validation.Failure([many1 anyOf 0123456789,_fail,A12345])');
+            .to.be.eql('Validation.Failure([many1 anyOf 0123456789,fail,A12345])');
     });
     it('can parse an integer into a true integer', () => {
         const pint = many1(anyOf(digits))

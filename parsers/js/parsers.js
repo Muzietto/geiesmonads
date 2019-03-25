@@ -57,6 +57,16 @@ const predicateBasedParser = (pred, label) => pos => {
 
 export { charParser, digitParser, predicateBasedParser };
 
+export const startOfInputP =
+  parser(pos => (pos.decrPos().char().isNothing)
+    ? succeed.run(pos)
+    : fail.run(pos)).setLabel('^');
+
+export const endOfInputP =
+  parser(pos => (pos.incrPos().char().isNothing)
+    ? succeed.run(pos)
+    : fail.run(pos)).setLabel('$');
+
 export function pchar(char) {
   const label = 'pchar_' + char;
   const result = pos => charParser(char)(pos);
@@ -87,7 +97,10 @@ export function notPrecededByP(c1, c2) {
   return parser(pos => {
     const res2 = pchar(c2).run(pos);
     if (res2.isSuccess) {
-      const res1 = pchar(c1).run(res2.value[1].decrPos(2));
+      let res1 = Validation.Failure();
+      try { // crash going back beyond start of input => ok
+        res1 = pchar(c1).run(res2.value[1].decrPos(2));
+      } catch (err) {}
       if (res1.isFailure) {
         return Validation.Success(Tuple.Pair(c2, res2.value[1]));
       }
