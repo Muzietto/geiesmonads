@@ -10,131 +10,6 @@ Array.prototype.toString = function () {
     return '[' + toString.apply(this) + ']';
 };
 
-export function JValue() {
-}
-JValue.prototype.isJValue = true;
-
-function JString(str) {
-    return new _jstring(str);
-}
-
-function _jstring(str) {
-    if (typeof str !== 'string') throw new Error('JString: invalid value');
-    Object.defineProperty(this, 'value', {value: str, writable: false});
-}
-_jstring.prototype = Object.create(JValue.prototype);
-_jstring.prototype.isJString = true;
-_jstring.prototype.type = 'jstring';
-_jstring.prototype.toString = function () {
-    return 'JString(' + this.value.toString() + ')';
-};
-
-JValue.JString = JString;
-JValue.prototype.JString = JValue.JString;
-
-function JNumber(float) {
-    return new _jnumber(float);
-}
-
-function _jnumber(float) {
-    if (typeof float !== 'number'
-        || isNaN(float)) throw new Error('JNumber: invalid value');
-    Object.defineProperty(this, 'value', {value: float, writable: false});
-}
-_jnumber.prototype = Object.create(JValue.prototype);
-_jnumber.prototype.isJNumber = true;
-_jnumber.prototype.type = 'jnumber';
-_jnumber.prototype.toString = function () {
-    return 'JNumber(' + this.value.toString() + ')';
-};
-
-JValue.JNumber = JNumber;
-JValue.prototype.JNumber = JValue.JNumber;
-
-function JBool(bool) {
-    return new _jbool(bool);
-}
-
-function _jbool(bool) {
-    if (typeof bool !== 'boolean') throw new Error('JBool: invalid value');
-    Object.defineProperty(this, 'value', {value: bool, writable: false});
-}
-_jbool.prototype = Object.create(JValue.prototype);
-_jbool.prototype.isJBool = true;
-_jbool.prototype.type = 'jbool';
-_jbool.prototype.toString = function () {
-    return 'JBool(' + this.value.toString() + ')';
-};
-
-JValue.JBool = JBool;
-JValue.prototype.JBool = JValue.JBool;
-
-function JNull(nullValue) {
-    return new _jnull(nullValue);
-}
-
-function _jnull(nullValue) {
-    if (nullValue !== null) throw new Error('JNull: invalid value');
-    Object.defineProperty(this, 'value', {value: nullValue, writable: false});
-}
-_jnull.prototype = Object.create(JValue.prototype);
-_jnull.prototype.isJNull = true;
-_jnull.prototype.type = 'jnull';
-_jnull.prototype.toString = function () {
-    return 'JNull(null)';
-};
-
-JValue.JNull = JNull;
-JValue.prototype.JNull = JValue.JNull;
-
-function JArray(...jValues) {
-    return new _jarray(...jValues);
-}
-
-// TODO make it with iterator and everything
-function _jarray(...jValues) {  // args become a REAL array
-    if (typeof jValue === 'undefined') { // empty JSON array
-        Object.defineProperty(this, 'value', {value: [], writable: false});
-    } else {
-        if (jValues.some(jval => (!jval.isJValue))) throw new Error('JArray: invalid content');
-        Object.defineProperty(this, 'value', {value: [...jValues], writable: false});
-    }
-}
-_jarray.prototype = Object.create(JValue.prototype);
-_jarray.prototype.isJArray = true;
-_jarray.prototype.type = 'jarray';
-_jarray.prototype.toString = function () {
-    return 'JArray([' + this.value.reduce((acc, curr) => acc + curr + ',', '') + '])';
-};
-
-JValue.JArray = JArray;
-JValue.prototype.JArray = JValue.JArray;
-
-function JObject(...pairs) {
-    return new _jobject(...pairs);
-}
-
-function _jobject(...pairs) {
-    const self = this;
-    if (pairs.some(pair => {
-            return (!pair.isPair
-            || typeof pair[0] !== 'string'
-            || !pair[1].isJValue);
-        })) throw new Error('JObject: invalid content');
-    pairs.forEach(([key, value]) => {
-        Object.defineProperty(self, key, {value: value, writable: false});
-    });
-}
-_jobject.prototype = Object.create(JValue.prototype);
-_jobject.prototype.isJObject = true;
-_jobject.prototype.type = 'jobject';
-_jobject.prototype.toString = function () {
-    return 'JObject({' + OBJ + '})';
-};
-
-JValue.JObject = JObject;
-JValue.prototype.JObject = JValue.JObject;
-
 /////////////////////////////
 export function Tuple() {
 }
@@ -311,3 +186,128 @@ export function none() {
         }
     };
 }
+
+export function JValue() {
+}
+JValue.prototype.isJValue = true;
+
+function JString(str) {
+    return new _jstring(str);
+}
+
+function _jstring(str) {
+    if (typeof str !== 'string') throw new Error('JString: invalid value');
+    Object.defineProperty(this, 'value', {value: str, writable: false});
+}
+_jstring.prototype = Object.create(JValue.prototype);
+_jstring.prototype.isJString = true;
+_jstring.prototype.type = 'jstring';
+_jstring.prototype.toString = function () {
+    return 'JString(' + this.value.toString() + ')';
+};
+
+JValue.JString = JString;
+JValue.prototype.JString = JValue.JString;
+
+function JNumber(float) {
+    return new _jnumber(float);
+}
+
+function _jnumber(float) {
+    if (typeof float !== 'number'
+        || isNaN(float)) throw new Error('JNumber: invalid value');
+    Object.defineProperty(this, 'value', {value: float, writable: false});
+}
+_jnumber.prototype = Object.create(JValue.prototype);
+_jnumber.prototype.isJNumber = true;
+_jnumber.prototype.type = 'jnumber';
+_jnumber.prototype.toString = function () {
+    return 'JNumber(' + this.value.toString() + ')';
+};
+
+JValue.JNumber = JNumber;
+JValue.prototype.JNumber = JValue.JNumber;
+
+function JBool(bool) {
+    return new _jbool(bool);
+}
+
+function _jbool(bool) {
+    if (typeof bool !== 'boolean') throw new Error('JBool: invalid value');
+    Object.defineProperty(this, 'value', {value: bool, writable: false});
+}
+_jbool.prototype = Object.create(JValue.prototype);
+_jbool.prototype.isJBool = true;
+_jbool.prototype.type = 'jbool';
+_jbool.prototype.toString = function () {
+    return 'JBool(' + this.value.toString() + ')';
+};
+
+JValue.JBool = JBool;
+JValue.prototype.JBool = JValue.JBool;
+
+function JNull(nullValue) {
+    return new _jnull(nullValue);
+}
+
+function _jnull(nullValue) {
+    if (nullValue !== null) throw new Error('JNull: invalid value');
+    Object.defineProperty(this, 'value', {value: nullValue, writable: false});
+}
+_jnull.prototype = Object.create(JValue.prototype);
+_jnull.prototype.isJNull = true;
+_jnull.prototype.type = 'jnull';
+_jnull.prototype.toString = function () {
+    return 'JNull(null)';
+};
+
+JValue.JNull = JNull;
+JValue.prototype.JNull = JValue.JNull;
+
+function JArray(...jValues) {
+    return new _jarray(...jValues);
+}
+
+// TODO make it with iterator and everything
+function _jarray(...jValues) {  // args become a REAL array
+    if (typeof jValue === 'undefined') { // empty JSON array
+        Object.defineProperty(this, 'value', {value: [], writable: false});
+    } else {
+        if (jValues.some(jval => (!jval.isJValue))) throw new Error('JArray: invalid content');
+        Object.defineProperty(this, 'value', {value: [...jValues], writable: false});
+    }
+}
+_jarray.prototype = Object.create(JValue.prototype);
+_jarray.prototype.isJArray = true;
+_jarray.prototype.type = 'jarray';
+_jarray.prototype.toString = function () {
+    return 'JArray([' + this.value.reduce((acc, curr) => acc + curr + ',', '') + '])';
+};
+
+JValue.JArray = JArray;
+JValue.prototype.JArray = JValue.JArray;
+
+function JObject(...pairs) {
+    return new _jobject(...pairs);
+}
+
+function _jobject(...pairs) {
+    const self = this;
+    if (pairs.some(pair => {
+            return (!pair.isPair
+            || typeof pair[0] !== 'string'
+            || !pair[1].isJValue);
+        })) throw new Error('JObject: invalid content');
+    pairs.forEach(([key, value]) => {
+        Object.defineProperty(self, key, {value: value, writable: false});
+    });
+}
+_jobject.prototype = Object.create(JValue.prototype);
+_jobject.prototype.isJObject = true;
+_jobject.prototype.type = 'jobject';
+_jobject.prototype.toString = function () {
+    return 'JObject({' + OBJ + '})';
+};
+
+JValue.JObject = JObject;
+JValue.prototype.JObject = JValue.JObject;
