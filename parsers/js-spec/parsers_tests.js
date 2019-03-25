@@ -35,7 +35,9 @@ import {
     precededByP,
     notPrecededByP,
     startOfInputP,
+    notStartOfInputP,
     endOfInputP,
+    notEndOfInputP,
     succeedP,
     failP,
 } from 'parsers';
@@ -127,7 +129,7 @@ describe('a named character parser', () => {
     });
 });
 
-describe.only('a parser for the start of the input', () => {
+describe('a parser for the start of the input', () => {
   it('succeeds at the start of the stream', () => {
     expect(startOfInputP.run(Position.fromText('abc')).isSuccess).to.be.true;
   });
@@ -135,21 +137,51 @@ describe.only('a parser for the start of the input', () => {
     const laterInTheStream = sequenceP([pchar('a'), startOfInputP]);
     expect(laterInTheStream.run(Position.fromText('abc')).isFailure).to.be.true;
   });
-  it('does not consume characters', () => {
+  it('does not consume characters, but it returns an empty string as result', () => {
     const startABC = sequenceP([startOfInputP, pchar('A'), pchar('B'), pchar('C')]);
     const parsing = startABC.run(Position.fromText('ABC'));
-    expect(parsing.toString()).to.be.eql('');
+    expect(parsing.toString()).to.be.eql('Validation.Success([[,A,B,C],row=1;col=0;rest=])');
+  });
+});
+
+describe('a parser for NOT the start of the input', () => {
+  it('fails at the start of the stream', () => {
+    expect(notStartOfInputP.run(Position.fromText('abc')).isFailure).to.be.true;
+  });
+  it('succeeds halfway through the stream', () => {
+    const laterInTheStream = sequenceP([pchar('a'), notStartOfInputP]);
+    expect(laterInTheStream.run(Position.fromText('abc')).isSuccess).to.be.true;
+  });
+  it('does not consume characters, but it returns an empty string as result', () => {
+    const ABNotStartC = sequenceP([pchar('A'), pchar('B'), notStartOfInputP, pchar('C')]);
+    const parsing = ABNotStartC.run(Position.fromText('ABC'));
+    expect(parsing.toString()).to.be.eql('Validation.Success([[A,B,,C],row=1;col=0;rest=])');
   });
 });
 
 describe('a parser for the end of the input', () => {
   it('succeeds at the end of the stream', () => {
-    const finallyInTheStream = sequenceP([pchar('a'), endOfInputP]);
+    const finallyInTheStream = sequenceP([pchar('a'), pchar('b'), endOfInputP]);
     expect(finallyInTheStream.run(Position.fromText('ab')).isSuccess).to.be.true;
   });
   it('fails halfway through the stream', () => {
-    const laterInTheStream = sequenceP([pchar('a'), startOfInputP]);
+    const laterInTheStream = sequenceP([pchar('a'), endOfInputP]);
     expect(laterInTheStream.run(Position.fromText('abc')).isFailure).to.be.true;
+  });
+});
+
+describe('a parser for NOT the end of the input', () => {
+  it('fails at the end of the stream', () => {
+    const notFinallyInTheStream = sequenceP([pchar('a'), notEndOfInputP]);
+    expect(notFinallyInTheStream.run(Position.fromText('a')).isFailure).to.be.true;
+  });
+  it('succeeds halfway through the stream', () => {
+    const ABnotEndC = sequenceP([pchar('A'), pchar('B'), notEndOfInputP, pchar('C')].map(logP));
+    expect(ABnotEndC.run(Position.fromText('ABC')).isSuccess).to.be.true;
+  });
+  it('does not consume characters, but it returns an empty string as result', () => {
+    const AnotEndB = sequenceP([pchar('A'), notEndOfInputP, pchar('B')].map(logP));
+    expect(AnotEndB.run(Position.fromText('AB')).toString()).to.be.eql('Validation.Success([[A,,B],row=1;col=0;rest=])');
   });
 });
 
@@ -215,13 +247,13 @@ describe('a succeeding parser', () => {
     const parsing = sequenceP([pchar('w'), pchar('h'), succeedP]).run(whatever);
     expect(parsing.toString()).to.be.eql('Validation.Success([[w,h,],row=0;col=2;rest=atever])');
   });
-  it('does not consume characters', () => {
+  it('does not consume characters, but it returns an empty string as result', () => {
     const parsing = sequenceP([pchar('w'), succeedP, pchar('h')]);
     expect(parsing.run(whatever).toString()).to.be.eql('Validation.Success([[w,,h],row=0;col=2;rest=atever])');
   });
 });
 
-describe.only('a failing parser', () => {
+describe('a failing parser', () => {
   it('will always fail', () => {
     expect(failP.run('whatever').isFailure).to.be.true;
     expect(sequenceP([pchar('w'), failP]).run('whatever').isFailure).to.be.true;

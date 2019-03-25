@@ -62,10 +62,20 @@ export const startOfInputP =
     ? succeedP.run(pos)
     : failP.run(pos)).setLabel('^');
 
+export const notStartOfInputP =
+  parser(pos => (pos.decrPos().char().isJust)
+    ? succeedP.run(pos)
+    : failP.run(pos)).setLabel('not^');
+
 export const endOfInputP =
-  parser(pos => (pos.incrPos().char().isNothing)
+  parser(pos => (pos.rest() === '')
     ? succeedP.run(pos)
     : failP.run(pos)).setLabel('$');
+
+export const notEndOfInputP =
+  parser(pos => (pos.rest() !== '')
+    ? succeedP.run(pos)
+    : failP.run(pos)).setLabel('not$');
 
 export function pchar(char) {
   const label = 'pchar_' + char;
