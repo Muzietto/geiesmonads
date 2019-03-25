@@ -36,6 +36,8 @@ import {
     notPrecededByP,
     startOfInputP,
     endOfInputP,
+    succeedP,
+    failP,
 } from 'parsers';
 import {
     isPair,
@@ -125,7 +127,7 @@ describe('a named character parser', () => {
     });
 });
 
-describe('a parser for the start of the input', () => {
+describe.only('a parser for the start of the input', () => {
   it('succeeds at the start of the stream', () => {
     expect(startOfInputP.run(Position.fromText('abc')).isSuccess).to.be.true;
   });
@@ -133,9 +135,14 @@ describe('a parser for the start of the input', () => {
     const laterInTheStream = sequenceP([pchar('a'), startOfInputP]);
     expect(laterInTheStream.run(Position.fromText('abc')).isFailure).to.be.true;
   });
+  it('does not consume characters', () => {
+    const startABC = sequenceP([startOfInputP, pchar('A'), pchar('B'), pchar('C')]);
+    const parsing = startABC.run(Position.fromText('ABC'));
+    expect(parsing.toString()).to.be.eql('');
+  });
 });
 
-describe.only('a parser for the end of the input', () => {
+describe('a parser for the end of the input', () => {
   it('succeeds at the end of the stream', () => {
     const finallyInTheStream = sequenceP([pchar('a'), endOfInputP]);
     expect(finallyInTheStream.run(Position.fromText('ab')).isSuccess).to.be.true;
@@ -199,6 +206,26 @@ describe('two parsers bound by orElse', () => {
         expect(parserAorB.run(text('a')).isSuccess).to.be.true;
         expect(parserAorB.run(text('')).isFailure).to.be.true;
     });
+});
+
+describe('a succeeding parser', () => {
+  const whatever = Position.fromText('whatever');
+  it('succeeds always', () => {
+    expect(succeedP.run(whatever).isSuccess).to.be.true;
+    const parsing = sequenceP([pchar('w'), pchar('h'), succeedP]).run(whatever);
+    expect(parsing.toString()).to.be.eql('Validation.Success([[w,h,],row=0;col=2;rest=atever])');
+  });
+  it('does not consume characters', () => {
+    const parsing = sequenceP([pchar('w'), succeedP, pchar('h')]);
+    expect(parsing.run(whatever).toString()).to.be.eql('Validation.Success([[w,,h],row=0;col=2;rest=atever])');
+  });
+});
+
+describe.only('a failing parser', () => {
+  it('will always fail', () => {
+    expect(failP.run('whatever').isFailure).to.be.true;
+    expect(sequenceP([pchar('w'), failP]).run('whatever').isFailure).to.be.true;
+  });
 });
 
 describe('a choice of parsers bound by orElse', () => {
@@ -720,6 +747,7 @@ describe('a logger for parsers', () => {
         const logIntermediateResult = logP(pchar('-'))
             .discardFirst(pdigit(8));
         let parsing = logIntermediateResult.run('-8x');
+        expect(parsing.toString()).to.be.eql('Validation.Success([8,row=0;col=2;rest=x])');
     });
     it('can log a result that\'s going to be discarded', () => {
         console.log = msg => {
@@ -727,6 +755,7 @@ describe('a logger for parsers', () => {
         };
         const discardSuffix = pstring('marco').discardSecond(logP(many1(anyOf(whites))));
         let parsing = discardSuffix.run('marco  faustinelli');
+        expect(parsing.toString()).to.be.eql('Validation.Success([[m,a,r,c,o],row=0;col=7;rest=faustinelli])');
     });
     console.log = storedLog;
 });

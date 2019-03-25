@@ -59,13 +59,13 @@ export { charParser, digitParser, predicateBasedParser };
 
 export const startOfInputP =
   parser(pos => (pos.decrPos().char().isNothing)
-    ? succeed.run(pos)
-    : fail.run(pos)).setLabel('^');
+    ? succeedP.run(pos)
+    : failP.run(pos)).setLabel('^');
 
 export const endOfInputP =
   parser(pos => (pos.incrPos().char().isNothing)
-    ? succeed.run(pos)
-    : fail.run(pos)).setLabel('$');
+    ? succeedP.run(pos)
+    : failP.run(pos)).setLabel('$');
 
 export function pchar(char) {
   const label = 'pchar_' + char;
@@ -145,12 +145,12 @@ export function orElse(p1, p2) {
   }, label).setLabel(label);
 }
 
-export const fail = parser(pos => Validation.Failure(Tuple.Triple('', 'fail', pos)));
+export const failP = parser(pos => Validation.Failure(Tuple.Triple('', 'fail', pos)));
 
-export const succeed = parser(pos => Validation.Success(Tuple.Pair(Tuple.Pair('', pos), 'succeed')));
+export const succeedP = parser(pos => Validation.Success(Tuple.Pair('', pos), 'succeed'));
 
 export function choice(parsers) {
-  return parsers.reduceRight((rest, curr) => orElse(curr, rest), fail)
+  return parsers.reduceRight((rest, curr) => orElse(curr, rest), failP)
     .setLabel('choice ' + parsers.reduce((acc, curr) => acc + '/' + curr.label, ''));
 }
 
