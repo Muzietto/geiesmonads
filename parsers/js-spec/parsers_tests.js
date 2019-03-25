@@ -147,6 +147,8 @@ describe('a parser for the start of the input', () => {
 describe('a parser for NOT the start of the input', () => {
   it('fails at the start of the stream', () => {
     expect(notStartOfInputP.run(Position.fromText('abc')).isFailure).to.be.true;
+    expect(sequenceP([notStartOfInputP, pchar('a')]).run(Position.fromText('abc')).toString())
+      .to.be.eql('Validation.Failure([unknown,fail,row=0;col=0;rest=abc])');
   });
   it('succeeds halfway through the stream', () => {
     const laterInTheStream = sequenceP([pchar('a'), notStartOfInputP]);
