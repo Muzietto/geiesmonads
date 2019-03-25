@@ -19,110 +19,6 @@ import {
 
 describe('among helper classes', () => {
 
-    describe('JValue\'s are parsed JSON values', () => {
-        describe('with JString\'s as parsed JSON string values', () => {
-            const jstring = JValue.JString('abc');
-            it('that are retrievable', () => {
-                expect(jstring.value).to.be.eql('abc');
-                expect(jstring.toString()).to.be.eql('JString(abc)');
-            });
-            it('that are immutable', () => {
-                expect(() => {
-                    jstring.value = 'def';
-                }).to.throw;
-            });
-            it('that gotta be strings', () => {
-                expect(() => JValue.JString(123)).to.throw;
-            });
-            it('that gotta by types with a supertype', () => {
-                const jstring = JValue.JString('123');
-                expect(jstring.isJValue).to.be.true;
-                expect(jstring.isJString).to.be.true;
-            });
-        });
-        it('with JNumber\'s as parsed JSON float values', () => {
-            const jnumber = JValue.JNumber(123.45e-23);
-            expect(jnumber.value).to.be.eql(123.45e-23);
-            expect(jnumber.toString()).to.be.eql('JNumber(1.2345e-21)');
-            expect(jnumber.isJValue).to.be.true;
-            expect(jnumber.isJNumber).to.be.true;
-            expect(() => {
-                jnumber.value = 123;
-            }).to.throw;
-            expect(() => JValue.JNumber('x')).to.throw;
-            expect(() => JValue.JNumber(NaN)).to.throw;
-        });
-        it('with JBool\'s as parsed JSON boolean values', () => {
-            const jbool = JValue.JBool(true);
-            expect(jbool.value).to.be.true;
-            expect(jbool.toString()).to.be.eql('JBool(true)');
-            expect(jbool.isJValue).to.be.true;
-            expect(jbool.isJBool).to.be.true;
-            expect(() => {
-                jbool.value = false;
-            }).to.throw;
-            expect(() => JValue.JBool('x')).to.throw;
-            expect(() => JValue.JBool(123)).to.throw;
-            expect(() => JValue.JBool(NaN)).to.throw;
-        });
-        it('with JNull\'s as parsed JSON null values', () => {
-            const jnull = JValue.JNull(null);
-            expect(jnull.value).to.be.null;
-            expect(jnull.toString()).to.be.eql('JNull(null)');
-            expect(jnull.isJValue).to.be.true;
-            expect(jnull.isJNull).to.be.true;
-            expect(() => {
-                jnull.value = 123;
-            }).to.throw;
-            expect(() => JValue.JNull('')).to.throw;
-            expect(() => JValue.JNull(undefined)).to.throw;
-            expect(() => JValue.JNull(NaN)).to.throw;
-        });
-        it('with JArray\'s as parsed JSON arrays', () => {
-            const jarray = JValue.JArray(JValue.JString('a'), JValue.JBool(false), JValue.JNull(null));
-            const jarValue = jarray.value;
-            expect(jarValue[0].value).to.be.eql('a');
-            expect(jarValue[1].value).to.be.eql(false);
-            expect(jarValue[2].value).to.be.eql(null);
-            expect(jarray.toString()).to.be.eql('JArray([JString(a),JBool(false),JNull(null),])');
-            expect(jarray.isJValue).to.be.true;
-            expect(jarray.isJArray).to.be.true;
-            expect(() => {
-                jarray.value = 123;
-            }).to.throw;
-            expect(() => JValue.JArray('')).to.throw;
-            expect(() => JValue.JArray(undefined)).to.throw;
-            expect(() => JValue.JArray(NaN)).to.throw;
-        });
-        it('with JObjects\'s as parsed JSON objects', () => {
-            const jobject = JValue.JObject(
-                Tuple.Pair('string', JValue.JString('a')),
-                Tuple.Pair('boolean', JValue.JBool(false)),
-                Tuple.Pair('null', JValue.JNull(null))
-            );
-            expect(jobject['string'].value).to.be.eql('a');
-            expect(jobject['boolean'].value).to.be.eql(false);
-            expect(jobject['null'].value).to.be.eql(null);
-            //expect(jobject.toString()).to.be.eql('JArray([JString(a),JBool(false),JNull(null),])');
-            expect(jobject.isJValue).to.be.true;
-            expect(jobject.isJObject).to.be.true;
-            expect(() => {
-                jobject.string = 'abc';
-            }).to.throw;
-            expect(() => JValue.JObject(JValue.JObject(
-                Tuple.Pair('string', JValue.JString('a')),
-                Tuple.Pair('boolean', false), // value must be a JValue
-                Tuple.Pair('null', JValue.JNull(null))
-            ))).to.throw;
-            expect(() => JValue.JObject(JValue.JObject(
-                Tuple.Pair('string', JValue.JString('a')),
-                Tuple.Pair(123, JValue.JNull(null)) // key must be a string
-            ))).to.throw;
-            expect(() => JValue.JNull(Tuple.Triple(1,2,3))).to.throw;
-        });
-
-    });
-
     describe('Position\'s', () => {
         const rows = [
             [1, 2, 3],
@@ -154,11 +50,23 @@ describe('among helper classes', () => {
             const pos02 = Position(rows, 2, 0).decrPos(5);
             expect(pos02.char().value).to.be.eql(3);
         });
-        it('return Nothing when position is beyond the contained rows content', () => {
+        it('return char() === Nothing when position is beyond the contained rows content', () => {
             const pos1010 = Position(rows, 10, 10);
             expect(pos1010.char().isNothing).to.be.true;
             const pos23 = Position(rows, 2, 2).incrPos();
             expect(pos23.char().isNothing).to.be.true;
+        });
+        it('return char() === Nothing when incrementing at the end', () => {
+            const posBeyond1 = Position(rows, 2, 2).incrPos();
+            expect(posBeyond1.char().isNothing).to.be.true;
+            const posBeyondALot = Position(rows, 0, 0).incrPos(100);
+            expect(posBeyondALot.char().isNothing).to.be.true;
+        });
+        it('return char() === Nothing when decrementing at the start', () => {
+            const posMinus1 = Position(rows, 0, 0).decrPos();
+            expect(posMinus1.char().isNothing).to.be.true;
+            const posMinus10 = Position(rows, 0, 0).decrPos(10);
+            expect(posMinus10.char().isNothing).to.be.true;
         });
         it('can be initialized from text strings', () => {
             const pos00 = Position.fromText('Lorem ipsum dolor sit amet');
@@ -288,5 +196,109 @@ describe('among helper classes', () => {
             expect(isFailure(fail)).to.be.true;
             expect(isPair(fail)).to.be.true;
         });
+    });
+
+    describe('JValue\'s are parsed JSON values', () => {
+        describe('with JString\'s as parsed JSON string values', () => {
+            const jstring = JValue.JString('abc');
+            it('that are retrievable', () => {
+                expect(jstring.value).to.be.eql('abc');
+                expect(jstring.toString()).to.be.eql('JString(abc)');
+            });
+            it('that are immutable', () => {
+                expect(() => {
+                    jstring.value = 'def';
+                }).to.throw;
+            });
+            it('that gotta be strings', () => {
+                expect(() => JValue.JString(123)).to.throw;
+            });
+            it('that gotta by types with a supertype', () => {
+                const jstring = JValue.JString('123');
+                expect(jstring.isJValue).to.be.true;
+                expect(jstring.isJString).to.be.true;
+            });
+        });
+        it('with JNumber\'s as parsed JSON float values', () => {
+            const jnumber = JValue.JNumber(123.45e-23);
+            expect(jnumber.value).to.be.eql(123.45e-23);
+            expect(jnumber.toString()).to.be.eql('JNumber(1.2345e-21)');
+            expect(jnumber.isJValue).to.be.true;
+            expect(jnumber.isJNumber).to.be.true;
+            expect(() => {
+                jnumber.value = 123;
+            }).to.throw;
+            expect(() => JValue.JNumber('x')).to.throw;
+            expect(() => JValue.JNumber(NaN)).to.throw;
+        });
+        it('with JBool\'s as parsed JSON boolean values', () => {
+            const jbool = JValue.JBool(true);
+            expect(jbool.value).to.be.true;
+            expect(jbool.toString()).to.be.eql('JBool(true)');
+            expect(jbool.isJValue).to.be.true;
+            expect(jbool.isJBool).to.be.true;
+            expect(() => {
+                jbool.value = false;
+            }).to.throw;
+            expect(() => JValue.JBool('x')).to.throw;
+            expect(() => JValue.JBool(123)).to.throw;
+            expect(() => JValue.JBool(NaN)).to.throw;
+        });
+        it('with JNull\'s as parsed JSON null values', () => {
+            const jnull = JValue.JNull(null);
+            expect(jnull.value).to.be.null;
+            expect(jnull.toString()).to.be.eql('JNull(null)');
+            expect(jnull.isJValue).to.be.true;
+            expect(jnull.isJNull).to.be.true;
+            expect(() => {
+                jnull.value = 123;
+            }).to.throw;
+            expect(() => JValue.JNull('')).to.throw;
+            expect(() => JValue.JNull(undefined)).to.throw;
+            expect(() => JValue.JNull(NaN)).to.throw;
+        });
+        it('with JArray\'s as parsed JSON arrays', () => {
+            const jarray = JValue.JArray(JValue.JString('a'), JValue.JBool(false), JValue.JNull(null));
+            const jarValue = jarray.value;
+            expect(jarValue[0].value).to.be.eql('a');
+            expect(jarValue[1].value).to.be.eql(false);
+            expect(jarValue[2].value).to.be.eql(null);
+            expect(jarray.toString()).to.be.eql('JArray([JString(a),JBool(false),JNull(null),])');
+            expect(jarray.isJValue).to.be.true;
+            expect(jarray.isJArray).to.be.true;
+            expect(() => {
+                jarray.value = 123;
+            }).to.throw;
+            expect(() => JValue.JArray('')).to.throw;
+            expect(() => JValue.JArray(undefined)).to.throw;
+            expect(() => JValue.JArray(NaN)).to.throw;
+        });
+        it('with JObjects\'s as parsed JSON objects', () => {
+            const jobject = JValue.JObject(
+                Tuple.Pair('string', JValue.JString('a')),
+                Tuple.Pair('boolean', JValue.JBool(false)),
+                Tuple.Pair('null', JValue.JNull(null))
+            );
+            expect(jobject['string'].value).to.be.eql('a');
+            expect(jobject['boolean'].value).to.be.eql(false);
+            expect(jobject['null'].value).to.be.eql(null);
+            //expect(jobject.toString()).to.be.eql('JArray([JString(a),JBool(false),JNull(null),])');
+            expect(jobject.isJValue).to.be.true;
+            expect(jobject.isJObject).to.be.true;
+            expect(() => {
+                jobject.string = 'abc';
+            }).to.throw;
+            expect(() => JValue.JObject(JValue.JObject(
+                Tuple.Pair('string', JValue.JString('a')),
+                Tuple.Pair('boolean', false), // value must be a JValue
+                Tuple.Pair('null', JValue.JNull(null))
+            ))).to.throw;
+            expect(() => JValue.JObject(JValue.JObject(
+                Tuple.Pair('string', JValue.JString('a')),
+                Tuple.Pair(123, JValue.JNull(null)) // key must be a string
+            ))).to.throw;
+            expect(() => JValue.JNull(Tuple.Triple(1,2,3))).to.throw;
+        });
+
     });
 });

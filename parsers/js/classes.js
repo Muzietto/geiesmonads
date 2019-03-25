@@ -92,34 +92,46 @@ _position.prototype.char = function () {
     return result;
 };
 _position.prototype.incrPos = function (times = 0) {
+  const lastRowIndex = this.rows.length -1;
+  const lastColumnIndex = this.rows[lastRowIndex].length -1
+  let result = Position(this.rows, lastRowIndex, lastColumnIndex + 1);
+  try {
     const needsRowIncrement = (this.col === this.rows[this.row].length - 1);
-    return times
-     ? incrPosHelper(this, times)
-     : Position(
+    result = (times * 1)
+      ? incrPosHelper(this, times)
+      : Position(
         this.rows,
         (needsRowIncrement ? this.row + 1 : this.row),
         (needsRowIncrement ? 0 : this.col + 1)
     );
+    return result;
+  } catch (err) {}
+  return result;
 
-    function incrPosHelper(pos, times = 0) {
-      if (times === 0) return pos;
-      return incrPosHelper(pos.incrPos(), times - 1)
-    }
+  function incrPosHelper(pos, times = 0) {
+    if (times === 0) return pos;
+    return incrPosHelper(pos.incrPos(), times - 1)
+  }
 };
 _position.prototype.decrPos = function (times = 0) {
+  let result = Position(this.rows, -1, -1);
+  try {
     const needsRowDecrement = (this.col === 0);
-    return times
-     ? decrPosHelper(this, times)
-     : Position(
+    result = times
+      ? decrPosHelper(this, times)
+      : Position(
         this.rows,
         (needsRowDecrement ? this.row - 1 : this.row),
         (needsRowDecrement ? this.rows[this.row -1].length - 1 : this.col - 1)
     );
+    return result;
+  } catch (err) {}
+  return result;
 
-    function decrPosHelper(pos, times = 0) {
-      if (times === 0) return pos;
-      return decrPosHelper(pos.decrPos(), times - 1)
-    }
+  function decrPosHelper(pos, times = 0) {
+    if (times === 0) return pos;
+    return decrPosHelper(pos.decrPos(), times - 1)
+  }
 };
 _position.prototype.rest = function () {
     const self = this;
