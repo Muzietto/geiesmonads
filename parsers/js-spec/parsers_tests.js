@@ -34,6 +34,8 @@ import {
     trimP,
     precededByP,
     notPrecededByP,
+    followedByP,
+    notFollowedByP,
     startOfInputP,
     notStartOfInputP,
     endOfInputP,
@@ -431,6 +433,51 @@ describe('parsers that consider precedences', () => {
       expect(parsingYX.value[1].rest()).to.be.eql('X');
     });
   });
+
+  describe('can parse X followed by Y', () => {
+    const XbeforeY = followedByP('Y', 'X');
+    it('without consuming the character', () => {
+      const XYp = many1(choice([XbeforeY, pchar('Y')]));
+      const parsingXY = XYp.run(text('XY'));
+      expect(parsingXY.isSuccess).to.be.true;
+      expect(parsingXY.toString()).to.be.eql('Validation.Success([[X,Y],row=1;col=0;rest=])')
+    });
+    it('and fail when X is not followed by Y', () => {
+      const XAp = many1(choice([XbeforeY, pchar('A')]));
+      const parsingXA = XAp.run(text('XA'));
+      expect(parsingXA.isFailure).to.be.true;
+      // expect(parsingXA.value[1].rest()).to.be.eql('X');
+    });
+    it('and fail when X is at the end of the string', () => {
+      const AXp = many1(choice([pchar('A'), XbeforeY]));
+      const parsingAX = AXp.run(text('AX'));
+      expect(parsingAX.isSuccess).to.be.true;
+      expect(parsingAX.value[1].rest()).to.be.eql('X');
+    });
+  });
+
+  describe('can parse X not followed by Y', () => {
+    const XnotBeforeY = notFollowedByP('Y', 'X');
+
+    it('without consuming the character', () => {
+      const XAp = many1(choice([XnotBeforeY, pchar('A')]));
+      const parsingXA = XAp.run(text('XA'));
+      expect(parsingXA.isSuccess).to.be.true;
+      expect(parsingXA.toString()).to.be.eql('Validation.Success([[X,A],row=1;col=0;rest=])')
+    });
+    it('and succeed when X is the last char in the string', () => {
+      const AXp = many1(choice([pchar('A'), XnotBeforeY]));
+      const parsingAX = AXp.run(text('AX'));
+      expect(parsingAX.isSuccess).to.be.true;
+      expect(parsingAX.toString()).to.be.eql('Validation.Success([[A,X],row=1;col=0;rest=])')
+    });
+    it('and halt when X is followed by Y', () => {
+      const AXYp = many1(choice([pchar('A'), XnotBeforeY]));
+      const parsingAXY = AXYp.run(text('AXY'));
+      expect(parsingAXY.isSuccess).to.be.true;
+      expect(parsingAXY.value[1].rest()).to.be.eql('XY');
+    });
+  });
 });
 
 describe('a parser for abc', () => {
@@ -446,6 +493,14 @@ describe('a parser for abc', () => {
                 ).fmap(pairAdder)
             ).fmap(pairAdder)
         ).fmap(pairAdder);
+        const parsing = abcP.run('abcd');
+        expect(parsing.isSuccess).to.be.true;
+        expect(parsing.value[0].toString()).to.be.eql('abc');
+        expect(parsing.value[1].rest()).to.be.eql('d');
+    });
+    it('parses abc with a different, but still very clumsy syntax', () => {
+        const pairAdder = ([x, y]) => x + y;
+        const abcP = ((pchar('a').andThen(pchar('b'))).fmap(pairAdder).andThen(pchar('c'))).fmap(pairAdder);
         const parsing = abcP.run('abcd');
         expect(parsing.isSuccess).to.be.true;
         expect(parsing.value[0].toString()).to.be.eql('abc');

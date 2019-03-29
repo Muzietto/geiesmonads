@@ -120,6 +120,39 @@ export function notPrecededByP(c1, c2) {
   }, label);
 }
 
+export function followedByP(c1, c2) {
+  const label = c2 + ' followed by ' + c1;
+  return parser(pos => {
+    const res2 = pchar(c2).run(pos);
+    if (res2.isSuccess) {
+      const res1 = pchar(c1).run(res2.value[1]); // no need to increment pos
+      if (res1.isSuccess) {
+        return Validation.Success(Tuple.Pair(c2, res2.value[1]));
+      }
+      return Validation.Failure(Tuple.Triple(label, res1.value[1], res1.value[2]));
+    }
+    return Validation.Failure(Tuple.Triple(label, res2.value[1], res2.value[2]));
+  }, label);
+}
+
+export function notFollowedByP(c1, c2) {
+  const label = c2 + ' not followed by ' + c1;
+  return parser(pos => {
+    const res2 = pchar(c2).run(pos);
+    if (res2.isSuccess) {
+      let res1 = Validation.Failure();
+      try { // crash going down beyond end of input => ok
+        res1 = pchar(c1).run(res2.value[1]);
+      } catch (err) {}
+      if (res1.isFailure) {
+        return Validation.Success(Tuple.Pair(c2, res2.value[1]));
+      }
+      return Validation.Failure(Tuple.Triple(label, res1.value[1], res1.value[2]));
+    }
+    return Validation.Failure(Tuple.Triple(label, res2.value[1], res2.value[2]));
+  }, label);
+}
+
 export function andThen(p1, p2) {
   const label = p1.label + ' andThen ' + p2.label;
   return parser(pos => {
