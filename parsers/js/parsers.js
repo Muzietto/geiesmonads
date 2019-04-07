@@ -218,7 +218,7 @@ export function fmap(fab, parser1) {
 }
 
 export function returnP(value) {
-  return parser(pos => Validation.Success(Tuple.Pair(value, pos)), value);
+  return parser(pos => Validation.Success(Tuple.Pair(value, pos)));
 }
 
 // parser(a -> b) -> parser(a) -> parser(b)
