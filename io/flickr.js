@@ -11,6 +11,8 @@ const map = f => xs => xs.map(f);
 
 const prop = attr => obj => obj[attr];
 
+const split = value => str => str.split(value);
+
 require([
     // 'ramda',
     'jquery',
@@ -32,7 +34,7 @@ require([
     var img = function(url) {
       return $('<img />', {
         src: url,
-        click: () => { window.location.href = url; },
+        click: () => { window.location.href = url.replace('_m', ''); },
         css: { cursor: 'pointer' },
       });
     };
@@ -95,7 +97,7 @@ require([
 
     var app = compose(Impure.getJSON(renderImages), url);
 
-    app('a-10');
+    app('b-17');
   });
 
 function composeN() {
