@@ -32,6 +32,8 @@ require([
     var img = function(url) {
       return $('<img />', {
         src: url,
+        click: () => { window.location.href = url; },
+        css: { cursor: 'pointer' },
       });
     };
 
@@ -93,7 +95,7 @@ require([
 
     var app = compose(Impure.getJSON(renderImages), url);
 
-    app('piaggio');
+    app('a-10');
   });
 
 function composeN() {
