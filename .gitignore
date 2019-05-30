@@ -1,6 +1,7 @@
 
 .idea
 /parsers/node_modules
+/parsers-node/icon/node_modules
 
 #################
 ## Eclipse
