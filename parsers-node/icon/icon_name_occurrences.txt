@@ -1,0 +1,220 @@
+                <Icon size='sizeXXXLarge' icon='boxBallot' color='brand3Main' />
+                    icon='arrowCircleDown'
+      <Icon icon='spinner' spin />
+        icon='close'
+      {(totalAvailableAmount.amount > 0) && <Icon icon='circle_solid' color='triageSuccess' />}
+      {(totalAvailableAmount.amount <= 0) && <Icon icon='circle_solid' color='triageError' />}
+      <Icon icon='loading' size='sizeXXXLarge' />
+        {(index < employeeOrder.pockets.length - 1) && <Icon icon='plus' size='sizeXLarge' />}
+      {(totalAvailableAmount.amount > 0) && <Icon icon='circle_solid' color='triageSuccess' />}
+      {(totalAvailableAmount.amount <= 0) && <Icon icon='circle_solid' color='triageError' />}
+        { loading && <Icon icon='loading' color='greyscaleSilver' size='sizeLarge' /> }
+                  <Icon icon='clock' />
+  const renderLoading = () => <Icon icon='loading' color='greyscaleSilver' size='sizeLarge' />;
+                <Icon icon='clock' />
+      return <Icon icon='eye' size='sizeSmall' color='brand1Main' />;
+      return <Icon icon='eyeSlash' size='sizeSmall' color='brand1Main' />;
+      return <Icon icon='calendarAlt' color='brand1Main' size='sizeSmall' />;
+      return <Icon icon='euroSign' color={this.props.disabled ? 'greyscaleMain' : 'brand1Main'} size='sizeSmall' />;
+      return <Icon icon='search' color='greyscaleMain' size='sizeSmall' />;
+      return <Icon icon='exclamationTriangle' color='triageError' size='sizeSmall' />;
+      return <Icon icon='checkAnimated' color='triageSuccess' size='sizeSmall' />;
+    <Input icon='cog' placeholder='Il tuo ingranaggio ti dice:' value='Attento ai granelli di sabbia!!' />)
+  <Icon icon='wrench' color='greyscaleSilver' size='sizeLarge' />
+        {onBack && <Icon icon='arrowCircleLeft' color='brand1Main' onClick={onBack}></Icon>}
+      return <Icon icon='exclamationTriangle' color='triageError' size='sizeSmall' />;
+      return <Icon icon='checkAnimated' color='triageSuccess' size='sizeSmall' />;
+      <Icon icon='angleRight' color='greyscaleWhite' size='sizeXXXLarge'/>
+        <Icon icon='angleRight' color='greyscaleBlack' size='sizeXXXLarge'/>
+      <Icon icon='angleLeft' color='greyscaleWhite' size='sizeXXXLarge'/>
+        <Icon icon='angleLeft' color='greyscaleBlack' size='sizeXXXLarge'/>
+      <ExampleIcon icon='notFound' displayProp='icon'/>
+      <ExampleIcon icon='envelopeOpen' displayProp='icon'/>
+      <ExampleIcon icon='envelope' displayProp='icon'/>
+      <ExampleIcon icon='paperclip' displayProp='icon'/>
+      <ExampleIcon icon='search' displayProp='icon'/>
+      <ExampleIcon icon='archive' displayProp='icon'/>
+      <ExampleIcon icon='at' displayProp='icon'/>
+      <ExampleIcon icon='award' displayProp='icon'/>
+      <ExampleIcon icon='ban' displayProp='icon'/>
+      <ExampleIcon icon='barcodeAlt' displayProp='icon'/>
+      <ExampleIcon icon='bell' displayProp='icon'/>
+      <ExampleIcon icon='binoculars' displayProp='icon'/>
+      <ExampleIcon icon='bookOpen' displayProp='icon'/>
+      <ExampleIcon icon='briefcase' displayProp='icon'/>
+      <ExampleIcon icon='building' displayProp='icon'/>
+      <ExampleIcon icon='bullhorn' displayProp='icon'/>
+      <ExampleIcon icon='calendarAlt' displayProp='icon'/>
+      <ExampleIcon icon='bullseyeArrow' displayProp='icon'/>
+      <ExampleIcon icon='cog' displayProp='icon'/>
+      <ExampleIcon icon='doorClosed' displayProp='icon'/>
+      <ExampleIcon icon='gift' displayProp='icon'/>
+      <ExampleIcon icon='handPointRight' displayProp='icon'/>
+      <ExampleIcon icon='hands' displayProp='icon'/>
+      <ExampleIcon icon='home' displayProp='icon'/>
+      <ExampleIcon icon='hourglassEnd' displayProp='icon'/>
+      <ExampleIcon icon='landmark' displayProp='icon'/>
+      <ExampleIcon icon='locationArrow' displayProp='icon'/>
+      <ExampleIcon icon='listUl' displayProp='icon'/>
+      <ExampleIcon icon='link' displayProp='icon'/>
+      <ExampleIcon icon='lockAlt' displayProp='icon'/>
+      <ExampleIcon icon='lockOpen' displayProp='icon'/>
+      <ExampleIcon icon='mapMarker' displayProp='icon'/>
+      <ExampleIcon icon='pencilAlt' displayProp='icon'/>
+      <ExampleIcon icon='paperPlane' displayProp='icon'/>
+      <ExampleIcon icon='phone' displayProp='icon'/>
+      <ExampleIcon icon='puzzlePiece' displayProp='icon'/>
+      <ExampleIcon icon='shoppingCart' displayProp='icon'/>
+      <ExampleIcon icon='star' displayProp='icon'/>
+      <ExampleIcon icon='store' displayProp='icon'/>
+      <ExampleIcon icon='suitcase' displayProp='icon'/>
+      <ExampleIcon icon='tag' displayProp='icon'/>
+      <ExampleIcon icon='ticketAlt' displayProp='icon'/>
+      <ExampleIcon icon='user' displayProp='icon'/>
+      <ExampleIcon icon='users' displayProp='icon'/>
+      <ExampleIcon icon='wallet' displayProp='icon'/>
+      <ExampleIcon icon='watch' displayProp='icon'/>
+      <ExampleIcon icon='wrench' displayProp='icon'/>
+      <ExampleIcon icon='abacus' displayProp='icon'/>
+      <ExampleIcon icon='exclamationTriangle' displayProp='icon'/>
+      <ExampleIcon icon='creditCardBlank' displayProp='icon'/>
+      <ExampleIcon icon='ballot' displayProp='icon'/>
+      <ExampleIcon icon='loading' displayProp='icon'/>
+      <ExampleIcon icon='euroSign' displayProp='icon'/>
+      <ExampleIcon icon='dollarSign' displayProp='icon'/>
+      <ExampleIcon icon='poundSign' displayProp='icon'/>
+      <ExampleIcon icon='arrowCircleDown' displayProp='icon'/>
+      <ExampleIcon icon='arrowUp' displayProp='icon'/>
+      <ExampleIcon icon='angleLeft' displayProp='icon'/>
+      <ExampleIcon icon='angleRight' displayProp='icon'/>
+      <ExampleIcon icon='ban' displayProp='icon'/>
+      <ExampleIcon icon='bell' displayProp='icon'/>
+      <ExampleIcon icon='boxHeart' displayProp='icon'/>
+      <ExampleIcon icon='calendarAlt' displayProp='icon'/>
+      <ExampleIcon icon='check' displayProp='icon'/>
+      <ExampleIcon icon='checkCircle' displayProp='icon'/>
+      <ExampleIcon icon='checkSquare' displayProp='icon'/>
+      <ExampleIcon icon='chevronDown' displayProp='icon'/>
+      <ExampleIcon icon='close' displayProp='icon'/>
+      <ExampleIcon icon='commentDots' displayProp='icon'/>
+      <ExampleIcon icon='exclamationTriangle' displayProp='icon'/>
+      <ExampleIcon icon='eye' displayProp='icon'/>
+      <ExampleIcon icon='eyeSlash' displayProp='icon'/>
+      <ExampleIcon icon='flag_italy' displayProp='icon'/>
+      <ExampleIcon icon='headset' displayProp='icon'/>
+      <ExampleIcon icon='heart' displayProp='icon'/>
+      <ExampleIcon icon='heartCircle' displayProp='icon'/>
+      <ExampleIcon icon='ico_iscritti' displayProp='icon'/>
+      <ExampleIcon icon='infoCircle' displayProp='icon'/>
+      <ExampleIcon icon='lightbulb' displayProp='icon'/>
+      <ExampleIcon icon='paperPlane' displayProp='icon'/>
+      <ExampleIcon icon='search' displayProp='icon'/>
+      <ExampleIcon icon='skullCrossbones' displayProp='icon'/>
+      <ExampleIcon icon='spinner' displayProp='icon'/>
+      <ExampleIcon icon='square' displayProp='icon'/>
+      <ExampleIcon icon='thumbsUp' displayProp='icon'/>
+      <ExampleIcon icon='checkAnimated' displayProp='icon'/>
+      <ExampleIcon icon='user' displayProp='icon'/>
+      <ExampleIcon icon='wallet' displayProp='icon'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='brand1Darker' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='brand1Lighter' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='brand1Main' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='brand2Darker' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='brand2Lighter' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='brand2Main' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='brand3Darker' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='brand3Lighter' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='brand3Main' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='greyscaleAbbey' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='greyscaleBlack' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='greyscaleDarker' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='greyscaleDove' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='greyscaleLighter' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='greyscaleMain' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='greyscaleMercury' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='greyscaleSilver' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='greyscaleWhite' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='triageError' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='triageInfo' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='triageSuccess' displayProp='color'/>
+      <ExampleIcon icon='arrowCircleDown' size='sizeLarge' color='triageWarning' displayProp='color'/>
+      <Icon icon='checkSquare' size='sizeXSmall'/>
+      <Icon icon='checkSquare' size='sizeSmall'/>
+      <Icon icon='checkSquare' size='sizeNormal'/>
+      <Icon icon='checkSquare' size='sizeLarge'/>
+      <Icon icon='checkSquare' size='sizeXLarge'/>
+      <Icon icon='checkSquare' size='sizeXXLarge'/>
+      <Icon icon='checkSquare' size='sizeXXXLarge'/>
+    <Icon icon='paperPlane' />
+    <Icon icon='paperPlane' centered={true} />
+        <Icon icon='search' color='greyscaleMain' />
+          <Icon icon='timesCircle' color='brand1Main' onClick={this.resetValue} />
+      <MaxiIconBulletPoint icon='hands'>
+      <MaxiIconBulletPointWithDoubtBox icon='hands' title='hai un dubbio?' render={() => TT} >
+    <WithBullet icon='paperPlane'>
+    <WithBullet icon='paperPlane' iconSize='large'>
+    return <Icon icon='user' color='greyscaleSilver' onClick={this.openARUModal} />;
+      <MaxiIconBulletPointWithDoubtBox doubtBoxData={dbData} icon='envelopeOpen'>
+      <MaxiIconBulletPointWithDoubtBox doubtBoxData={dbData} icon='envelopeOpen'>
+      <MaxiIconBulletPointWithDoubtBox doubtBoxData={dbData} icon='envelopeOpen'>
+      <MaxiIconBulletPointWithDoubtBox doubtBoxData={dbData} icon='envelopeOpen'>
+      {!beneficiary && <Icon icon='loading' color='greyscaleSilver' size='sizeLarge' />}
+    <Icon icon='streetView' color='brand3Darker' size='sizeXXLarge'/>
+          <Icon color='greyscaleWhite' icon='close' size='sizeNormal' />
+      {!choices && <Icon icon='loading' color='greyscaleSilver' size='sizeLarge' />}
+        <Icon icon='wallet' color='greyscaleWhite' size='sizeLarge'/>
+            icon='ico_iscritti'
+            icon='ico_accessi'
+            icon='ico_prodotti'
+            icon='ico_brand'
+        <Icon icon='lightbulbOn' size='sizeXLarge' color='brand3Darker' />
+    <ShadowedBadge icon='cog' />);
+  .add('Status success with icon', () => <Badge icon='calendarCheck'/>)
+  .add('Status success with icon small', () => <Badge icon='calendarCheck' variant='small'/>)
+      icon='heart'
+      <Icon icon='spinner' spin />
+      icon='plus'
+      icon='ellipsisH'
+    {!beneficiaries && <Icon icon='loading' color='greyscaleSilver' size='sizeLarge' />}
+                icon='headset'
+                <Icon icon='arrowToLeft' color='brand1Main' />
+      {!profile && <Icon icon='loading' color='greyscaleSilver' size='sizeLarge' />}
+      {!info && <Icon icon='loading' color='greyscaleSilver' size='sizeLarge' />}
+      <Icon icon='boxHeart' size='sizeLarge' />
+        <Icon icon='times' size='sizeNormal'  />
+      <Icon icon='times' size='sizeNormal' />
+        <Icon icon='circle_solid' color={( daysBeforeEnd > 0) ? 'triageSuccess' : 'triageError'} />
+            <Icon icon='wallet' color='brand1Main' size='sizeNormal' />
+            <Icon icon='exchange' color='brand1Main' size='sizeNormal' />
+  <Icon icon='wrench' color='greyscaleSilver' size='sizeLarge' />
+      {!request && <Icon icon='loading' color='greyscaleSilver' size='sizeLarge' />}
+          <Badge icon='calendarCheck' variant='small' />
+        icon='minusCircle'
+        icon='plusCircle'
+    { !requests && <Icon icon='loading' color='greyscaleSilver' size='sizeLarge' /> }
+      <MaxiIconBulletPoint icon='hands'>
+      <MaxiIconBulletPoint icon='paperPlane'>
+    <Icon icon='bell' color='greyscaleSilver'/>
+      <Icon icon='bars' size='sizeXXLarge' color='greyscaleMain' onClick={this.props.mobileMenuToggler} />
+      <Icon icon='search' color='greyscaleMain' onClick={this.openSearchMenu} />
+      <TopMostButton label={dictionary.t('topmostmenu.help')} icon='headset'/>
+      <Icon icon='people' />
+      <Icon icon='people' />
+      <Icon icon='people' />
+                icon='close'
+            icon='square'
+              icon='checkAnimated'
+            icon='square'
+    <Icon icon='wallet' color='brand1Main' size='sizeNormal' />
+    <Icon icon='exchange' color='brand1Main' size='sizeNormal' />
+    <Icon icon='users' color='brand1Main' size='sizeNormal' />
+    <Icon icon='bell' color='brand1Main' size='sizeNormal' />
+    <Icon icon='heart' color='brand1Main' size='sizeNormal' />
+    <ProfilePicture icon='plus' />);
+      <Icon icon='circle_solid' color='triageSuccess' />
+      <Icon icon='circle_solid' color='triageError' />
+      <Icon icon='commentDots' size='sizeXLarge' color='brand3Darker'/>
+        <Icon color={iconColor} icon='chevronDown' size='sizeXSmall'/>
+        <Icon color={iconColor} icon='chevronDown' size='sizeXSmall' />
+            icon='close'
+          icon='infoCircle'
