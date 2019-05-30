@@ -1,0 +1,37 @@
+{
+  "name": "geiesmonads-parsers-icon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "babel-node --presets es2015 parseIconNames.js",
+    "parsers": "./node_modules/.bin/babel --plugins=transform-es2015-modules-amd ./js ./examples ./js-spec --out-dir ./dist --source-maps inline"
+  },
+  "author": "Marco Faustinelli",
+  "license": "MIT",
+  "babel": {
+    "presets": [
+      "stage-0",
+      "es2015"
+    ],
+    "plugins": []
+  },
+  "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-eslint": "^7.1.1",
+    "babel-loader": "^6.2.8",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-es2015-modules-amd": "^6.6.5",
+    "babel-polyfill": "^6.3.14",
+    "babel-preset-react-hmre": "^1.0.1",
+    "babel-preset-stage-0": "^6.3.13",
+    "data.maybe": "v1.2.2",
+    "data.validation": "v1.3.1",
+    "folktale": "2.0.1",
+    "data.either": "v1.5.1"
+  },
+  "dependencies": {
+    "babel-cli": "^6.9.0"
+  }
+}
