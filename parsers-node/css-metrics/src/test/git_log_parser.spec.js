@@ -1,7 +1,10 @@
 import { expect } from 'chai';
 import {
-  lineP
-} from '../lib/git_log_parser';
+  lineP,
+} from '../git_log_parser';
+import {
+  pchar,
+} from '../lib/parsers';
 
 describe('among git log parsers', () => {
 
