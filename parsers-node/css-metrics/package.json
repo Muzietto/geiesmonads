@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "babel-node --presets es2015 parseCssLogfile.js",
+    "compile": "babel --presets es2015,stage-0 -d dist/ src/",
+    "test": "npm run compile && mocha --compilers js:babel-core/register",
     "parsers": "./node_modules/.bin/babel --plugins=transform-es2015-modules-amd ./js ./examples ./js-spec --out-dir ./dist --source-maps inline"
   },
   "author": "Marco Faustinelli",
@@ -29,7 +31,8 @@
     "data.maybe": "v1.2.2",
     "data.validation": "v1.3.1",
     "folktale": "2.0.1",
-    "data.either": "v1.5.1"
+    "data.either": "v1.5.1",
+    "mocha": "6.1.4"
   },
   "dependencies": {
     "babel-cli": "^6.9.0"
