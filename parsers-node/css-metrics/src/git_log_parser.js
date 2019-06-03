@@ -8,11 +8,14 @@ import {
   opt, // returns a Success(Maybe)
   sequenceP, // returns an array
   many1, // returns a Success(_)
-} from 'js/parsers';
+  many,
+  pchar,
+  pstring,
+} from './lib/parsers';
 
 const array2String = arr => arr.join('');
 
-const lineP = parser => parser.discardSecond(pchar('\n')).setLabel('On one line: ' + parser.label);
+export const lineP = parser => parser.discardSecond(pchar('\n')).setLabel('On one line: ' + parser.label);
 const symbolicCharP = anyOf(symbolicChars());
 const numberP = many1(digitP).fmap(res => parseInt(res.join(''), 10));
 const whateverP = many(choice([letterP, digitP, whiteP, symbolicCharP]))
