@@ -6,7 +6,7 @@
   "scripts": {
     "start": "babel-node --presets es2015 parseCssLogfile.js",
     "compile": "babel --presets es2015,stage-0 -d dist/ src/",
-    "test": "npm run compile && mocha --compilers js:babel-core/register",
+    "test": "npm run compile && mocha ./dist/test --reporter=min --no-colors --require babel-core/register",
     "parsers": "./node_modules/.bin/babel --plugins=transform-es2015-modules-amd ./js ./examples ./js-spec --out-dir ./dist --source-maps inline"
   },
   "author": "Marco Faustinelli",
@@ -16,22 +16,26 @@
       "stage-0",
       "es2015"
     ],
-    "plugins": []
+    "plugins": [
+      "transform-runtime"
+    ]
   },
   "devDependencies": {
     "babel-core": "^6.18.2",
     "babel-eslint": "^7.1.1",
     "babel-loader": "^6.2.8",
-    "babel-preset-es2015": "^6.18.0",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-plugin-transform-es2015-modules-amd": "^6.6.5",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.3.14",
+    "babel-preset-es2015": "^6.18.0",
     "babel-preset-react-hmre": "^1.0.1",
     "babel-preset-stage-0": "^6.3.13",
+    "chai": "^4.2.0",
+    "data.either": "v1.5.1",
     "data.maybe": "v1.2.2",
     "data.validation": "v1.3.1",
     "folktale": "2.0.1",
-    "data.either": "v1.5.1",
     "mocha": "6.1.4"
   },
   "dependencies": {
