@@ -48,26 +48,26 @@ const firstLineP = lineP(dateP);
 
 const filenameP = many1(choice([letterP, digitP, pchar('/')])).fmap(array2String);
 
-const secondLineP = lineP(whiteP.discardFirst(filenameP).discardSecond(whateverP)]));
+const secondLineP = lineP(whiteP.discardFirst(filenameP).discardSecond(whateverP));
 
 const insertionsP = numberP.discardSecond(sequenceP([whiteP, pstring('insertion'), opt(pchar('s')), stringP('(+)')]));
 const deletionsP = numberP.discardSecond(sequenceP([whiteP, pstring('deletion'), opt(pchar('s')), stringP('(-)')]));
 
 const thirdLineP = lineP(sequenceP([whateverP, pchar(','), whiteP])
   .discardFirst(sequenceP([opt(insertionsP), opt(sequenceP([pchar(','), whiteP])), opt(deletionsP)])))
-  .fmap([maybeInsertions, maybeSeparator, maybeDeletions] => {/* TODO operations here */}); // deltaRows
+  .fmap(([maybeInsertions, maybeSeparator, maybeDeletions]) => {/* TODO operations here */}); // deltaRows
 
-const commitP = ... // res = Tuple.Couple(filename, Tuple.Couple(date, deltaRows))
+//const commitP = ... // res = Tuple.Couple(filename, Tuple.Couple(date, deltaRows))
 
-const fileHistorySeparatorP = ...
+//const fileHistorySeparatorP = ...
 
-const fileHistoryP = ... // Tuple.Couple(filename, Tuple.Couple[](data, filesize))
+//const fileHistoryP = ... // Tuple.Couple(filename, Tuple.Couple[](data, filesize))
 
-const gitLogFileP = ... // Tuple.Couple(filename, Tuple.Couple[](data, filesize))[]
+//const gitLogFileP = ... // Tuple.Couple(filename, Tuple.Couple[](data, filesize))[]
 
 function symbolicChars() {
   return [
-    '/'
+    '/',
     '+',
     '-',
     '|',
