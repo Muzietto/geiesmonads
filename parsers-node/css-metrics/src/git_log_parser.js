@@ -15,9 +15,12 @@ import {
 
 const array2String = arr => arr.join('');
 
-export const lineP = parser => parser.discardSecond(pchar('\n')).setLabel('On one line: ' + parser.label);
+export const lineP = parser => parser.andThen(pchar('\n'))
+  .fmap(([ res, cr ]) => { console.log(`prova ${res}`); return res; } )
+  .setLabel('On one line: ' + parser.label);
+
 const symbolicCharP = anyOf(symbolicChars());
-const numberP = many1(digitP).fmap(res => parseInt(res.join(''), 10));
+export const numberP = many1(digitP).fmap(res => parseInt(res.join(''), 10));
 const whateverP = many(choice([letterP, digitP, whiteP, symbolicCharP]))
   .fmap(array2String).setLabel('Parsing whatever...');
 
