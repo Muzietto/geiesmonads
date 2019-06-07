@@ -13,30 +13,33 @@ import {
   pstring,
 } from './lib/parsers';
 
-const array2String = arr => arr.join('');
+const array2String = res => res.join('');
+const tuple2String = res => res.toArray().join('');
 
-export const lineP = parser => parser.andThen(pchar('\n'))
-  .fmap(([ res, cr ]) => { console.log(`prova ${res}`); return res; } )
+export const lineP = parser => parser.discardSecond(pstring('§§'))
   .setLabel('On one line: ' + parser.label);
-
 const symbolicCharP = anyOf(symbolicChars());
-export const numberP = many1(digitP).fmap(res => parseInt(res.join(''), 10));
-const whateverP = many(choice([letterP, digitP, whiteP, symbolicCharP]))
+export const numberP = many1(digitP).fmap(res => parseInt(res.join(''), 10))
+  .setLabel('numberP');
+export const whateverP = many(choice([letterP, digitP, whiteP, symbolicCharP]))
   .fmap(array2String).setLabel('Parsing whatever...');
 
-const weekdayP = choice(['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(stringP));
-const monthP = choice(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map(stringP));
-const yearP = many(digitP, 4).fmap(array2String);
-const timezoneP = (pchar('+').andThen(yearP)).fmap(array2String);
-const daytimeP = sequenceP([
+export const weekdayP = choice(['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+  .map(stringP)).setLabel('weekdayP');
+export const monthP = choice(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  .map(stringP)).setLabel('monthP');
+export const yearP = many(digitP, 4).fmap(array2String).setLabel('yearP');
+export const timezoneP = pchar('+').andThen(yearP)
+  .fmap(tuple2String).setLabel('timezoneP');
+export const daytimeP = sequenceP([
   numberP,
   pchar(':'),
   numberP,
   pchar(':'),
   numberP,
-]).fmap(array2String);
+]).fmap(array2String).setLabel('daytimeP');
 
-const dateP = sequenceP([
+export const dateP = sequenceP([
   weekdayP,
   whiteP,
   monthP,
@@ -48,7 +51,7 @@ const dateP = sequenceP([
   yearP,
   whiteP,
   timezoneP,
-]).fmap(array2String); // ready for new Date(res)
+]).fmap(res => new Date(array2String(res))).setLabel('dateP');
 
 const firstLineP = lineP(dateP);
 
