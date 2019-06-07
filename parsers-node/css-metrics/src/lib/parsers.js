@@ -396,7 +396,7 @@ export function tapP(px, fn) {
 
 export function logP(px) {
   // eslint-disable-next-line no-console
-  return tapP(px, res => console.log(px.label + ':' + res));
+  return tapP(px, res => { console.log(px.label + ':' + res.toString()); });
 }
 
 export function pword(word) {
