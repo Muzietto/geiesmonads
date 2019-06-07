@@ -55,14 +55,14 @@ export const dateP = sequenceP([
 
 const firstLineP = lineP(dateP);
 
-const filenameP = many1(choice([letterP, digitP, pchar('/')])).fmap(array2String);
+export const filenameP = many1(choice([letterP, digitP, pchar('/'), pchar('.')])).fmap(array2String);
 
 const secondLineP = lineP(whiteP.discardFirst(filenameP).discardSecond(whateverP));
 
-const insertionsP = numberP.discardSecond(sequenceP([whiteP, pstring('insertion'), opt(pchar('s')), stringP('(+)')]));
-const deletionsP = numberP.discardSecond(sequenceP([whiteP, pstring('deletion'), opt(pchar('s')), stringP('(-)')]));
+export const insertionsP = numberP.discardSecond(sequenceP([whiteP, pstring('insertion'), opt(pchar('s')), stringP('(+)')]));
+export const deletionsP = numberP.discardSecond(sequenceP([whiteP, pstring('deletion'), opt(pchar('s')), stringP('(-)')]));
 
-const thirdLineP = lineP(sequenceP([whateverP, pchar(','), whiteP])
+export const thirdLineP = lineP(sequenceP([whateverP, pchar(','), whiteP])
   .discardFirst(sequenceP([opt(insertionsP), opt(sequenceP([pchar(','), whiteP])), opt(deletionsP)])))
   .fmap(([maybeInsertions, maybeSeparator, maybeDeletions]) => {/* TODO operations here */}); // deltaRows
 
