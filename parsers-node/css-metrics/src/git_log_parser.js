@@ -57,7 +57,7 @@ const firstLineP = lineP(dateP);
 
 export const filenameP = many1(choice([letterP, digitP, pchar('/'), pchar('.')])).fmap(array2String);
 
-const secondLineP = lineP(whiteP.discardFirst(filenameP).discardSecond(whateverP));
+export const secondLineP = lineP(whiteP.discardFirst(filenameP).discardSecond(whateverP));
 
 export const insertionsP = numberP.discardSecond(sequenceP([whiteP, pstring('insertion'), opt(pchar('s')), stringP('(+)')]));
 export const deletionsP = numberP.discardSecond(sequenceP([whiteP, pstring('deletion'), opt(pchar('s')), stringP('(-)')]));
@@ -92,7 +92,6 @@ function symbolicChars() {
     '$',
     '£',
     '®',
-    '§',
     '™',
     '¥',
     '(', ')',
