@@ -97,7 +97,7 @@ describe('among git log parsers', () => {
         });
     });
 
-    describe('secondLineP', () => {//expect(line.run(prep('a\n')).isSuccess).to.be.true;
+    describe('secondLineP', () => {
         const fname = 'src/components/organisms/Accordion/Accordion.scss';
         it('parses a complex string and returns just the filename', () => {
           const secline = whiteP.discardFirst(filenameP).discardSecond(whateverP)
@@ -122,6 +122,15 @@ describe('among git log parsers', () => {
           expect(deletionsP.run('53 deletions(-)').isSuccess).to.be.true;
           expect(deletionsP.run('53 deletions(-)').value[0]).to.be.eql(53);
           expect(deletionsP.run('53 deletions(-)').value[1].rest()).to.be.eql('');
+        });
+    });
+
+    describe('thirdLineP', () => {
+        it('parses a complex string and returns just relevant numbers', () => {
+          expect(thirdLineP.run(prep(' 1 file changed, 3 insertions(+), 3 deletions(-)\n')).value[0]).to.be.eql(0);
+          expect(thirdLineP.run(prep(' 1 file changed, 3 deletions(-)\n')).value[0]).to.be.eql(-3);
+          expect(thirdLineP.run(prep(' 1 file changed, 3 insertions(+), 1 deletions(-)\n')).value[0]).to.be.eql(2);
+          expect(thirdLineP.run(prep(' 1 file changed, 43 deletions(-)\n')).value[0]).to.be.eql(-43);
         });
     });
 });

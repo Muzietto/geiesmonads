@@ -64,7 +64,8 @@ export const deletionsP = numberP.discardSecond(sequenceP([whiteP, pstring('dele
 
 export const thirdLineP = lineP(sequenceP([whateverP, pchar(','), whiteP])
   .discardFirst(sequenceP([opt(insertionsP), opt(sequenceP([pchar(','), whiteP])), opt(deletionsP)])))
-  .fmap(([maybeInsertions, maybeSeparator, maybeDeletions]) => {/* TODO operations here */}); // deltaRows
+  .fmap(([maybeInsertions, maybeSeparator, maybeDeletions]) =>
+      maybeInsertions.getOrElse(0) - maybeDeletions.getOrElse(0)) // deltaRows
 
 //const commitP = ... // res = Tuple.Couple(filename, Tuple.Couple(date, deltaRows))
 
@@ -85,7 +86,6 @@ function symbolicChars() {
     '©',
     '÷',
     'µ',
-    '·',
     '¶',
     '±',
     '€',
