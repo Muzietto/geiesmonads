@@ -8,6 +8,7 @@ import {
   timezoneP,
   daytimeP,
   dateP,
+  filenameP,
 } from '../git_log_parser';
 import {
   pchar,
@@ -82,6 +83,14 @@ describe('among git log parsers', () => {
         });
     });
 
+    describe('filenameP', () => {
+        it('parses a filename', () => {
+          expect(filenameP.run('src/Accordion.scss').isSuccess).to.be.true;
+          expect(filenameP.run('src/Accordion.scss').value[1].rest()).to.be.eql('');
+          expect(filenameP.run('src\\components\\organisms\\Accordion\\Accordion.scss').isSuccess).to.be.true;
+          expect(filenameP.run('src\\components\\organisms\\Accordion\\Accordion.scss').value[1].rest()).not.to.be.eql('');
+        });
+    });
 });
 
 function prep(str) {
