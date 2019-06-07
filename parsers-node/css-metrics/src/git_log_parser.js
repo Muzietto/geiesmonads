@@ -13,6 +13,10 @@ import {
   pstring,
 } from './lib/parsers';
 
+import { Tuple } from './lib/tuples';
+const Pair = Tuple.Pair;
+const Triple = Tuple.Triple;
+
 const array2String = res => res.join('');
 const tuple2String = res => res.toArray().join('');
 
@@ -67,13 +71,14 @@ export const thirdLineP = lineP(sequenceP([whateverP, pchar(','), whiteP])
   .fmap(([maybeInsertions, maybeSeparator, maybeDeletions]) =>
       maybeInsertions.getOrElse(0) - maybeDeletions.getOrElse(0)) // deltaRows
 
-//const commitP = ... // res = Tuple.Couple(filename, Tuple.Couple(date, deltaRows))
+export const commitP = sequenceP([firstLineP, secondLineP, thirdLineP])
+  .fmap(([date, filename, deltaRows]) => Couple(filename, Couple(date, deltaRows)));
 
 //const fileHistorySeparatorP = ...
 
-//const fileHistoryP = ... // Tuple.Couple(filename, Tuple.Couple[](data, filesize))
+//const fileHistoryP = ... // Couple(filename, Couple[](data, filesize))
 
-//const gitLogFileP = ... // Tuple.Couple(filename, Tuple.Couple[](data, filesize))[]
+//const gitLogFileP = ... // Couple(filename, Couple[](data, filesize))[]
 
 function symbolicChars() {
   return [
