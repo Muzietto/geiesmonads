@@ -9,10 +9,15 @@ import {
   daytimeP,
   dateP,
   filenameP,
+  secondLineP,
+  insertionsP,
+  deletionsP,
+  thirdLineP,
 } from '../git_log_parser';
 import {
   pchar,
-  logP
+  logP,
+  whiteP,
 } from '../lib/parsers';
 
 describe('among git log parsers', () => {
@@ -36,7 +41,7 @@ describe('among git log parsers', () => {
     describe('whateverP', () => {
         it('parses anything, as long as it\'s made of chars', () => {
             expect(whateverP.run('').isSuccess).to.be.true;
-            expect(whateverP.run('a').isSuccess).to.be.true;
+            expect(whateverP.run(' | 6 +++---').isSuccess).to.be.true;
             expect(whateverP.run('123').isSuccess).to.be.true;
             expect(whateverP.run('123asd£$% £$%345ertERT QWEQWE123@#ù').isSuccess).to.be.true;
         });
@@ -89,6 +94,16 @@ describe('among git log parsers', () => {
           expect(filenameP.run('src/Accordion.scss').value[1].rest()).to.be.eql('');
           expect(filenameP.run('src\\components\\organisms\\Accordion\\Accordion.scss').isSuccess).to.be.true;
           expect(filenameP.run('src\\components\\organisms\\Accordion\\Accordion.scss').value[1].rest()).not.to.be.eql('');
+        });
+    });
+
+    describe('secondLineP', () => {//expect(line.run(prep('a\n')).isSuccess).to.be.true;
+        const fname = 'src/components/organisms/Accordion/Accordion.scss';
+        it('parses a complex string and returns just the filename', () => {
+          const secline = whiteP.discardFirst(filenameP).discardSecond(whateverP)
+          expect(secline.run(' ' + fname + ' | 6 +++---').value[0]).to.be.eql(fname);
+          expect(lineP(secline).run(prep(' ' + fname + ' | 6 +++---\n')).value[0]).to.be.eql(fname);
+          expect(secondLineP.run(prep(' ' + fname + ' | 6 +++---\n')).value[0]).to.be.eql(fname);
         });
     });
 });
