@@ -379,7 +379,7 @@ export function betweenParens(px) {
 }
 
 export function bindP(famb, px) {
-  const label = 'unknown';
+  const label = 'bindP';
   return parser(pos => {
     const res = px.run(pos);
     if (res.isFailure) return res;
