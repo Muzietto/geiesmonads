@@ -9,6 +9,7 @@ import {
   daytimeP,
   dateP,
   filenameP,
+  firstLineP,
   secondLineP,
   insertionsP,
   deletionsP,
@@ -18,6 +19,7 @@ import {
   pchar,
   logP,
   whiteP,
+  sequenceP,
 } from '../lib/parsers';
 
 describe('among git log parsers', () => {
@@ -85,6 +87,8 @@ describe('among git log parsers', () => {
           expect(dateP.run('Tue Jan 22 15:38:24 2019 +0100').isSuccess).to.be.true;
           expect(dateP.run('Tue Jan 22 15:38:24 2019').isSuccess).to.be.false;
           expect(dateP.run('Tue Jan 22 15:38:24 2019 +0100').value[0].constructor.name === 'Date').to.be.true;
+          expect(dateP.run('Thu Jan 17 09:22:09 2019 +0100').isSuccess).to.be.true;
+          expect(dateP.run('Thu Jan 17 09:22:09 2019 +0100').value[0].constructor.name === 'Date').to.be.true;
         });
     });
 
@@ -131,6 +135,20 @@ describe('among git log parsers', () => {
           expect(thirdLineP.run(prep(' 1 file changed, 3 deletions(-)\n')).value[0]).to.be.eql(-3);
           expect(thirdLineP.run(prep(' 1 file changed, 3 insertions(+), 1 deletions(-)\n')).value[0]).to.be.eql(2);
           expect(thirdLineP.run(prep(' 1 file changed, 43 deletions(-)\n')).value[0]).to.be.eql(-43);
+        });
+    });
+
+    describe.only('xxx', () => {
+        it('parses a 3-lines commit log', () => {
+          const commitStr = 'a\nb\nc\n';
+          expect(sequenceP([lineP(pchar('a')), lineP(pchar('b')), lineP(pchar('c'))]).run(prep(commitStr)).toString()).to.be.eql(0);
+        });
+    });
+
+    describe('commitP', () => {
+        it('parses a 3-lines commit log', () => {
+          const commitStr = 'Thu Jan 17 09:22:09 2019 +0100\n src/components/organisms/Modal/Modal.scss | 13 ++++++-------\n 1 file changed, 6 insertions(+), 7 deletions(-)\n';
+          expect(thirdLineP.run(prep(commitStr)).toString()).to.be.eql(0);
         });
     });
 });
