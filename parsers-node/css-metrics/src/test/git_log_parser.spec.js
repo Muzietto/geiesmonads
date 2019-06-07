@@ -106,6 +106,24 @@ describe('among git log parsers', () => {
           expect(secondLineP.run(prep(' ' + fname + ' | 6 +++---\n')).value[0]).to.be.eql(fname);
         });
     });
+
+    describe('insertionsP', () => {
+        it('extracts the number of insertions', () => {
+          expect(insertionsP.run('1 insertion(+)').isSuccess).to.be.true;
+          expect(insertionsP.run('53 insertions(+)').isSuccess).to.be.true;
+          expect(insertionsP.run('53 insertions(+)').value[0]).to.be.eql(53);
+          expect(insertionsP.run('53 insertions(+)').value[1].rest()).to.be.eql('');
+        });
+    });
+
+    describe('deletionsP', () => {
+        it('extracts the number of deletions', () => {
+          expect(deletionsP.run('1 deletion(-)').isSuccess).to.be.true;
+          expect(deletionsP.run('53 deletions(-)').isSuccess).to.be.true;
+          expect(deletionsP.run('53 deletions(-)').value[0]).to.be.eql(53);
+          expect(deletionsP.run('53 deletions(-)').value[1].rest()).to.be.eql('');
+        });
+    });
 });
 
 function prep(str) {
