@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "babel-node --presets es2015 parseCssLogfile.js",
-    "compile": "babel --presets es2015,stage-0 -d dist/ src/",
+    "compile": "babel --presets es2015,stage-0 src/ --out-dir dist/ ",
     "test": "npm run compile && mocha ./dist/test --reporter=min --no-colors --require babel-core/register",
     "parsers": "./node_modules/.bin/babel --plugins=transform-es2015-modules-amd ./js ./examples ./js-spec --out-dir ./dist --source-maps inline"
   },
