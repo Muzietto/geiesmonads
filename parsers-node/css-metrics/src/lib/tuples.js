@@ -46,6 +46,9 @@ _pair.prototype.type = 'pair';
 _pair.prototype.toString = function () {
     return '[' + this[0].toString() + ',' + this[1].toString() + ']';
 };
+_pair.prototype.toArray = function () {
+  return Array.from(this);
+};
 
 function Triple(a, b, c) {
     let result = new _triple(a, b, c);
@@ -67,6 +70,9 @@ _triple.prototype.isTriple = true;
 _triple.prototype.type = 'triple';
 _triple.prototype.toString = function () {
     return '[' + this[0].toString() + ',' + this[1].toString() + ',' + this[2].toString() + ']';
+};
+_triple.prototype.toArray = function () {
+  return Array.from(this);
 };
 
 Tuple.Pair = Pair;
