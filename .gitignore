@@ -1,7 +1,11 @@
 
 .idea
 /parsers/node_modules
+/parsers/dist
 /parsers-node/icon/node_modules
+/parsers-node/icon/dist
+/parsers-node/css-metrics/node_modules
+/parsers-node/css-metrics/dist
 
 #################
 ## Eclipse
