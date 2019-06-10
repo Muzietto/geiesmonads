@@ -84,11 +84,21 @@ describe('among git log parsers', () => {
 
     describe('dateP', () => {
         it('parses a complex string and returns a JS Date', () => {
-          expect(dateP.run('Tue Jan 22 15:38:24 2019 +0100').isSuccess).to.be.true;
+          expect(dateP.run('Thu Jan 17 09:22:09 2019 +0100').isSuccess).to.be.true;
           expect(dateP.run('Tue Jan 22 15:38:24 2019').isSuccess).to.be.false;
           expect(dateP.run('Tue Jan 22 15:38:24 2019 +0100').value[0].constructor.name === 'Date').to.be.true;
           expect(dateP.run('Thu Jan 17 09:22:09 2019 +0100').isSuccess).to.be.true;
           expect(dateP.run('Thu Jan 17 09:22:09 2019 +0100').value[0].constructor.name === 'Date').to.be.true;
+        });
+    });
+
+    describe('firstLineP', () => {
+        it('parses a date with a newline at the end', () => {
+          expect(firstLineP.run(prep('Thu Jan 17 09:22:09 2019 +0100\n')).isSuccess).to.be.true;
+          expect(firstLineP.run(prep('Tue Jan 22 15:38:24 2019\n')).isSuccess).to.be.false;
+          expect(firstLineP.run(prep('Tue Jan 22 15:38:24 2019 +0100\n')).value[0].constructor.name === 'Date').to.be.true;
+          expect(firstLineP.run(prep('Thu Jan 17 09:22:09 2019 +0100\n')).isSuccess).to.be.true;
+          expect(firstLineP.run(prep('Thu Jan 17 09:22:09 2019 +0100\n')).value[0].constructor.name === 'Date').to.be.true;
         });
     });
 
@@ -138,21 +148,23 @@ describe('among git log parsers', () => {
         });
     });
 
-    describe.only('xxx', () => {
+    describe('an hand-made line parser', () => {
         it('parses a 3-lines commit log', () => {
+          const parzer = sequenceP([lineP(pchar('a')), lineP(pchar('b')), lineP(pchar('c'))]);
           const commitStr = 'a\nb\nc\n';
-          expect(sequenceP([lineP(pchar('a')), lineP(pchar('b')), lineP(pchar('c'))]).run(prep(commitStr)).toString()).to.be.eql(0);
+          expect(parzer.run(prep(commitStr)).isSuccess).to.be.true;
+          expect(parzer.run(prep(commitStr)).value[1].rest()).to.be.eql('');
         });
     });
 
     describe('commitP', () => {
         it('parses a 3-lines commit log', () => {
-          const commitStr = 'Thu Jan 17 09:22:09 2019 +0100\n src/components/organisms/Modal/Modal.scss | 13 ++++++-------\n 1 file changed, 6 insertions(+), 7 deletions(-)\n';
+          const commitStr = 'Thu Jan 17 19:22:09 2019 +0100\n';
           expect(thirdLineP.run(prep(commitStr)).toString()).to.be.eql(0);
         });
     });
 });
 
 function prep(str) {
-  return str.replace('\n', '§§')
+  return str.replace(/\n/g, '§§')
 }

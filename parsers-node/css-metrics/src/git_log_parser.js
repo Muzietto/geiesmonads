@@ -57,7 +57,7 @@ export const dateP = sequenceP([
   timezoneP,
 ]).fmap(res => new Date(array2String(res))).setLabel('dateP');
 
-const firstLineP = lineP(dateP);
+export const firstLineP = lineP(dateP);
 
 export const filenameP = many1(choice([letterP, digitP, pchar('/'), pchar('.')])).fmap(array2String);
 
