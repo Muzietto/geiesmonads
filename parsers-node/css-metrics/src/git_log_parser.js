@@ -20,13 +20,15 @@ const Triple = Tuple.Triple;
 const array2String = res => res.join('');
 const tuple2String = res => res.toArray().join('');
 
-export const lineP = parser => parser.discardSecond(pstring('§§'))
+const newlineP = pstring('§§');
+export const lineP = parser => parser.discardSecond(newlineP)
   .setLabel('On one line: ' + parser.label);
 const symbolicCharP = anyOf(symbolicChars());
 export const numberP = many1(digitP).fmap(res => parseInt(res.join(''), 10))
   .setLabel('numberP');
 export const whateverP = many(choice([letterP, digitP, whiteP, symbolicCharP]))
   .fmap(array2String).setLabel('Parsing whatever...');
+export const fileHistorySeparatorP = lineP(many(pchar('-'), 6));
 
 export const weekdayP = choice(['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
   .map(stringP)).setLabel('weekdayP');
@@ -74,11 +76,9 @@ export const thirdLineP = lineP(sequenceP([whateverP, pchar(','), whiteP])
 export const commitP = sequenceP([firstLineP, secondLineP, thirdLineP])
   .fmap(([date, filename, deltaRows]) => Pair(filename, Pair(date, deltaRows)));
 
-//const fileHistorySeparatorP = ...
+//const fileHistoryP = ... // Pair(filename, Pair[](data, filesize))
 
-//const fileHistoryP = ... // Couple(filename, Couple[](data, filesize))
-
-//const gitLogFileP = ... // Couple(filename, Couple[](data, filesize))[]
+//const gitLogFileP = ... // Pair(filename, Pair[](data, filesize))[]
 
 function symbolicChars() {
   return [

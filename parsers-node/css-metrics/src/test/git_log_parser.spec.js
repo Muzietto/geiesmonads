@@ -14,6 +14,10 @@ import {
   insertionsP,
   deletionsP,
   thirdLineP,
+  commitP,
+  fileHistorySeparatorP,
+  fileHistoryP,
+  gitLogFileP
 } from '../git_log_parser';
 import {
   pchar,
