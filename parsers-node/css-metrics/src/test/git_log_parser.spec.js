@@ -159,8 +159,17 @@ describe('among git log parsers', () => {
 
     describe('commitP', () => {
         it('parses a 3-lines commit log', () => {
-          const commitStr = 'Thu Jan 17 19:22:09 2019 +0100\n';
-          expect(thirdLineP.run(prep(commitStr)).toString()).to.be.eql(0);
+          const commitStr = 'Thu Jan 17 19:22:09 2019 +0100\n Accordion.scss | 22 +++\n 1 file changed, 16 insertions(+), 6 deletions(-)\n';
+          expect(commitP.run(prep(commitStr)).isSuccess).to.be.true;
+          expect(commitP.run(prep(commitStr)).toString()).to.be.eql('Validation.Success([[Accordion.scss,[Thu Jan 17 2019 19:22:09 GMT+0100 (Central European Standard Time),10]],row=1;col=0;rest=])');
+        });
+    });
+    describe('fileHistorySeparatorP', () => {
+        it('parses six lonely dashes in a row', () => {
+          expect(fileHistorySeparatorP.run(prep('------\n')).isSuccess).to.be.true;
+          expect(fileHistorySeparatorP.run(prep('-------\n')).isSuccess).to.be.false;
+          expect(fileHistorySeparatorP.run(prep('-----\n')).isSuccess).to.be.false;
+          expect(fileHistorySeparatorP.run(prep('-----6\n')).isSuccess).to.be.false;
         });
     });
 });

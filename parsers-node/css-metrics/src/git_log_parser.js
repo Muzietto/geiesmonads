@@ -72,7 +72,7 @@ export const thirdLineP = lineP(sequenceP([whateverP, pchar(','), whiteP])
       maybeInsertions.getOrElse(0) - maybeDeletions.getOrElse(0)) // deltaRows
 
 export const commitP = sequenceP([firstLineP, secondLineP, thirdLineP])
-  .fmap(([date, filename, deltaRows]) => Couple(filename, Couple(date, deltaRows)));
+  .fmap(([date, filename, deltaRows]) => Pair(filename, Pair(date, deltaRows)));
 
 //const fileHistorySeparatorP = ...
 
