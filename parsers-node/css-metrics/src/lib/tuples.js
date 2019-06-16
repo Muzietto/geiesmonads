@@ -44,7 +44,7 @@ function _pair(a, b) {
 _pair.prototype.isPair = true;
 _pair.prototype.type = 'pair';
 _pair.prototype.toString = function () {
-    return '[' + this[0].toString() + ',' + this[1].toString() + ']';
+    return 'P[' + toStringConsideringArrays(this[0]) + ',' + toStringConsideringArrays(this[1]) + ']';
 };
 _pair.prototype.toArray = function () {
   return Array.from(this);
@@ -69,7 +69,7 @@ function _triple(a, b, c) {
 _triple.prototype.isTriple = true;
 _triple.prototype.type = 'triple';
 _triple.prototype.toString = function () {
-    return '[' + this[0].toString() + ',' + this[1].toString() + ',' + this[2].toString() + ']';
+    return 'T[' + toStringConsideringArrays(this[0]) + ',' + toStringConsideringArrays(this[1]) + ',' + toStringConsideringArrays(this[2]) + ']';
 };
 _triple.prototype.toArray = function () {
   return Array.from(this);
@@ -83,6 +83,11 @@ Tuple.prototype.Triple = Triple;
 
 export function Position(rows = [], row = 0, col = 0) {
     return new _position(rows, row, col);
+}
+
+function toStringConsideringArrays(value) {
+  if (Array.isArray(value)) return '[' + value.toString() + ']';
+  return value.toString();
 }
 
 //Position.prototype = Object.create({});
