@@ -23,6 +23,11 @@ const tuple2String = res => res.toArray().join('');
 const newlineP = pstring('§§');
 export const lineP = parser => parser.discardSecond(newlineP)
   .setLabel('On one line: ' + parser.label);
+const symbolicChars = () => ['/', '+', '-', '|', '\'', '¢', '©', '÷', 'µ', '¶', '±',
+  '¥', '(', ')', 'á', 'Á', 'à', 'À', 'â', 'Â', 'å', 'Å', 'ã', 'Ã', 'ä', 'Ä', 'æ', '™',
+  'Æ', 'ç', 'Ç', 'é', 'É', 'è', 'È', 'ê', 'Ê', 'ë', 'Ë', 'í', 'Í', 'ì', 'Ì', 'î', '£',
+  'Î', 'ï', 'Ï', 'ñ', 'Ñ', 'ó', 'Ó', 'ò', 'Ò', 'ô', 'Ô', 'ø', 'Ø', 'õ', 'Õ', 'ö', '$',
+  'Ö', 'ú', 'Ú', 'ù', 'Ù', 'û', 'Û', 'ü', 'Ü', 'ß', 'ÿ', '!', '?', '/', '=', '®', '€'];
 const symbolicCharP = anyOf(symbolicChars());
 export const numberP = many1(digitP).fmap(res => parseInt(res.join(''), 10))
   .setLabel('numberP');
