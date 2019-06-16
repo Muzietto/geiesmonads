@@ -171,12 +171,29 @@ describe('among git log parsers', () => {
           expect(commitP.run(prep(commitStr)).value[1].rest()).to.be.eql('');
         });
     });
+
     describe('fileHistorySeparatorP', () => {
         it('parses six lonely dashes in a row', () => {
           expect(fileHistorySeparatorP.run(prep('------\n')).isSuccess).to.be.true;
           expect(fileHistorySeparatorP.run(prep('-------\n')).isSuccess).to.be.false;
           expect(fileHistorySeparatorP.run(prep('-----\n')).isSuccess).to.be.false;
           expect(fileHistorySeparatorP.run(prep('-----6\n')).isSuccess).to.be.false;
+        });
+    });
+
+    describe('fileHistoryP', () => {
+        it('parses several commit logs', () => {
+          let chs = 'Thu Jan 17 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
+          chs += 'Fri Jan 18 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 16 insertions(+), 6 deletions(-)\n';
+          chs += '------\n';
+          const result = fileHistoryP.run(prep(chs));
+
+          expect(result.isSuccess).to.be.true;
+          expect(result.value[0][0]).to.be.eql('A.scss');
+          expect(Array.isArray(result.value[0][1])).to.be.true;
+          expect(result.value[0][1][0].toString()).to.be.eql('P[Thu Jan 17 2019 19:22:09 GMT+0100 (Central European Standard Time),10]');
+          expect(result.value[0][1][1].toString()).to.be.eql('P[Fri Jan 18 2019 19:22:09 GMT+0100 (Central European Standard Time),20]');
+          expect(result.value[1].rest()).to.be.eql('');
         });
     });
 });

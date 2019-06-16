@@ -11,6 +11,8 @@ import {
   many,
   pchar,
   pstring,
+  returnP,
+  logP,
 } from './lib/parsers';
 
 import { Tuple } from './lib/tuples';
@@ -81,61 +83,17 @@ export const thirdLineP = lineP(sequenceP([whateverP, pchar(','), whiteP])
 export const commitP = sequenceP([firstLineP, secondLineP, thirdLineP])
   .fmap(([date, filename, deltaRows]) => Pair(filename, Pair(date, deltaRows)));
 
-//const fileHistoryP = ... // Pair(filename, Pair[](data, filesize))
+export const fileHistoryP = many1(commitP.discardSecond(opt(newlineP))).discardSecond(fileHistorySeparatorP)
+  .bind(commits => {
+      const [filename, _] = commits[0];
+      return returnP(commits.reduce((acc, curr) => {
+        const [filename, previousCommits, previousFilesize] = acc;
+        const [_, [date, deltaRows]] = curr;
+        const currFileSize = previousFilesize + deltaRows;
+        return Triple(filename, previousCommits.concat([Pair(date, currFileSize)]), currFileSize);
+      }, Triple(filename, [], 0)));
+    })
+  .fmap(([filename, commits, _]) => Pair(filename, commits))
+  .setLabel('commitsP'); // Pair(filename, Pair[](date, filesize))
 
-//const gitLogFileP = ... // Pair(filename, Pair[](data, filesize))[]
-
-function symbolicChars() {
-  return [
-    '/',
-    '+',
-    '-',
-    '|',
-    '\'',
-    '¢',
-    '©',
-    '÷',
-    'µ',
-    '¶',
-    '±',
-    '€',
-    '$',
-    '£',
-    '®',
-    '™',
-    '¥',
-    '(', ')',
-    'á', 'Á',
-    'à', 'À',
-    'â', 'Â',
-    'å', 'Å',
-    'ã', 'Ã',
-    'ä', 'Ä',
-    'æ', 'Æ',
-    'ç', 'Ç',
-    'é', 'É',
-    'è', 'È',
-    'ê', 'Ê',
-    'ë', 'Ë',
-    'í', 'Í',
-    'ì', 'Ì',
-    'î', 'Î',
-    'ï', 'Ï',
-    'ñ', 'Ñ',
-    'ó', 'Ó',
-    'ò', 'Ò',
-    'ô', 'Ô',
-    'ø', 'Ø',
-    'õ', 'Õ',
-    'ö', 'Ö',
-    'ú', 'Ú',
-    'ù', 'Ù',
-    'û', 'Û',
-    'ü', 'Ü',
-    'ß', 'ÿ',
-    '!',
-    '?',
-    '/',
-    '=',
-  ];
-}
+//const gitLogFileP = ... // Pair(filename, Pair[](date, filesize))[]
