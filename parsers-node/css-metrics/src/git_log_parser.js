@@ -96,4 +96,5 @@ export const fileHistoryP = many1(commitP.discardSecond(opt(newlineP))).discardS
     })
   .setLabel('fileHistoryP'); // Pair(filename, Pair[](date, filesize))
 
-export const gitLogFileP = many1(fileHistoryP).setLabel('gitLogFileP'); // Pair[](filename, Pair[](date, filesize))
+// Pair[](filename, Pair[](date, filesize))
+export const gitLogFileP = many1(fileHistoryP).setLabel('gitLogFileP');
