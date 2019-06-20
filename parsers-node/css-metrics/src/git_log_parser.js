@@ -86,14 +86,14 @@ export const commitP = sequenceP([firstLineP, secondLineP, thirdLineP])
 export const fileHistoryP = many1(commitP.discardSecond(opt(newlineP))).discardSecond(fileHistorySeparatorP)
   .bind(commits => {
       const [filename, _] = commits[0];
-      return returnP(commits.reduce((acc, curr) => {
-        const [filename, previousCommits, previousFilesize] = acc;
+      const [commitPairs, __] = commits.reduce((acc, curr) => {
+        const [previousCommits, previousFilesize] = acc;
         const [_, [date, deltaRows]] = curr;
         const currFileSize = previousFilesize + deltaRows;
-        return Triple(filename, previousCommits.concat([Pair(date, currFileSize)]), currFileSize);
-      }, Triple(filename, [], 0)));
+        return Pair(previousCommits.concat([Pair(date, currFileSize)]), currFileSize);
+      }, Pair([], 0));
+      return returnP(Pair(filename, commitPairs));
     })
-  .fmap(([filename, commits, _]) => Pair(filename, commits))
   .setLabel('fileHistoryP'); // Pair(filename, Pair[](date, filesize))
 
 export const gitLogFileP = many1(fileHistoryP).setLabel('gitLogFileP'); // Pair[](filename, Pair[](date, filesize))
