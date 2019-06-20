@@ -44,7 +44,7 @@ function _pair(a, b) {
 _pair.prototype.isPair = true;
 _pair.prototype.type = 'pair';
 _pair.prototype.toString = function () {
-    return 'P[' + toStringConsideringArrays(this[0]) + ',' + toStringConsideringArrays(this[1]) + ']';
+    return 'P{' + toStringConsideringArrays(this[0]) + ',' + toStringConsideringArrays(this[1]) + '}';
 };
 _pair.prototype.toArray = function () {
   return Array.from(this);
@@ -69,7 +69,7 @@ function _triple(a, b, c) {
 _triple.prototype.isTriple = true;
 _triple.prototype.type = 'triple';
 _triple.prototype.toString = function () {
-    return 'T[' + toStringConsideringArrays(this[0]) + ',' + toStringConsideringArrays(this[1]) + ',' + toStringConsideringArrays(this[2]) + ']';
+    return 'T{' + toStringConsideringArrays(this[0]) + ',' + toStringConsideringArrays(this[1]) + ',' + toStringConsideringArrays(this[2]) + '}';
 };
 _triple.prototype.toArray = function () {
   return Array.from(this);
