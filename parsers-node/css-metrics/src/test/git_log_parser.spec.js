@@ -18,6 +18,7 @@ import {
   fileHistorySeparatorP,
   fileHistoryP,
   gitLogFileP,
+  prettyLogP,
 } from '../git_log_parser';
 import {
   pchar,
@@ -222,19 +223,42 @@ describe('among git log parsers', () => {
           const result = gitLogFileP.run(prep(chs));
           expect(result.isSuccess).to.be.true;
           expect(Array.isArray(result.value[0])).to.be.true;
+          expect(result.value[0][0].isPair).to.be.true;
           expect(result.value[0][0][0]).to.be.eql('A.scss');
           expect(Array.isArray(result.value[0][0][1])).to.be.true;
           expect(result.value[0][0][1][0].toString()).to.be.eql('P{Thu Jan 17 2019 19:22:09 GMT+0100 (Central European Standard Time),10}');
           expect(result.value[0][0][1][1].toString()).to.be.eql('P{Fri Jan 18 2019 19:22:09 GMT+0100 (Central European Standard Time),20}');
+          expect(result.value[0][1].isPair).to.be.true;
           expect(result.value[0][1][0]).to.be.eql('B.scss');
           expect(Array.isArray(result.value[0][1][1])).to.be.true;
           expect(result.value[0][1][1][0].toString()).to.be.eql('P{Thu Jan 17 2019 20:22:09 GMT+0100 (Central European Standard Time),10}');
           expect(result.value[0][1][1][1].toString()).to.be.eql('P{Fri Jan 18 2019 20:22:09 GMT+0100 (Central European Standard Time),8}');
           expect(result.value[0][1][1][2].toString()).to.be.eql('P{Sat Jan 19 2019 20:22:09 GMT+0100 (Central European Standard Time),7}');
+          expect(result.value[0][2].isPair).to.be.true;
           expect(result.value[0][2][0]).to.be.eql('C.scss');
           expect(Array.isArray(result.value[0][2][1])).to.be.true;
           expect(result.value[0][2][1][0].toString()).to.be.eql('P{Sat Jan 19 2019 21:22:09 GMT+0100 (Central European Standard Time),16}');
           expect(result.value[1].rest()).to.be.eql('');
+        });
+    });
+
+    describe('prettyLogP', () => {
+        it('prepares a CSV output from gitLogFileP', () => {
+          let chs = '';
+          chs += 'Thu Jan 17 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
+          chs += 'Fri Jan 18 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 16 insertions(+), 6 deletions(-)\n';
+          chs += '------\n';
+          chs += 'Thu Jan 17 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
+          chs += 'Fri Jan 18 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 6 insertions(+), 8 deletions(-)\n';
+          chs += 'Sat Jan 19 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 1 deletion(-)\n';
+          chs += '------\n';
+          const result = prettyLogP.run(prep(chs));
+
+          expect(result.isSuccess).to.be.true;
+          expect(result.value[1].rest()).to.be.eql('');
+          expect(Array.isArray(result.value[0])).to.be.true;
+          expect(result.value[0][0]).to.be.eql('A.scss\n1/17/2019,1/18/2019\n10,20');
+          expect(result.value[0][1]).to.be.eql('B.scss\n1/17/2019,1/18/2019,1/19/2019\n10,8,7');
         });
     });
 });

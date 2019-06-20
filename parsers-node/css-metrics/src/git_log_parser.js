@@ -98,3 +98,18 @@ export const fileHistoryP = many1(commitP.discardSecond(opt(newlineP))).discardS
 
 // Pair[](filename, Pair[](date, filesize))
 export const gitLogFileP = many1(fileHistoryP).setLabel('gitLogFileP');
+
+// [
+//   A.css\n10/01/2018,10/05/2018,10/19/2018,10/28/2018,10/29/2018\n10,12,18,13,9
+//   B.css\n10/01/2018,10/05/2018,10/19/2018,10/28/2018,10/29/2018\n10,12,18,13,9
+// ]
+export const prettyLogP = gitLogFileP
+.fmap(fileHistories => {
+    return fileHistories.map(fileHistory => {
+      const [filename, history] = fileHistory;
+      const [dates, sizes] = history
+        .reduce(([prevDates, prevSizes], [date, size]) =>
+          Pair(prevDates.concat([date.toLocaleDateString('en-US')]),prevSizes.concat([size])), Pair([],[]));
+      return `${filename}\n${dates.join(',')}\n${sizes.join(',')}`;
+    });
+  }).setLabel('prettyLogP');
