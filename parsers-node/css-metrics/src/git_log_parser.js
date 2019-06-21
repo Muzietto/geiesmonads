@@ -111,6 +111,6 @@ export const prettyLogP = gitLogFileP
       const [dates, sizes] = history
         .reduce(([prevDates, prevSizes], [date, size]) =>
           Pair(prevDates.concat([date.toLocaleDateString('en-US')]),prevSizes.concat([size])), Pair([],[]));
-      return `${filename}\n${dates.join(',')}\n${sizes.join(',')}`;
+      return `${filename}\n${dates.join(',')}\n${sizes.join(',')}\n`;
     });
   }).setLabel('prettyLogP');
