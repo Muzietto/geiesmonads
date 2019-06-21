@@ -394,9 +394,11 @@ export function tapP(px, fn) {
   });
 }
 
-export function logP(px) {
+export function logP(px, msg) {
   // eslint-disable-next-line no-console
-  return tapP(px, res => { console.log(px.label + ':' + res.toString()); });
+  return tapP(px, res => {
+    console.log(px.label + ((typeof msg !== 'undefined') ? ' - ' + msg : '') + ': ' + res.toString()); 
+  });
 }
 
 export function pword(word) {
