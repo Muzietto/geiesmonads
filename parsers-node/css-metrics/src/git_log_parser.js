@@ -84,6 +84,7 @@ export const commitP = sequenceP([firstLineP, secondLineP, thirdLineP])
   .fmap(([date, filename, deltaRows]) => Pair(filename, Pair(date, deltaRows)));
 
 export const fileHistoryP = many1(commitP.discardSecond(opt(newlineP))).discardSecond(fileHistorySeparatorP)
+  .fmap(commits => commits.reverse())
   .bind(commits => {
       const [filename, _] = commits[0];
       const [commitPairs, __] = commits.reduce((acc, curr) => {

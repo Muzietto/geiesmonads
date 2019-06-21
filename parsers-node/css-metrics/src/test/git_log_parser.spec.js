@@ -196,14 +196,17 @@ describe('among git log parsers', () => {
           expect(result.value[1].rest()).to.be.eql('');
         });
         it('parses several commit logs', () => {
-          let chs = 'Thu Jan 17 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
-          chs += 'Fri Jan 18 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 16 insertions(+), 6 deletions(-)\n';
+          let chs = 'Fri Jan 18 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 16 insertions(+), 6 deletions(-)\n';
+          chs += 'Thu Jan 17 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
           chs += '------\n';
           const result = fileHistoryP.run(prep(chs));
 
           expect(result.isSuccess).to.be.true;
-          expect(result.value[0][1][0].toString()).to.be.eql('P{Thu Jan 17 2019 19:22:09 GMT+0100 (Central European Standard Time),10}');
-          expect(result.value[0][1][1].toString()).to.be.eql('P{Fri Jan 18 2019 19:22:09 GMT+0100 (Central European Standard Time),20}');
+          expect(result.value[0].isPair).to.be.true;
+          expect(result.value[0][0]).to.be.eql('A.scss');
+          expect(Array.isArray(result.value[0][1])).to.be.true;
+          expect(result.value[0][1][0].toString()).to.be.eql('P{Thu Jan 17 2019 19:22:09 GMT+0100 (Central European Standard Time),10}','asd');
+          expect(result.value[0][1][1].toString()).to.be.eql('P{Fri Jan 18 2019 19:22:09 GMT+0100 (Central European Standard Time),20}','qwe');
           expect(result.value[1].rest()).to.be.eql('');
         });
     });
@@ -211,12 +214,12 @@ describe('among git log parsers', () => {
     describe('gitLogFileP', () => {
         it('parses several file histories', () => {
           let chs = '';
-          chs += 'Thu Jan 17 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
           chs += 'Fri Jan 18 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 16 insertions(+), 6 deletions(-)\n';
+          chs += 'Thu Jan 17 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
           chs += '------\n';
-          chs += 'Thu Jan 17 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
-          chs += 'Fri Jan 18 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 6 insertions(+), 8 deletions(-)\n';
           chs += 'Sat Jan 19 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 1 deletion(-)\n';
+          chs += 'Fri Jan 18 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 6 insertions(+), 8 deletions(-)\n';
+          chs += 'Thu Jan 17 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
           chs += '------\n';
           chs += 'Sat Jan 19 21:22:09 2019 +0100\n C.scss | 22 +++\n 1 f c, 16 insertions(+)\n\n';
           chs += '------\n';
@@ -245,12 +248,12 @@ describe('among git log parsers', () => {
     describe('prettyLogP', () => {
         it('prepares a CSV output from gitLogFileP', () => {
           let chs = '';
-          chs += 'Thu Jan 17 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
           chs += 'Fri Jan 18 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 16 insertions(+), 6 deletions(-)\n';
+          chs += 'Thu Jan 17 19:22:09 2019 +0100\n A.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
           chs += '------\n';
-          chs += 'Thu Jan 17 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
-          chs += 'Fri Jan 18 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 6 insertions(+), 8 deletions(-)\n';
           chs += 'Sat Jan 19 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 1 deletion(-)\n';
+          chs += 'Fri Jan 18 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 6 insertions(+), 8 deletions(-)\n';
+          chs += 'Thu Jan 17 20:22:09 2019 +0100\n B.scss | 22 +++\n 1 f c, 10 insertions(+)\n\n';
           chs += '------\n';
           const result = prettyLogP.run(prep(chs));
 
