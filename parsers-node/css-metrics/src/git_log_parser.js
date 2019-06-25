@@ -83,7 +83,7 @@ export const thirdLineP = lineP(sequenceP([whateverP, pchar(','), whiteP])
 export const commitP = sequenceP([firstLineP, secondLineP, thirdLineP])
   .fmap(([date, filename, deltaRows]) => Pair(filename, Pair(date, deltaRows)));
 
-export const fileHistoryP = many1(commitP.discardSecond(opt(newlineP))).discardSecond(fileHistorySeparatorP)
+export const fileHistoryP = logP(many1(commitP.discardSecond(opt(newlineP))).discardSecond(fileHistorySeparatorP)
   .fmap(commits => commits.reverse())
   .bind(commits => {
       const [filename, _] = commits[0];
@@ -95,7 +95,7 @@ export const fileHistoryP = many1(commitP.discardSecond(opt(newlineP))).discardS
       }, Pair([], 0));
       return returnP(Pair(filename, commitPairs));
     })
-  .setLabel('fileHistoryP'); // Pair(filename, Pair[](date, filesize))
+  .setLabel('fileHistoryP')); // Pair(filename, Pair[](date, filesize))
 
 // Pair[](filename, Pair[](date, filesize))
 export const gitLogFileP = many1(fileHistoryP).setLabel('gitLogFileP');
@@ -115,10 +115,12 @@ export const prettyLogP = gitLogFileP
     });
   }).setLabel('prettyLogP');
 
-export const repeatedSecondLineP = logP(many1(secondLineP, 2).setLabel('DOUBLE_LINE'));
+export const repeatedFirstLineP = logP(many1(firstLineP, 2).setLabel('DOUBLE_FIRST_LINE'));
+export const repeatedSecondLineP = logP(many1(secondLineP, 2).setLabel('DOUBLE_SECOND_LINE'));
+export const repeatedThirdLineP = logP(many1(thirdLineP, 2).setLabel('DOUBLE_THIRD_LINE'));
 export const anyOtherLineP = choice([
   pchar('\n'),
-  firstLineP,
+  secondLineP,
   thirdLineP,
 ]).setLabel('anyOtherLineP');
-export const cleanupP = choice([ repeatedSecondLineP, anyOtherLineP ]);
+export const cleanupP = choice([ repeatedFirstLineP, anyOtherLineP ]);

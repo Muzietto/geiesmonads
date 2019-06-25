@@ -4,10 +4,10 @@ import stream from 'stream';
 import { cleanupP } from './src/git_log_parser';
 
 console.log('starting...');
-const instream = fs.createReadStream('./js_input/input_js_01.txt');
+const instream = fs.createReadStream('./js_input/pippo4.txt');
 
 const rl = readline.createInterface({ input: instream });
-const ws = fs.createWriteStream('./js_output/output_js_01.csv');
+const ws = fs.createWriteStream('./js_output/pippo4.csv');
 
 let buffer = '';
 
