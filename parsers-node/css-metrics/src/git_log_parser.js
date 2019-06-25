@@ -114,3 +114,11 @@ export const prettyLogP = gitLogFileP
       return `${filename}\n${dates.join(',')}\n${sizes.join(',')}\n`;
     });
   }).setLabel('prettyLogP');
+
+export const repeatedSecondLineP = logP(many1(secondLineP, 2).setLabel('DOUBLE_LINE'));
+export const anyOtherLineP = choice([
+  pchar('\n'),
+  firstLineP,
+  thirdLineP,
+]).setLabel('anyOtherLineP');
+export const cleanupP = choice([ repeatedSecondLineP, anyOtherLineP ]);
