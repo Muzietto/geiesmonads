@@ -124,3 +124,27 @@ export const anyOtherLineP = choice([
   thirdLineP,
 ]).setLabel('anyOtherLineP');
 export const cleanupP = choice([ repeatedFirstLineP, anyOtherLineP ]);
+
+export const fileCreationP = logP(fileHistoryP
+  .fmap(([filename, [[creationDate, creationFilesize], ...rest]]) =>
+    Pair(filename, creationDate.toLocaleDateString('en-US')))
+  .setLabel('fileCreationP'));
+
+// Pair[](filename, dateStr)
+export const fileCreationsP = many1(fileCreationP).setLabel('fileCreationsP');
+// { [dateStr]: numCreations }
+export const creationDatesP = fileCreationsP
+  .bind(creations => returnP(creations.reduce((acc, [fname, creationDateStr]) => {
+    if (typeof acc[creationDateStr] !== 'undefined') acc[creationDateStr] += 1;
+    else acc[creationDateStr] = 1;
+    return acc;
+  }, {}))).setLabel('creationDatesP');
+
+  //   10/01/2018,10/05/2018,10/19/2018,10/28/2018,10/29/2018\n10,12,18,13,9
+  export const prettyCreationsP = creationDatesP
+    .fmap(creationsObj => {
+      const keyzz = Object.keys(creationsObj)
+        .sort((a,b) => new Date(b) - new Date(a));
+      const valuzz = keyzz.map(key => creationsObj[key]);
+      return valuzz.join(',') + '\n' + keyzz.join(',');
+    });
