@@ -83,7 +83,7 @@ export const thirdLineP = lineP(sequenceP([whateverP, pchar(','), whiteP])
 export const commitP = sequenceP([firstLineP, secondLineP, thirdLineP])
   .fmap(([date, filename, deltaRows]) => Pair(filename, Pair(date, deltaRows)));
 
-export const fileHistoryP = logP(many1(commitP.discardSecond(opt(newlineP))).discardSecond(fileHistorySeparatorP)
+export const fileHistoryP = many1(commitP.discardSecond(opt(newlineP))).discardSecond(fileHistorySeparatorP)
   .fmap(commits => commits.reverse())
   .bind(commits => {
       const [filename, _] = commits[0];
@@ -95,7 +95,7 @@ export const fileHistoryP = logP(many1(commitP.discardSecond(opt(newlineP))).dis
       }, Pair([], 0));
       return returnP(Pair(filename, commitPairs));
     })
-  .setLabel('fileHistoryP')); // Pair(filename, Pair[](date, filesize))
+  .setLabel('fileHistoryP'); // Pair(filename, Pair[](date, filesize))
 
 // Pair[](filename, Pair[](date, filesize))
 export const gitLogFileP = many1(fileHistoryP).setLabel('gitLogFileP');
