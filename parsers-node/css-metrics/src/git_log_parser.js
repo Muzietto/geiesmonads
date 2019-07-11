@@ -146,5 +146,5 @@ export const creationDatesP = fileCreationsP
       const keyzz = Object.keys(creationsObj)
         .sort((a,b) => new Date(b) - new Date(a));
       const valuzz = keyzz.map(key => creationsObj[key]);
-      return valuzz.join(',') + '\n' + keyzz.join(',');
+      return valuzz.reverse().join(',') + '\n' + keyzz.reverse().join(',');
     });
