@@ -4,10 +4,10 @@ import stream from 'stream';
 import { prettyCreationsP } from './src/git_log_parser';
 
 console.log('starting...');
-const instream = fs.createReadStream('./js_input/mini_pippo4.txt');
+const instream = fs.createReadStream('./css_input/css_gitlogs.txt');
 
 const rl = readline.createInterface({ input: instream });
-const ws = fs.createWriteStream('./js_output/pippo4.creations.csv');
+const ws = fs.createWriteStream('./css_output/css_gitlogs.creations.csv');
 
 let buffer = '';
 
