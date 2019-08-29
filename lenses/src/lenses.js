@@ -31,4 +31,22 @@ const fullStore = {
 };
 
 const store = set(lensA, view(lensA, fullStore), fullStore);
-console.log(JSON.stringify(store), JSON.stringify(fullStore))
+console.log(JSON.stringify(store), JSON.stringify(fullStore));
+
+const upperize = x => x.toUpperCase();
+const enlarge = x => x.split('').join(' ');
+
+const over = lens => f => store => set(lens, f(view(lens, store)), store);
+
+const upperized = over(lensA)(upperize)(fullStore);
+console.log(JSON.stringify(upperized));
+
+const upperenlargize = x => upperize(enlarge(x));
+const upperenlargized = over(lensA)(upperenlargize)(fullStore);
+
+const upperizeA = over(lensA)(upperize);
+const enlargeA = over(lensA)(enlarge);
+const upperenlargizeA = x => upperizeA(enlargeA(x));
+const upperenlargized2 = upperenlargizeA(fullStore);
+
+console.log(JSON.stringify(upperenlargized), JSON.stringify(upperenlargized2));
