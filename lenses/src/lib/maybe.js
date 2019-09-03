@@ -193,7 +193,8 @@ Maybe.of = function (a) {
     return new Just(a);
 };
 Maybe.prototype.of = Maybe.of;
-
+Maybe.pure = Maybe.of;
+Maybe.prototype.pure = Maybe.of;
 
 /**
  * Applies the function inside the `Maybe[α]` structure to another
