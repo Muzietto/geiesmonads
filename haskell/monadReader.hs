@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts, PolyKinds, DataKinds, TypeSynonymInstances #-}
 
 import Control.Monad.Reader
 
@@ -33,3 +33,12 @@ loadAll2 x y = do
     file <- load2 y
     history <- loadRevision2 x
     return (file, history)
+
+-- SameInput
+type SI e = * -> * -> *
+
+--  fmap :: (a -> b) -> (e -> a) -> (e -> b)
+instance Functor (SI e) where
+    fmap :: (a -> b) -> (SI e) a -> (SI e) b
+    fmap fab sie = \x -> fab (sie x)
+
