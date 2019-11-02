@@ -57,7 +57,7 @@ function Reader(fra) {
       return Reader(r => fra(r)(Ra.run(r)));
     },
     bind: function(faRb) {
-      return Reader(r => faRb(fra(r))(r));
+      return Reader(r => faRb(fra(r)).run(r));
     },
     ask: function() {
       return Reader(r => r);
@@ -71,6 +71,20 @@ function Reader(fra) {
   };
 }
 
+const unit = x => Reader(_ => x)
 const pure = x => Reader(_ => x)
 const ask = Reader(r => r);
 const asks = fra => Reader(fra);
+// const asks = Reader;
+
+
+// es6_reader_test
+const greet = name => ask.bind(env => unit(env + ', ' + name));
+// greet('luigi').run('ciao') // 'ciao, luigi'
+
+const completeTheGreeting = greeting => asks(g => g === 'ciao')
+  .bind(isCiao => unit(greeting + (isCiao ? '!!!' : '...')))
+// greet('luigi').bind(completeTheGreeting).run('ciao')    // 'ciao, luigi!!!'
+// greet('luigi').bind(completeTheGreeting).run('fottiti') // 'fottiti, luigi...'
+
+// https://stackoverflow.com/questions/14178889/what-is-the-purpose-of-the-reader-monad
