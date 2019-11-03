@@ -15,8 +15,8 @@ describe('the reader monad', function() {
   unit = MONAD.reader.UNIT,
   ask = MONAD.reader.ask,
   asks = MONAD.reader.asks,
-  local = MONAD.reader.local
-  ;
+  local = MONAD.reader.local;
+
   var greet = name => ask().bind(ctx => {
     //debugger;
     return unit(ctx + ', ' + name);
@@ -66,11 +66,13 @@ describe('the reader monad', function() {
     // ctx(greet1||completeTheGreeting1||completeTheGreeting2) = 'Hello'
     // str(completeTheGreeting1) = 'Hello, John'
     // str(completeTheGreeting2) = 'Hello, John!!'
-    expect(greet('John').bind(completeTheGreeting).bind(completeTheGreeting)('Hello')).to.be.equal('Hello, John!!!!');
+    expect(greet('John').bind(completeTheGreeting).bind(completeTheGreeting)('Hello'))
+      .to.be.equal('Hello, John!!!!');
     // ctx(greet1||completeTheGreeting) = 'Hello'
     // str(completeTheGreeting) = 'Hello, John'
     // === AAA ===> name(greet2) = 'Hello, John!!' <=== AAA ===
-    expect(greet('John').bind(completeTheGreeting).bind(greet)('Hello')).to.be.equal('Hello, Hello, John!!');
+    expect(greet('John').bind(completeTheGreeting).bind(greet)('Hello'))
+      .to.be.equal('Hello, Hello, John!!');
     // str(completeTheGreeting) = 'Louie'
     // ctx(completeTheGreeting||greet) = 'Hello'
     // === AAA ===> name(greet) = 'Louie!!' <=== AAA ===
