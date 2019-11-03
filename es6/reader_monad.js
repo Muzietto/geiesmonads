@@ -102,4 +102,51 @@ const completeTheGreeting = greeting => asks(g => g === 'ciao')
 //   in case v1 of
 //     FunVal argname body env' -> eval0 (Map.insert argname v2 env') body
 //     _ -> undefined
+
+function Lit(i) { this.i = i; }
+function Var(name) { this.name = name; }
+function Plus(e1, e2) { this.e1 = e1; this.e2 = e2; }
+function Lambda(argname, body) { this.argname = argname; this.body = body; }
+function App(lambda, expr) { this.lambda = lambda; this.expr = expr; }
+//-------------
+function IntVal(value) { this.value = value; }
+function FunVal(argname, body, env) { this.argname = argname; this.body = body; this.env = env; }
+
+function caseOf(expr) {
+  if (expr instanceof Lit) return 'Lit';
+  if (expr instanceof Var) return 'Var';
+  if (expr instanceof Plus) return 'Plus';
+  if (expr instanceof Lambda) return 'Lambda';
+  if (expr instanceof App) return 'App';
+  return 'unknown';
+}
+
+function eval0(env) {
+  return expr => {
+    switch(caseOf(expr)) {
+      case 'Lit':
+        return new IntVal(expr.i);
+        break;
+      case 'Var':
+        return env[expr.name];
+        break;
+      case 'Plus':
+        const { e1, e2 } = expr;
+        const { value: v1 } = eval0(env)(e1);
+        const { value: v2 } = eval0(env)(e2);
+        return new IntVal(v1 + v2);
+        break;
+      case 'Lambda':
+        return new IntVal(expr.i);
+        break;
+      case 'App':
+        return new IntVal(expr.i);
+        break;
+    }
+  }
+}
+
+
+
+
 // https://stackoverflow.com/questions/14178889/what-is-the-purpose-of-the-reader-monad
