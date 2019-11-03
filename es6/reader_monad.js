@@ -51,7 +51,7 @@ function Reader(fra) {
   return {
     run: fra,
     return: a => Reader(() => a),
-    fmap: Reader,
+    fmap: fab => Reader(r => fab(fra(r))),
     pure: a => Reader(() => a),
     ap: function(Ra) {
       return Reader(r => fra(r)(Ra.run(r)));
@@ -77,10 +77,11 @@ const ask = Reader(r => r);
 const asks = fra => Reader(fra);
 // const asks = Reader;
 
-
 // es6_reader_test
 const greet = name => ask.bind(env => unit(env + ', ' + name));
 // greet('luigi').run('ciao') // 'ciao, luigi'
+// TODO - greet is WRONG. find a real example that allows meaningful usage of fmap
+// greet('luigi').fmap(x => x.toUpperCase()).run('ciao') // 'CIAO'
 
 const completeTheGreeting = greeting => asks(g => g === 'ciao')
   .bind(isCiao => unit(greeting + (isCiao ? '!!!' : '...')))
