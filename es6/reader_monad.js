@@ -88,4 +88,18 @@ const completeTheGreeting = greeting => asks(g => g === 'ciao')
 // greet('luigi').bind(completeTheGreeting).run('ciao')    // 'ciao, luigi!!!'
 // greet('luigi').bind(completeTheGreeting).run('fottiti') // 'fottiti, luigi...'
 
+// eval0 :: Env -> Exp -> Value
+// eval0 _ (Lit i) = IntVal i
+// eval0 env (Var name) = fromJust $ Map.lookup name env
+// eval0 env (Plus e1 e2) = let
+//     IntVal i1 = eval0 env e1
+//     IntVal i2 = eval0 env e2
+//   in IntVal (i1 + i2)
+// eval0 env (Lambda argname body) = FunVal argname body env
+// eval0 env (App lambda expr) = let
+//   v1 = eval0 env lambda
+//   v2 = eval0 env expr
+//   in case v1 of
+//     FunVal argname body env' -> eval0 (Map.insert argname v2 env') body
+//     _ -> undefined
 // https://stackoverflow.com/questions/14178889/what-is-the-purpose-of-the-reader-monad
