@@ -45,7 +45,7 @@ describe('the reader monad', function() {
       expect(result).to.be.equal('Ciao, Marco');
     });
 
-    it('but apparently makes the monad completely useless...', function() {
+    it('but apparently makes the monad completely useless (JUST APPARENTLY!!!)', function() {
       expect(ask()
         .bind(x => unit(x + ', '))
         .bind(x => unit(x + 'Marco'))('Ciao')).to.be.equal('Ciao, Marco');
@@ -100,6 +100,12 @@ describe('the reader monad', function() {
         .ap(pure(lunghezza))()
 
       expect(result).to.be.equal(11);
+    });
+  });
+
+  describe('is a monad', () => {
+    it('which (as usual) allows a finer level of computation control than the functor and the applicative', () => {
+      // https://stackoverflow.com/questions/55797418/what-can-the-reader-monad-do-that-applicative-functions-cannot#answer-55797596
     });
   });
 
