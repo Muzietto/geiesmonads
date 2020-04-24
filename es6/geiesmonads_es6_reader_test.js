@@ -18,58 +18,111 @@ describe('the reader monad', function() {
   asks = MONAD.reader.asks,
   local = MONAD.reader.local;
 
-  it('can receive and use a context provided at runtime', function() {
+  it('can "ask" to receive a context provided at runtime', function() {
+
     expect(ask()
       .bind(x => unit(x + ', '))
       .bind(x => unit(x + 'Marco'))('Ciao')).to.be.equal('Ciao, Marco');
   });
 
-  it('is a friggin\' functor', function() {
-    expect(ask()
-      .fmap(x => x + ', Marco')('Ciao')).to.be.equal('Ciao, Marco');
+  it('features "asks" to spare one ring in the chain', function() {
+
+    let result = asks(x => x + 'Marco')('Ciao');
+
+    expect(result).to.be.equal('CiaoMarco');
+
+    result = asks(x => x + ', ').fmap(x => x + 'Marco')('Ciao')
+
+    expect(result).to.be.equal('Ciao, Marco');
   });
 
-  it('is also a bloody applicative', function() {
+  describe('is a friggin\' functor', () => {
 
-    let result = pure(a => b => c => a + b + c)
-      .ap(unit('ciao'))
-      .ap(unit('birillo'))
-      .ap(unit('gugu'))();
+    it('which simplifies things a lot!', function() {
 
-    expect(result).to.be.equal('ciaobirillogugu');
+      let result = ask().fmap(x => x + ', Marco')('Ciao')
 
-    result = pure(a => b => c => a + b + c)
-      .ap(unit('ciao'))
-      .ap(unit('birillo'))
-      .ap(ask().fmap(r => r + 'gugu'))('!')
+      expect(result).to.be.equal('Ciao, Marco');
+    });
 
-    expect(result).to.be.equal('ciaobirillo!gugu');
+    it('but apparently makes the monad completely useless...', function() {
+      expect(ask()
+        .bind(x => unit(x + ', '))
+        .bind(x => unit(x + 'Marco'))('Ciao')).to.be.equal('Ciao, Marco');
 
-    result = pure(a => b => a + b)
-      .ap(unit('ciao'))
-      .ap(ask().fmap(r => r + 'birillo'))('eterno');
-
-    expect(result).to.be.equal('ciaoeternobirillo');
-
-    result = pure(a => b => a + b)
-      .ap(ask().fmap(x => x + ', Marco'))
-      .ap(ask().fmap(x => x + ', Simpatico'))('Ciao');
-
-    expect(result).to.be.equal('Ciao, MarcoCiao, Simpatico');
+      expect(ask()
+        .fmap(x => x + ', ')
+        .fmap(x => x + 'Marco')('Ciao')).to.be.equal('Ciao, Marco');
+    });
   });
 
-  it('can operate on a locally modified context', function() {
-    expect(local(s => s + 'Sauce')(ask())('Chocolate'))
-      .to.be.equal('ChocolateSauce');
+  describe('is also a bloody applicative', () => {
 
-    expect(local(x => 'sauce' + x)
-      (ask().bind(s => unit('ciao' + s)))('birillo'))
-        .to.be.equal('ciaosaucebirillo');
+    it('doing its thing', function() {
+      let result = pure(a => b => c => a + b + c)
+        .ap(unit('ciao'))
+        .ap(unit('birillo'))
+        .ap(unit('gugu'))();
 
+      expect(result).to.be.equal('ciaobirillogugu');
+
+      result = pure(a => b => c => a + b + c)
+        .ap(unit('ciao'))
+        .ap(unit('birillo'))
+        .ap(ask().fmap(r => r + 'gugu'))('!')
+
+      expect(result).to.be.equal('ciaobirillo!gugu');
+
+      result = pure(a => b => a + b)
+        .ap(unit('ciao'))
+        .ap(ask().fmap(r => r + 'birillo'))('eterno');
+
+      expect(result).to.be.equal('ciaoeternobirillo');
+
+      result = pure(a => b => a + b)
+        .ap(ask().fmap(x => x + ', Marco'))
+        .ap(ask().fmap(x => x + ', Simpatico'))('Ciao');
+
+      expect(result).to.be.equal('Ciao, MarcoCiao, Simpatico');
+    });
+    it('mixing types', () => {
+      const lunghezza = str => str.length;
+
+      let result = pure(a => b => lunghezza(a + b))
+        .ap(unit('ciao'))
+        .ap(pure('birillo'))()
+
+      expect(result).to.be.equal(11);
+
+      result = pure(a => b => op => op(a + b))
+        .ap(unit('ciao'))
+        .ap(pure('birillo'))
+        .ap(pure(lunghezza))()
+
+      expect(result).to.be.equal(11);
+    });
   });
 
+  describe('can operate on a locally modified context using "local"', () => {
+    it('doing its thing', function() {
+      expect(local(s => s + 'Sauce')(ask())('Chocolate'))
+        .to.be.equal('ChocolateSauce');
 
+      expect(local(x => 'sauce' + x)
+        (ask().bind(s => unit('ciao' + s)))('birillo'))
+          .to.be.equal('ciaosaucebirillo');
+    });
 
+    it('together with its functor and its applicative', function() {
+      const result = pure(a => b => c => a + b + c)
+        .ap(unit('ciao'))
+        .ap(local
+              (x => x + x.toUpperCase())
+              (ask().fmap(x => x + 'birillo')))
+         .ap(ask().fmap(x => x + 'END'))('gugu')
 
+       expect(result).to.be.equal('ciaoguguGUGUbirilloguguEND');
+    });
+  });
 
 });
