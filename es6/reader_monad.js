@@ -137,15 +137,27 @@ function eval0(env) {
         return new IntVal(v1 + v2);
         break;
       case 'Lambda':
-        return new IntVal(expr.i);
+        const { argname, body } = expr;
+        return new FunVal(argname, body, env);
         break;
-      case 'App':
-        return new IntVal(expr.i);
-        break;
+      case 'App': // App(lambda, expr)
+        const funval = eval0(env)(expr.lambda);
+        const expr2 = eval0(env)(expr.expr);
+        if (funval instanceof FunVal) {
+          const newEnv = { ...funval.env, [funval.argname]: expr2 };
+          return eval0(newEnv)(funval.body);
+        }
+        return undefined;
     }
   }
 }
 
+
+const X = new Var('X');
+const UNO = new Lit(1);
+const DUE = new Lit(2);
+const TRE = new Plus(UNO, DUE);
+const PLUS_ONE = new Lambda(X,new Plus(X,UNO));
 
 
 
