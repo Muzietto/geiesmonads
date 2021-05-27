@@ -22,16 +22,16 @@
 /**
  * @module lib/validation
  */
-//module.exports = Validation
+// module.exports = Validation
 
 // -- Aliases ----------------------------------------------------------
 const clone = Object.create;
-const unimplemented = function () {
-    throw new Error('Not implemented.');
-};
-const noop = function () {
-    return this;
-};
+function unimplemented() {
+  throw new Error('Not implemented.');
+}
+function noop() {
+  return this;
+}
 
 
 // -- Implementation ---------------------------------------------------
@@ -56,12 +56,12 @@ export function Validation() {
 
 Failure.prototype = clone(Validation.prototype);
 function Failure(a) {
-    this.value = a;
+  this.value = a;
 }
 
 Success.prototype = clone(Validation.prototype);
 function Success(a) {
-    this.value = a;
+  this.value = a;
 }
 
 // -- Constructors -----------------------------------------------------
@@ -71,8 +71,8 @@ function Success(a) {
  *
  * @summary a → Validation[α, β]
  */
-Validation.Failure = function (a) {
-    return new Failure(a);
+Validation.Failure = function(a) {
+  return new Failure(a);
 };
 Validation.prototype.Failure = Validation.Failure;
 
@@ -81,8 +81,8 @@ Validation.prototype.Failure = Validation.Failure;
  *
  * @summary β → Validation[α, β]
  */
-Validation.Success = function (a) {
-    return new Success(a);
+Validation.Success = function(a) {
+  return new Success(a);
 };
 Validation.prototype.Success = Validation.Success;
 
@@ -97,9 +97,9 @@ Validation.prototype.Success = Validation.Success;
  *
  * @summary α → Validation[α, α]
  */
-Validation.fromNullable = function (a) {
-    return (a !== null) ? new Success(a)
-        : /* otherwise */  new Failure(a);
+Validation.fromNullable = function(a) {
+  return (a !== null) ? new Success(a)
+    : /* otherwise */ new Failure(a);
 };
 Validation.prototype.fromNullable = Validation.fromNullable;
 
@@ -108,8 +108,8 @@ Validation.prototype.fromNullable = Validation.fromNullable;
  *
  * @summary Either[α, β] → Validation[α, β]
  */
-Validation.fromEither = function (a) {
-    return a.fold(Validation.Failure, Validation.Success);
+Validation.fromEither = function(a) {
+  return a.fold(Validation.Failure, Validation.Success);
 };
 
 
@@ -142,8 +142,8 @@ Success.prototype.isSuccess = true;
  *
  * @summary β → Validation[α, β]
  */
-Validation.of = function (a) {
-    return new Success(a);
+Validation.of = function(a) {
+  return new Success(a);
 };
 Validation.prototype.of = Validation.of;
 
@@ -160,14 +160,14 @@ Validation.prototype.of = Validation.of;
  */
 Validation.prototype.ap = unimplemented;
 
-Failure.prototype.ap = function (b) {
-    return b.isFailure ? this.Failure(this.value.concat(b.value))
-        : /* otherwise */  this;
+Failure.prototype.ap = function(b) {
+  return b.isFailure ? this.Failure(this.value.concat(b.value))
+    : /* otherwise */ this;
 };
 
-Success.prototype.ap = function (b) {
-    return b.isFailure ? b
-        : /* otherwise */  b.map(this.value);
+Success.prototype.ap = function(b) {
+  return b.isFailure ? b
+    : /* otherwise */ b.map(this.value);
 };
 
 
@@ -183,8 +183,8 @@ Success.prototype.ap = function (b) {
 Validation.prototype.map = unimplemented;
 Failure.prototype.map = noop;
 
-Success.prototype.map = function (f) {
-    return this.of(f(this.value));
+Success.prototype.map = function(f) {
+  return this.of(f(this.value));
 };
 
 
@@ -198,12 +198,12 @@ Success.prototype.map = function (f) {
  */
 Validation.prototype.toString = unimplemented;
 
-Failure.prototype.toString = function () {
-    return 'Validation.Failure(' + this.value + ')';
+Failure.prototype.toString = function() {
+  return 'Validation.Failure(' + this.value + ')';
 };
 
-Success.prototype.toString = function () {
-    return 'Validation.Success(' + this.value + ')';
+Success.prototype.toString = function() {
+  return 'Validation.Success(' + this.value + ')';
 };
 
 
@@ -218,12 +218,12 @@ Success.prototype.toString = function () {
  */
 Validation.prototype.isEqual = unimplemented;
 
-Failure.prototype.isEqual = function (a) {
-    return a.isFailure && (a.value === this.value);
+Failure.prototype.isEqual = function(a) {
+  return a.isFailure && (a.value === this.value);
 };
 
-Success.prototype.isEqual = function (a) {
-    return a.isSuccess && (a.value === this.value);
+Success.prototype.isEqual = function(a) {
+  return a.isSuccess && (a.value === this.value);
 };
 
 
@@ -241,12 +241,12 @@ Success.prototype.isEqual = function (a) {
  */
 Validation.prototype.get = unimplemented;
 
-Failure.prototype.get = function () {
-    throw new TypeError('Can\'t extract the value of a Failure(a).');
+Failure.prototype.get = function() {
+  throw new TypeError('Can\'t extract the value of a Failure(a).');
 };
 
-Success.prototype.get = function () {
-    return this.value;
+Success.prototype.get = function() {
+  return this.value;
 };
 
 
@@ -259,12 +259,13 @@ Success.prototype.get = function () {
  */
 Validation.prototype.getOrElse = unimplemented;
 
-Failure.prototype.getOrElse = function (a) {
-    return a;
+Failure.prototype.getOrElse = function(a) {
+  return a;
 };
 
-Success.prototype.getOrElse = function (_) {
-    return this.value;
+// eslint-disable-next-line no-unused-vars
+Success.prototype.getOrElse = function(_) {
+  return this.value;
 };
 
 
@@ -278,8 +279,8 @@ Success.prototype.getOrElse = function (_) {
 Validation.prototype.orElse = unimplemented;
 Success.prototype.orElse = noop;
 
-Failure.prototype.orElse = function (f) {
-    return f(this.value);
+Failure.prototype.orElse = function(f) {
+  return f(this.value);
 };
 
 
@@ -288,8 +289,8 @@ Failure.prototype.orElse = function (f) {
  *
  * @summary (@Validation[α, α]) => Void → α
  */
-Validation.prototype.merge = function () {
-    return this.value;
+Validation.prototype.merge = function() {
+  return this.value;
 };
 
 
@@ -303,12 +304,13 @@ Validation.prototype.merge = function () {
  */
 Validation.prototype.fold = unimplemented;
 
-Failure.prototype.fold = function (f, _) {
-    return f(this.value);
+// eslint-disable-next-line no-unused-vars
+Failure.prototype.fold = function(f, _) {
+  return f(this.value);
 };
 
-Success.prototype.fold = function (_, g) {
-    return g(this.value);
+Success.prototype.fold = function(_, g) {
+  return g(this.value);
 };
 
 /**
@@ -319,12 +321,12 @@ Success.prototype.fold = function (_, g) {
  */
 Validation.prototype.cata = unimplemented;
 
-Failure.prototype.cata = function (pattern) {
-    return pattern.Failure(this.value);
+Failure.prototype.cata = function(pattern) {
+  return pattern.Failure(this.value);
 };
 
-Success.prototype.cata = function (pattern) {
-    return pattern.Success(this.value);
+Success.prototype.cata = function(pattern) {
+  return pattern.Success(this.value);
 };
 
 
@@ -336,12 +338,12 @@ Success.prototype.cata = function (pattern) {
  */
 Validation.prototype.swap = unimplemented;
 
-Failure.prototype.swap = function () {
-    return this.Success(this.value);
+Failure.prototype.swap = function() {
+  return this.Success(this.value);
 };
 
-Success.prototype.swap = function () {
-    return this.Failure(this.value);
+Success.prototype.swap = function() {
+  return this.Failure(this.value);
 };
 
 
@@ -353,12 +355,13 @@ Success.prototype.swap = function () {
  */
 Validation.prototype.bimap = unimplemented;
 
-Failure.prototype.bimap = function (f, _) {
-    return this.Failure(f(this.value));
+// eslint-disable-next-line no-unused-vars
+Failure.prototype.bimap = function(f, _) {
+  return this.Failure(f(this.value));
 };
 
-Success.prototype.bimap = function (_, g) {
-    return this.Success(g(this.value));
+Success.prototype.bimap = function(_, g) {
+  return this.Success(g(this.value));
 };
 
 
@@ -371,8 +374,8 @@ Success.prototype.bimap = function (_, g) {
 Validation.prototype.failureMap = unimplemented;
 Success.prototype.failureMap = noop;
 
-Failure.prototype.failureMap = function (f) {
-    return this.Failure(f(this.value));
+Failure.prototype.failureMap = function(f) {
+  return this.Failure(f(this.value));
 };
 
 /**

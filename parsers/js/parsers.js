@@ -25,8 +25,8 @@ SOFTWARE.
 // cfr. "Understanding Parser Combinators" (F# for Fun and Profit)
 
 import {
-  Tuple,
-  Position,
+  Tuple, // couples and triples
+  Position, // a 2D buffer and two pointers: Position(rows = [], row = 0, col = 0)
 } from './tuples';
 import { Maybe } from './maybe'; // Just or Nothing
 import { Validation } from './validation'; // Success or Failure
@@ -58,24 +58,24 @@ const predicateBasedParser = (pred, label) => pos => {
 export { charParser, digitParser, predicateBasedParser };
 
 export const startOfInputP =
-  parser(pos => (pos.decrPos().char().isNothing)
+  parser(pos => ((pos.decrPos().char().isNothing)
     ? succeedP.run(pos)
-    : failP.run(pos)).setLabel('^');
+    : failP.run(pos))).setLabel('^');
 
 export const notStartOfInputP =
-  parser(pos => (pos.decrPos().char().isJust)
+  parser(pos => ((pos.decrPos().char().isJust)
     ? succeedP.run(pos)
-    : failP.run(pos)).setLabel('not^');
+    : failP.run(pos))).setLabel('not^');
 
 export const endOfInputP =
-  parser(pos => (pos.rest() === '')
+  parser(pos => ((pos.rest() === '')
     ? succeedP.run(pos)
-    : failP.run(pos)).setLabel('$');
+    : failP.run(pos))).setLabel('$');
 
 export const notEndOfInputP =
-  parser(pos => (pos.rest() !== '')
+  parser(pos => ((pos.rest() !== '')
     ? succeedP.run(pos)
-    : failP.run(pos)).setLabel('not$');
+    : failP.run(pos))).setLabel('not$');
 
 export function pchar(char) {
   const label = 'pchar_' + char;
@@ -188,9 +188,11 @@ export function orElse(p1, p2) {
   }, label).setLabel(label);
 }
 
-export const failP = parser(pos => Validation.Failure(Tuple.Triple('', 'fail', pos)));
+export const failP = parser(pos => Validation.Failure(Tuple.Triple('', 'fail', pos)))
+  .setLabel('failP');
 
-export const succeedP = parser(pos => Validation.Success(Tuple.Pair('', pos), 'succeed'));
+export const succeedP = parser(pos => Validation.Success(Tuple.Pair('', pos), 'succeed'))
+  .setLabel('succeedP');
 
 export function choice(parsers) {
   return parsers.reduceRight((rest, curr) => orElse(curr, rest), failP)
@@ -379,7 +381,7 @@ export function betweenParens(px) {
 }
 
 export function bindP(famb, px) {
-  const label = 'unknown';
+  const label = 'bindP applied to ' + px.label;
   return parser(pos => {
     const res = px.run(pos);
     if (res.isFailure) return res;

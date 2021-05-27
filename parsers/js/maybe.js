@@ -22,16 +22,16 @@
 /**
  * @module lib/maybe
  */
-//module.exports = Maybe
+// module.exports = Maybe
 
 // -- Aliases ----------------------------------------------------------
 const clone = Object.create;
-const unimplemented = function () {
-    throw new Error('Not implemented.');
-};
-const noop = function () {
-    return this;
-};
+function unimplemented() {
+  throw new Error('Not implemented.');
+}
+function noop() {
+  return this;
+}
 
 // -- Implementation ---------------------------------------------------
 
@@ -80,7 +80,7 @@ export function Maybe() {
 // The case for successful values
 Just.prototype = clone(Maybe.prototype);
 function Just(a) {
-    this.value = a;
+  this.value = a;
 }
 
 // The case for failure values
@@ -97,8 +97,8 @@ function Nothing() {
  *
  * @summary Void → Maybe[α]
  */
-Maybe.Nothing = function () {
-    return new Nothing;
+Maybe.Nothing = function() {
+  return new Nothing;
 };
 Maybe.prototype.Nothing = Maybe.Nothing;
 
@@ -111,8 +111,8 @@ Maybe.prototype.Nothing = Maybe.Nothing;
  *
  * @summary α → Maybe[α]
  */
-Maybe.Just = function (a) {
-    return new Just(a);
+Maybe.Just = function(a) {
+  return new Just(a);
 };
 Maybe.prototype.Just = Maybe.Just;
 
@@ -127,9 +127,9 @@ Maybe.prototype.Just = Maybe.Just;
  *
  * @summary α → Maybe[α]
  */
-Maybe.fromNullable = function (a) {
-    return (a !== null) ? new Just(a)
-        : /* otherwise */  new Nothing;
+Maybe.fromNullable = function(a) {
+  return (a !== null) ? new Just(a)
+    : /* otherwise */ new Nothing;
 };
 Maybe.prototype.fromNullable = Maybe.fromNullable;
 
@@ -141,8 +141,8 @@ Maybe.prototype.fromNullable = Maybe.fromNullable;
  *
  * @summary Either[α, β] → Maybe[β]
  */
-Maybe.fromEither = function (a) {
-    return a.fold(Maybe.Nothing, Maybe.Just);
+Maybe.fromEither = function(a) {
+  return a.fold(Maybe.Nothing, Maybe.Just);
 };
 Maybe.prototype.fromEither = Maybe.fromEither;
 
@@ -189,8 +189,8 @@ Just.prototype.isJust = true;
  *
  * @summary α → Maybe[α]
  */
-Maybe.of = function (a) {
-    return new Just(a);
+Maybe.of = function(a) {
+  return new Just(a);
 };
 Maybe.prototype.of = Maybe.of;
 
@@ -209,8 +209,8 @@ Maybe.prototype.ap = unimplemented;
 
 Nothing.prototype.ap = noop;
 
-Just.prototype.ap = function (b) {
-    return b.map(this.value);
+Just.prototype.ap = function(b) {
+  return b.map(this.value);
 };
 
 
@@ -226,8 +226,8 @@ Just.prototype.ap = function (b) {
 Maybe.prototype.map = unimplemented;
 Nothing.prototype.map = noop;
 
-Just.prototype.map = function (f) {
-    return this.of(f(this.value));
+Just.prototype.map = function(f) {
+  return this.of(f(this.value));
 };
 
 
@@ -243,8 +243,8 @@ Just.prototype.map = function (f) {
 Maybe.prototype.chain = unimplemented;
 Nothing.prototype.chain = noop;
 
-Just.prototype.chain = function (f) {
-    return f(this.value);
+Just.prototype.chain = function(f) {
+  return f(this.value);
 };
 
 
@@ -258,12 +258,12 @@ Just.prototype.chain = function (f) {
  */
 Maybe.prototype.toString = unimplemented;
 
-Nothing.prototype.toString = function () {
-    return 'Maybe.Nothing';
+Nothing.prototype.toString = function() {
+  return 'Maybe.Nothing';
 };
 
-Just.prototype.toString = function () {
-    return 'Maybe.Just(' + this.value + ')';
+Just.prototype.toString = function() {
+  return 'Maybe.Just(' + this.value + ')';
 };
 
 
@@ -277,12 +277,12 @@ Just.prototype.toString = function () {
  */
 Maybe.prototype.isEqual = unimplemented;
 
-Nothing.prototype.isEqual = function (b) {
-    return b.isNothing;
+Nothing.prototype.isEqual = function(b) {
+  return b.isNothing;
 };
 
-Just.prototype.isEqual = function (b) {
-    return b.isJust
+Just.prototype.isEqual = function(b) {
+  return b.isJust
         && b.value === this.value;
 };
 
@@ -300,12 +300,12 @@ Just.prototype.isEqual = function (b) {
  */
 Maybe.prototype.get = unimplemented;
 
-Nothing.prototype.get = function () {
-    throw new TypeError('Can\'t extract the value of a Nothing.');
+Nothing.prototype.get = function() {
+  throw new TypeError('Can\'t extract the value of a Nothing.');
 };
 
-Just.prototype.get = function () {
-    return this.value;
+Just.prototype.get = function() {
+  return this.value;
 };
 
 
@@ -318,12 +318,13 @@ Just.prototype.get = function () {
  */
 Maybe.prototype.getOrElse = unimplemented;
 
-Nothing.prototype.getOrElse = function (a) {
-    return a;
+Nothing.prototype.getOrElse = function(a) {
+  return a;
 };
 
-Just.prototype.getOrElse = function (_) {
-    return this.value;
+// eslint-disable-next-line no-unused-vars
+Just.prototype.getOrElse = function(_) {
+  return this.value;
 };
 
 
@@ -336,12 +337,13 @@ Just.prototype.getOrElse = function (_) {
  */
 Maybe.prototype.orElse = unimplemented;
 
-Nothing.prototype.orElse = function (f) {
-    return f();
+Nothing.prototype.orElse = function(f) {
+  return f();
 };
 
-Just.prototype.orElse = function (_) {
-    return this;
+// eslint-disable-next-line no-unused-vars
+Just.prototype.orElse = function(_) {
+  return this;
 };
 
 
@@ -353,12 +355,12 @@ Just.prototype.orElse = function (_) {
  */
 Maybe.prototype.cata = unimplemented;
 
-Nothing.prototype.cata = function (pattern) {
-    return pattern.Nothing();
+Nothing.prototype.cata = function(pattern) {
+  return pattern.Nothing();
 };
 
-Just.prototype.cata = function (pattern) {
-    return pattern.Just(this.value);
+Just.prototype.cata = function(pattern) {
+  return pattern.Just(this.value);
 };
 
 
@@ -370,13 +372,13 @@ Just.prototype.cata = function (pattern) {
  */
 Maybe.prototype.toJSON = unimplemented;
 
-Nothing.prototype.toJSON = function () {
-    return {'#type': 'folktale:Maybe.Nothing'};
+Nothing.prototype.toJSON = function() {
+  return { '#type': 'folktale:Maybe.Nothing' };
 };
 
-Just.prototype.toJSON = function () {
-    return {
-        '#type': 'folktale:Maybe.Just'
-        , value: this.value
-    };
+Just.prototype.toJSON = function() {
+  return {
+    '#type': 'folktale:Maybe.Just'
+    , value: this.value,
+  };
 };

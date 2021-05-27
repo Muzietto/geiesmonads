@@ -7,6 +7,9 @@
 /parsers-node/css-metrics/node_modules
 /parsers-node/css-metrics/dist
 
+package-lock.json
+node_modules
+
 #################
 ## Eclipse
 #################

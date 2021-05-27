@@ -3,6 +3,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
         <title>PC tests</title>
+        <link rel="icon" href="favicon.ico" type="image/gif">
         <link rel="stylesheet" type="text/css" href="dist/lib/mocha.css">
 
         <script type="text/javascript" src="dist/requirejs.config.js"></script>
@@ -11,6 +12,21 @@
     <body>
         <h1 style="margin-left:20px;">geiesmonads parser combinators tests</h1>
         <h3 style="margin-left:20px;">Check the tests of the <a href="./Mocha_Helper_Classes_Tests.html">helper classes</a></h3>
+        <h3 style="margin-left:20px;">To serve this file, have an http-server that serves the directory above geiesmonads</h3>
+        <h4 style="margin-left:20px;">This page is meant as a training to the design of composite parsers<h4>
+        <details style="margin-left:20px; padding: 5px;width: 100%">
+          <summary>This page uses a few collections of characters and stringified digits:</summary>
+          <pre>
+            <code>
+              const lowercases = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',];
+              const uppercases = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
+              const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+              const whites = [' ', '\t', '\n', '\r'];
+              const text = Position.fromText;
+            </code>
+          </pre>
+        </details>
         <div id="mocha"></div>
+        <div style="padding: 10px;">Favicon made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
     </body>
 </html>
