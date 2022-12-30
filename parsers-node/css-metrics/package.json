@@ -37,7 +37,7 @@
     "data.maybe": "v1.2.2",
     "data.validation": "v1.3.1",
     "folktale": "2.0.1",
-    "mocha": "6.1.4"
+    "mocha": "10.2.0"
   },
   "dependencies": {
     "babel-cli": "^6.9.0"
