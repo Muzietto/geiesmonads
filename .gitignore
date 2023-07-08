@@ -1,7 +1,7 @@
 
 .idea
-/parsers/node_modules
-/parsers/dist
+node_modules/
+dist/
 /parsers-node/icon/node_modules
 /parsers-node/icon/dist
 /parsers-node/css-metrics/node_modules
