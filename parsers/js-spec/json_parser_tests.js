@@ -53,12 +53,13 @@ describe('building a JSON parser', () => {
   });
   describe('a parser for JSON escaped chars', () => {
     it('parses an escaped character and returns a Success', () => {
-      expect(jEscapedCharP.run(text('\b')).isSuccess).to.be.true;
-      expect(jEscapedCharP.run(text('\f')).isSuccess).to.be.true;
-      //            expect(jEscapedCharP.run(text('\n')).isSuccess).to.be.true;
-      expect(jEscapedCharP.run(text('\r')).isSuccess).to.be.true;
-      expect(jEscapedCharP.run(text('\t')).isSuccess).to.be.true;
-      expect(jEscapedCharP.run(text('a')).isFailure).to.be.true;
+      expect(jEscapedCharP.run(text('\\b')).isSuccess).to.be.true;
+      expect(jEscapedCharP.run(text('\\b')).value[0]).to.be.eql('\b');
+      expect(jEscapedCharP.run(text('\\f')).isSuccess).to.be.true;
+      expect(jEscapedCharP.run(text('\\f')).value[0]).to.be.eql('\f');
+      expect(jEscapedCharP.run(text('\\r')).isSuccess).to.be.true;
+      expect(jEscapedCharP.run(text('\\t')).isSuccess).to.be.true;
+      expect(jEscapedCharP.run(text('\t')).isFailure).to.be.true;
     });
   });
   describe('a parser for escaped 4-digits unicode chars', () => {

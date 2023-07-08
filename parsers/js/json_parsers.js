@@ -43,20 +43,22 @@ const JTrueP = pstring('true').fmap(_ => JValue.JBool(true));
 const JFalseP = pstring('false').fmap(_ => JValue.JBool(false));
 export const JBoolP = JTrueP.orElse(JFalseP).setLabel('bool');
 
-export const jUnescapedCharP = parser(predicateBasedParser(char => (char !== '\\' && char !== '"'), 'junescapedCharP'));
+export const jUnescapedCharP = parser(predicateBasedParser(char => (char !== '\\' && char !== '"'), 'jUnescapedCharP'));
+
 const escapedJSONChars = [
-  '\"',
-  '\\',
-  '\/',
-  '\b',
-  '\f',
-  //    '\n', // newlines will be removed during text -> position transformation
-  '\r',
-  '\t',
+  // [stringToMatch, resultChar]
+  ['\\\"', '\"'],      // quote
+  ['\\\\', '\\'],      // reverse solidus
+  ['\\/', '/'],        // solidus
+  ['\\b', '\b'],       // backspace
+  ['\\f', '\f'],       // formfeed
+  ['\\n', '\n'],       // newline
+  ['\\r', '\r'],       // cr
+  ['\\t', '\t'],       // tab
 ];
-export const jEscapedCharP = choice(escapedJSONChars.map(pchar)).setLabel('escaped char');
-// actually here it is done differently:
-// https://fsharpforfunandprofit.com/posts/understanding-parser-combinators-4/#escaped-characters
+export const jEscapedCharP = choice(escapedJSONChars
+  .map(([stringToMatch, resultChar]) => pstring(stringToMatch).fmap(() => resultChar)))
+    .setLabel('escaped char');
 
 const hexDigitsP = choice([
   '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F',
