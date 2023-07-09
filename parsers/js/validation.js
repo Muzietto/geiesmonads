@@ -199,11 +199,11 @@ Success.prototype.map = function(f) {
 Validation.prototype.toString = unimplemented;
 
 Failure.prototype.toString = function() {
-  return 'Validation.Failure(' + this.value + ')';
+  return 'Validation.Failure(' + this.value.toString() + ')';
 };
 
 Success.prototype.toString = function() {
-  return 'Validation.Success(' + this.value + ')';
+  return 'Validation.Success(' + this.value.toString() + ')';
 };
 
 

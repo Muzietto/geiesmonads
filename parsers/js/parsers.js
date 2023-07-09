@@ -361,13 +361,20 @@ export function discardFirst(p1, p2) {
   }, label).setLabel(label);
 }
 
-export function sepBy1Book(px, sep) {
-  return px.andThen(many(sep.discardFirst(px))).fmap(([r, rlist]) => [r].concat(rlist));
+export function sepBy1(px, sep) {
+  return px.andThen(many(sep.discardFirst(px)))
+    .fmap(([r, rlist]) => [r].concat(rlist));
 }
 
-// my version works just fine...
-export function sepBy1(valueP, separatorP) {
-  return many(many1(valueP).discardSecond(opt(separatorP)));
+// my version works just fine (almost - succeeds akso with zero matches)...
+export function sepBy1Marco(valueP, separatorP) {
+  return many(many1(valueP).discardSecond(opt(separatorP)))
+    .fmap(res => res.map(([x]) => x));
+}
+
+// sepBy1 working on zero occurrences
+export function sepBy(px, sep) {
+  return sepBy1(px, sep).orElse(returnP([]));
 }
 
 export function between(p1, p2, p3) {

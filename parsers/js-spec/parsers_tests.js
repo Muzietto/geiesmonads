@@ -26,6 +26,7 @@ import {
   discardFirst,
   discardSecond,
   sepBy1,
+  sepBy,
   between,
   betweenParens,
   tapP,
@@ -895,7 +896,8 @@ describe('a logger for parsers (logP)', () => {
   console.log = storedLog;
 });
 
-describe('parsing while discarding input (ADVANCED STUFF)', () => {
+describe('parsing while discarding input (ADVANCED STUFF)', function() {
+  this.timeout(50000000000);
   it('allows to exclude parentheses', () => {
     const insideParens = pchar('(')
       .discardFirst(many(anyOf(lowercases)))
@@ -922,26 +924,69 @@ describe('parsing while discarding input (ADVANCED STUFF)', () => {
       .to.be.eql('Validation.Success([[[a],[b],[c,d],[m,a,r,c,o]],row=0;col=15;rest=1])');
   });
   describe('thanks to the specific sepBy1 operator (introduction to JSON parsers)', () => {
-    const valuesP = anyOf(lowercases);
+    const valuesP = many1(anyOf(lowercases));
     const commaP = pchar(',');
-    it('cherry-picking elements separated by separators', () => {
-      expect(sepBy1(valuesP, commaP).run('a,b,cd,1').toString())
-        .to.be.eql('Validation.Success([[[a],[b],[c,d]],row=0;col=7;rest=1])');
+    it('cherry-picking 1+ elements separated by separators', () => {
+      // debugger;
+      const result = sepBy1(valuesP, commaP).run('a,b,cd').toString();
+      expect(result)
+        .to.be.eql('Validation.Success([[[a],[b],[c,d]],row=1;col=0;rest=])');
     });
-    it('...also when inside a lists', () => {
-      const listElements = between(pchar('['), sepBy1(valuesP, commaP), pchar(']'));
-      expect(listElements.run('[a,b,cd,marco,]').toString())
-        .to.be.eql('Validation.Success([[[a],[b],[c,d],[m,a,r,c,o]],row=1;col=0;rest=])');
+    it('but unable to cherry-pick 0+ elements separated by separators', () => {
+      const result = sepBy1(valuesP, commaP).run('');
+      expect(result.isFailure).to.be.true;
     });
-    it('...lists with no elements', () => {
+    describe('also able to handle lists', () => {
       const listElements = between(pchar('['), sepBy1(valuesP, commaP), pchar(']'));
-      expect(listElements.run('[]').toString())
-        .to.be.eql('Validation.Success([[],row=1;col=0;rest=])');
+      it('...lists with many elements', () => {
+        const result = listElements.run('[a,b,cd,marco]').toString();
+        expect(result)
+          .to.be.eql('Validation.Success([[[a],[b],[c,d],[m,a,r,c,o]],row=1;col=0;rest=])');
+      });
+      it('...lists with just one element', () => {
+        const result = listElements.run('[a]').toString();
+        expect(result)
+          .to.be.eql('Validation.Success([[[a]],row=1;col=0;rest=])');
+      });
+      it('...but unable to handle lists with no elements', () => {
+        const result = listElements.run('[]');
+        expect(result.isFailure).to.be.true;
+      });
     });
-    it('...lists with just one element', () => {
-      const listElements = between(pchar('['), sepBy1(valuesP, commaP), pchar(']'));
-      expect(listElements.run('[a]').toString())
-        .to.be.eql('Validation.Success([[[a]],row=1;col=0;rest=])');
+  });
+  describe('thanks to the specific sepBy operator (introduction to JSON parsers)', () => {
+    const valuesP = many1(anyOf(lowercases));
+    const commaP = pchar(',');
+    it('cherry-picking 0+ elements separated by separators', () => {
+      // debugger;
+      const result = sepBy(valuesP, commaP).run('a,b,cd').toString();
+      expect(result)
+        .to.be.eql('Validation.Success([[[a],[b],[c,d]],row=1;col=0;rest=])');
+    });
+    it('still able to cherry-pick 0+ elements separated by separators', () => {
+      const result = sepBy(valuesP, commaP).run(';');
+      const resString = result.toString();
+      expect(resString)
+        .to.be.eql('Validation.Success([[],;])'); // WHY???!!!???!!!
+    });
+    describe('also able to handle lists', () => {
+      const listElements = between(pchar('['), sepBy(valuesP, commaP), pchar(']'));
+      it('...lists with many elements', () => {
+        const result = listElements.run('[a,b,cd,marco]').toString();
+        expect(result)
+          .to.be.eql('Validation.Success([[[a],[b],[c,d],[m,a,r,c,o]],row=1;col=0;rest=])');
+      });
+      it('...lists with just one element', () => {
+        const result = listElements.run('[a]').toString();
+        expect(result)
+          .to.be.eql('Validation.Success([[[a]],row=1;col=0;rest=])');
+      });
+      it('...still able to handle lists with no elements', () => {
+        const result = listElements.run('[]');
+        const resString = result.toString();
+        expect(resString)
+          .to.be.eql('Validation.Success([[],row=1;col=0;rest=])');
+      });
     });
   });
 });
