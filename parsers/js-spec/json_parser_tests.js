@@ -12,6 +12,7 @@ import {
 } from 'json_parsers';
 import {
   Position,
+  JValue,
 } from 'classes';
 
 const text = Position.fromText;
@@ -30,6 +31,7 @@ describe('building a JSON parser', () => {
       const run = JBoolP.run('true');
       expect(run.isSuccess).to.be.true;
       expect(run.value[0].isJBool).to.be.true;
+      expect(run.value[0]).to.be.eql(JValue.JBool(true));
       expect(run.value[0].value).to.be.true;
     });
     it('parses the string \'false\' and returns a JValue.JBool(false)', () => {
@@ -65,7 +67,7 @@ describe('building a JSON parser', () => {
   describe('a parser for escaped 4-digits unicode chars', () => {
     it('parses an escaped character and returns a Success', () => {
       const run = jUnicodeCharP.run(text('\\u1a2e'));
-      expect(run.isSuccess).to.be.true;
+      expect(run.isSuccess).to.be.true;// \\u263A
       expect(run.value[0]).to.be.eql(6702);
       expect(jUnicodeCharP.run(text('\\u0010')).value[0]).to.be.eql(16);
       expect(jUnicodeCharP.run(text('\\u000F')).value[0]).to.be.eql(15);
@@ -78,11 +80,23 @@ describe('building a JSON parser', () => {
       expect(run.value[0].isJString).to.be.true;
       expect(run.value[0].value).to.be.eql('test string');
     });
-    it('handles unicodes very roughly, and no escaped chars yet...', () => {
+    it('handles unicodes very roughly', () => {
       const run = JStringP.run(text('\"test \\u0010 string\"'));
       expect(run.isSuccess).to.be.true;
       expect(run.value[0].isJString).to.be.true;
       expect(run.value[0].value).to.be.eql('test 16 string');
+    });
+    it('handles escaped chars as well', () => {
+      const run = JStringP.run(text('\"test \\n string\"'));
+      expect(run.isSuccess).to.be.true;
+      expect(run.value[0].isJString).to.be.true;
+      expect(run.value[0].value).to.be.eql('test \n string');
+    });
+    xit('will handle escaped chars better - this should have a smiley inside', () => {
+      const run = JStringP.run(text('\"ab\\u263Ade\"'));
+      expect(run.isSuccess).to.be.true;
+      expect(run.value[0].isJString).to.be.true;
+      expect(run.value[0].value).to.be.eql('test \n string');
     });
   });
   describe('a parser for numbers inside JSON files', () => {
@@ -119,19 +133,71 @@ describe('building a JSON parser', () => {
       expect(JNumberP.run(text('-123.234e-2')).value[0].value).to.be.eql(-123.234e-2);
     });
   });
-  describe('a parser for arrays discards square brackets', () => {
+  describe('a parser for JSON arrays discards square brackets', function() {
+    this.timeout(50000000000);
     describe('and distills into JValue.JArray\'s', () => {
       it('nothing if that\'s the case', () => {
-        const jarra = '[]';
+        const jarra = '[   ]';
         const run = JArrayP.run(text(jarra));
         expect(run.isSuccess).to.be.true;
         expect(run.value[0].isJArray).to.be.true;
+        const content = run.value[0].value;
+        expect(content.length).to.be.eql(0);
       });
-      it('nulls and bools', () => {
-        const jarra = '[true ,   false , null,      true]';
+      it('numbers', () => {
+        const jarra = '[  1   , 2   , 3    ]';
         const run = JArrayP.run(text(jarra));
         expect(run.isSuccess).to.be.true;
         expect(run.value[0].isJArray).to.be.true;
+        const content = run.value[0].value;
+        expect(content.length).to.be.eql(3);
+        expect(content[0].isJNumber).to.be.true;
+        expect(content[0].value).to.be.eql(1);
+        expect(content[1].value).to.be.eql(2);
+        expect(content[2].value).to.be.eql(3);
+      });
+      it('numbers, nulls, strings and bools', () => {
+        const jarra = '[true ,   false , null,      true,123.123   ,"paperino"]';
+        const run = JArrayP.run(text(jarra));
+        expect(run.isSuccess).to.be.true;
+        expect(run.value[0].isJArray).to.be.true;
+        const content = run.value[0].value;
+        expect(content.length).to.be.eql(6);
+        expect(content[0].isJBool).to.be.true;
+        expect(content[0].value).to.be.true;
+        expect(content[1].isJBool).to.be.true;
+        expect(content[1].value).to.be.false;
+        expect(content[2].isJNull).to.be.true;
+        expect(content[2].value).to.be.null;
+        expect(content[4].isJNumber).to.be.true;
+        expect(content[4].value).to.be.eql(123.123);
+        expect(content[5].isJString).to.be.true;
+        expect(content[5].value).to.be.eql('paperino');
+      });
+      it('arrays and all the rest', () => {
+        const jarra = '[[123],    null, [      null,  "minnie"  ,[     ]  ]]';
+        const run = JArrayP.run(text(jarra));
+        expect(run.isSuccess).to.be.true;
+        expect(run.value[0].isJArray).to.be.true;
+
+        const content = run.value[0].value;
+        expect(content.length).to.be.eql(3);
+
+        expect(content[0].isJArray).to.be.true;
+        expect(content[0].value.length).to.be.eql(1);
+        expect(content[0].value[0].isJNumber).to.be.true;
+        expect(content[0].value[0].value).to.be.eql(123);
+
+        expect(content[1].isJNull).to.be.true;
+        expect(content[1].value).to.be.null;
+
+        expect(content[2].isJArray).to.be.true;
+        expect(content[2].value.length).to.be.eql(3);
+        expect(content[2].value[0].isJNull).to.be.true;
+        expect(content[2].value[1].isJString).to.be.true;
+        expect(content[2].value[1].value).to.be.eql('minnie');
+        expect(content[2].value[2].isJArray).to.be.true;
+        expect(content[2].value[2].value.length).to.be.eql(0);
       });
     });
   });

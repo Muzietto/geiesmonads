@@ -276,13 +276,12 @@ _jnull.prototype.toString = function() {
 JValue.JNull = JNull;
 JValue.prototype.JNull = JValue.JNull;
 
-function JArray(...jValues) {
-  return new _jarray(...jValues);
+function JArray(jValues) {
+  return new _jarray(jValues);
 }
 
-// TODO make it with iterator and everything
-function _jarray(...jValues) { // args become a REAL array
-  if (typeof jValue === 'undefined') { // empty JSON array
+function _jarray(jValues) {
+  if (typeof jValues === 'undefined') {
     Object.defineProperty(this, 'value', { value: [], writable: false });
   } else {
     if (jValues.some(jval => (!jval.isJValue))) throw new Error('JArray: invalid content');

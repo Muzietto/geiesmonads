@@ -35,15 +35,16 @@ import {
   between,
   betweenParens,
   sepBy1,
+  sepBy,
 } from 'parsers';
 
-export const JNullP = pstring('null').fmap(_ => JValue.JNull(null)).setLabel('null');
+export const JNullP = pstring('null').fmap(_ => JValue.JNull(null)).setLabel('JSON null parser');
 
 const JTrueP = pstring('true').fmap(_ => JValue.JBool(true));
 const JFalseP = pstring('false').fmap(_ => JValue.JBool(false));
-export const JBoolP = JTrueP.orElse(JFalseP).setLabel('bool');
+export const JBoolP = JTrueP.orElse(JFalseP).setLabel('JSON boolean parser');
 
-export const jUnescapedCharP = parser(predicateBasedParser(char => (char !== '\\' && char !== '"'), 'jUnescapedCharP'));
+export const jUnescapedCharP = parser(predicateBasedParser(char => (char !== '\\' && char !== '"'))).setLabel('jUnescapedCharP');
 
 const escapedJSONChars = [
   // [stringToMatch, resultChar]
@@ -57,8 +58,9 @@ const escapedJSONChars = [
   ['\\t', '\t'],       // tab
 ];
 export const jEscapedCharP = choice(escapedJSONChars
-  .map(([stringToMatch, resultChar]) => pstring(stringToMatch).fmap(() => resultChar)))
-    .setLabel('escaped char');
+  .map(([stringToMatch, resultChar]) => pstring(stringToMatch)
+    .fmap(() => resultChar)))
+      .setLabel('JSON escaped char parser');
 
 const hexDigitsP = choice([
   '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F',
@@ -71,10 +73,15 @@ export const jUnicodeCharP = pchar('\\')
   .andThen(hexDigitsP) // returns c
   .andThen(hexDigitsP) // returns d
   .fmap(([[[a, b], c], d]) => parseInt('' + a + b + c + d, 16))
-  .setLabel('unicode char');
+  .setLabel('JSON unicode char parser');
 
-const jCharP = jUnescapedCharP/* .orElse(jEscapedCharP) */.orElse(jUnicodeCharP);
-const doublequote = pchar('"').setLabel('doublequote');
+const jCharP = choice([
+  jUnescapedCharP,
+  jEscapedCharP,
+  jUnicodeCharP
+]);
+
+const doublequote = pchar('"').setLabel('doublequote parser');
 
 export const JStringP = doublequote
   .discardFirst(manyChars(jCharP))
@@ -118,35 +125,42 @@ export const JNumberP = jNumberStringP
   .fmap(JValue.JNumber)
   .setLabel('JSON number parser');
 
+export let JArrayP;
+
 const [jValueP, parserRef] = parserForwardedToRef();
 
 const leftSquareParensP = pchar('[').discardSecond(many(pchar(' ')));
 const rightSquareParensP = pchar(']').discardSecond(many(pchar(' ')));
 const commaP = pchar(',').discardSecond(many(pchar(' ')));
 const jvalueP = jValueP.discardSecond(many(pchar(' ')));
-const jvaluesP = sepBy1(jvalueP, commaP);
+const jvaluesP = sepBy(jvalueP, commaP);
 
-export const JArrayP = between(leftSquareParensP, jvaluesP, rightSquareParensP)
-  .fmap(JValue.JArray)
+JArrayP = between(
+  leftSquareParensP,
+  jvaluesP,
+  rightSquareParensP
+)
+  .fmap(JValue.JArray) // we want result to be a JS array
   .setLabel('JSON array parser');
-
-// parserRef = JNullP
-//     .orElse(JBoolP)
-//     .orElse(JStringP)
-//     .orElse(JNumberP)
-//     .orElse(JArrayP);
 
 function parserForwardedToRef() {
 
-  const dummyParser = parser(pos =>
-    Validation.Failure(Tuple.Triple('unfixed forwarded parser', '_fail', pos)),
-  'dummyParser');
+  const dummyParser = parser(pos => { throw 'unfixed forwarded parser'; })
+    .setLabel('dummyParser');
 
-  const parserRef = dummyParser;
+  const parserRefFun = () => choice([
+    JNumberP,
+    JNullP,
+    JBoolP,
+    JStringP,
+    JArrayP,
+  ]);
 
   const wrapperParser = parser(pos => {
-    return parserRef.run(pos);
-  }, 'wrapperParser');
+    const parserRef = parserRefFun();
+    const result = parserRef.run(pos);
+    return result;
+  }).setLabel('wrapper parser');
 
   return Tuple.Pair(wrapperParser, parserRef);
 }

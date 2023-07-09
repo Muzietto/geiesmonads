@@ -220,7 +220,8 @@ export function fmap(fab, parser1) {
 }
 
 export function returnP(value) {
-  return parser(pos => Validation.Success(Tuple.Pair(value, pos)));
+  return parser(pos => Validation.Success(Tuple.Pair(value, pos)))
+    .setLabel(`returnP ${value.toString()}`);
 }
 
 // parser(a -> b) -> parser(a) -> parser(b)
