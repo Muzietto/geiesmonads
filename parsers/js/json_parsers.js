@@ -126,13 +126,16 @@ export const JNumberP = jNumberStringP
   .setLabel('JSON number parser');
 
 export let JArrayP;
+export let JObjectP;
 
 const [jValueP, parserRef] = parserForwardedToRef();
 
-const leftSquareParensP = pchar('[').discardSecond(many(pchar(' ')));
-const rightSquareParensP = pchar(']').discardSecond(many(pchar(' ')));
-const commaP = pchar(',').discardSecond(many(pchar(' ')));
-const jvalueP = jValueP.discardSecond(many(pchar(' ')));
+const spacesP = many(pchar(' '));
+const leftSquareParensP = pchar('[').discardSecond(spacesP);
+const rightSquareParensP = pchar(']').discardSecond(spacesP);
+const commaP = pchar(',').discardSecond(spacesP);
+
+const jvalueP = jValueP.discardSecond(spacesP);
 const jvaluesP = sepBy(jvalueP, commaP);
 
 JArrayP = between(
@@ -142,6 +145,24 @@ JArrayP = between(
 )
   .fmap(JValue.JArray) // we want result to be a JS array
   .setLabel('JSON array parser');
+
+const leftCurlyParensP = pchar('{').discardSecond(spacesP);
+const rightCurlyParensP = pchar('}').discardSecond(spacesP);
+const colonP = pchar(':').discardSecond(spacesP);
+const jkeyValueP = JStringP
+  .discardSecond(spacesP)
+  .discardSecond(colonP)
+  .andThen(jValueP)
+  .discardSecond(spacesP);
+const jkeyValuesP = sepBy(jkeyValueP, commaP);
+
+JObjectP = between(
+  leftCurlyParensP,
+  jkeyValuesP,
+  rightCurlyParensP
+)
+  .fmap(JValue.JObject)
+  .setLabel('JSON object parser');
 
 function parserForwardedToRef() {
 
@@ -154,6 +175,7 @@ function parserForwardedToRef() {
     JBoolP,
     JStringP,
     JArrayP,
+    JObjectP,
   ]);
 
   const wrapperParser = parser(pos => {

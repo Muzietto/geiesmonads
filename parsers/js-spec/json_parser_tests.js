@@ -9,6 +9,7 @@ import {
   jNumberStringP,
   JNumberP,
   JArrayP,
+  JObjectP,
 } from 'json_parsers';
 import {
   Position,
@@ -177,6 +178,82 @@ describe('building a JSON parser', () => {
       it('arrays and all the rest', () => {
         const jarra = '[[123],    null, [      null,  "minnie"  ,[     ]  ]]';
         const run = JArrayP.run(text(jarra));
+        expect(run.isSuccess).to.be.true;
+        expect(run.value[0].isJArray).to.be.true;
+
+        const content = run.value[0].value;
+        expect(content.length).to.be.eql(3);
+
+        expect(content[0].isJArray).to.be.true;
+        expect(content[0].value.length).to.be.eql(1);
+        expect(content[0].value[0].isJNumber).to.be.true;
+        expect(content[0].value[0].value).to.be.eql(123);
+
+        expect(content[1].isJNull).to.be.true;
+        expect(content[1].value).to.be.null;
+
+        expect(content[2].isJArray).to.be.true;
+        expect(content[2].value.length).to.be.eql(3);
+        expect(content[2].value[0].isJNull).to.be.true;
+        expect(content[2].value[1].isJString).to.be.true;
+        expect(content[2].value[1].value).to.be.eql('minnie');
+        expect(content[2].value[2].isJArray).to.be.true;
+        expect(content[2].value[2].value.length).to.be.eql(0);
+      });
+    });
+  });
+  describe.only('a parser for JSON object discards curly brackets', function() {
+    this.timeout(50000000000);
+    describe('and distills into JValue.JObject\'s', () => {
+      it('nothing if that\'s the case', () => {
+        const jobj = '{   }';
+        const run = JObjectP.run(text(jobj));
+        expect(run.isSuccess).to.be.true;
+        expect(run.value[0].isJObject).to.be.true;
+        const content = run.value[0].value;
+        expect(content).to.be.eql({});
+      });
+      it('objects with numbers as values', () => {
+        const jobj = '{ "qwe" : 123 }';
+        const run = JObjectP.run(text(jobj));
+        expect(run.isSuccess).to.be.true;
+        expect(run.value[0].isJObject).to.be.true;
+        const content = run.value[0].value;
+        expect(content).to.be.eql({qwe:123});
+      });
+      xit('arrays with numbers', () => {
+        const jobj = '[  1   , 2   , 3    ]';
+        const run = JArrayP.run(text(jobj));
+        expect(run.isSuccess).to.be.true;
+        expect(run.value[0].isJArray).to.be.true;
+        const content = run.value[0].value;
+        expect(content.length).to.be.eql(3);
+        expect(content[0].isJNumber).to.be.true;
+        expect(content[0].value).to.be.eql(1);
+        expect(content[1].value).to.be.eql(2);
+        expect(content[2].value).to.be.eql(3);
+      });
+      xit('numbers, nulls, strings and bools', () => {
+        const jobj = '[true ,   false , null,      true,123.123   ,"paperino"]';
+        const run = JArrayP.run(text(jobj));
+        expect(run.isSuccess).to.be.true;
+        expect(run.value[0].isJArray).to.be.true;
+        const content = run.value[0].value;
+        expect(content.length).to.be.eql(6);
+        expect(content[0].isJBool).to.be.true;
+        expect(content[0].value).to.be.true;
+        expect(content[1].isJBool).to.be.true;
+        expect(content[1].value).to.be.false;
+        expect(content[2].isJNull).to.be.true;
+        expect(content[2].value).to.be.null;
+        expect(content[4].isJNumber).to.be.true;
+        expect(content[4].value).to.be.eql(123.123);
+        expect(content[5].isJString).to.be.true;
+        expect(content[5].value).to.be.eql('paperino');
+      });
+      it('JSON arrays and all the rest', () => {
+        const jobj = '[[123],    null, [      null,  "minnie"  ,[     ]  ]]';
+        const run = JArrayP.run(text(jobj));
         expect(run.isSuccess).to.be.true;
         expect(run.value[0].isJArray).to.be.true;
 

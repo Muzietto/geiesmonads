@@ -298,27 +298,28 @@ _jarray.prototype.toString = function() {
 JValue.JArray = JArray;
 JValue.prototype.JArray = JValue.JArray;
 
-function JObject(...pairs) {
-  return new _jobject(...pairs);
+function JObject(keyValuePairs) { // [Pair(key1,value1),Pair(key2,value2)]
+  return new _jobject(keyValuePairs);
 }
 
-function _jobject(...pairs) {
-  const self = this;
-  if (pairs.some(pair => {
+function _jobject(keyValuePairs) {
+  if (keyValuePairs.some(pair => {
     return (!pair.isPair
-            || typeof pair[0] !== 'string'
+            || !pair[0].isJString
             || !pair[1].isJValue);
   })) throw new Error('JObject: invalid content');
-  pairs.forEach(([key, value]) => {
-    Object.defineProperty(self, key, { value, writable: false });
-  });
+  const dict = keyValuePairs.reduce((acc, [jstring,jvalue]) => {
+    acc[jstring.value] = jvalue.value;
+    return acc;
+  }, {});
+  Object.defineProperty(this, 'value', { value: dict, writable: false });
 }
 _jobject.prototype = Object.create(JValue.prototype);
 _jobject.prototype.isJObject = true;
 _jobject.prototype.type = 'jobject';
 _jobject.prototype.toString = function() {
-  // eslint-disable-next-line no-undef
-  return 'JObject({' + OBJ + '})'; // TODO - complete me!
+  const OBJ = '';
+  return 'JObject({' + OBJ + '})';
 };
 
 JValue.JObject = JObject;
