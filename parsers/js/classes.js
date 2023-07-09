@@ -309,7 +309,7 @@ function _jobject(keyValuePairs) {
             || !pair[1].isJValue);
   })) throw new Error('JObject: invalid content');
   const dict = keyValuePairs.reduce((acc, [jstring,jvalue]) => {
-    acc[jstring.value] = jvalue.value;
+    acc[jstring.value] = jvalue;
     return acc;
   }, {});
   Object.defineProperty(this, 'value', { value: dict, writable: false });
