@@ -202,7 +202,7 @@ describe('building a JSON parser', () => {
       });
     });
   });
-  describe.only('a parser for JSON object discards curly brackets', function() {
+  describe('a parser for JSON object discards curly brackets', function() {
     this.timeout(50000000000);
     describe('and distills into JValue.JObject\'s', () => {
       it('nothing if that\'s the case', () => {
