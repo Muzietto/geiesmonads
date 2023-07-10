@@ -258,7 +258,7 @@ describe('among helper classes', () => {
       expect(() => JValue.JNull(NaN)).to.throw;
     });
     it('with JArray\'s as parsed JSON arrays', () => {
-      const jarray = JValue.JArray(JValue.JString('a'), JValue.JBool(false), JValue.JNull(null));
+      const jarray = JValue.JArray([JValue.JString('a'), JValue.JBool(false), JValue.JNull(null)]);
       const jarValue = jarray.value;
       expect(jarValue[0].value).to.be.eql('a');
       expect(jarValue[1].value).to.be.eql(false);
@@ -266,6 +266,7 @@ describe('among helper classes', () => {
       expect(jarray.toString()).to.be.eql('JArray([JString(a),JBool(false),JNull(null),])');
       expect(jarray.isJValue).to.be.true;
       expect(jarray.isJArray).to.be.true;
+
       expect(() => {
         jarray.value = 123;
       }).to.throw;
@@ -274,17 +275,17 @@ describe('among helper classes', () => {
       expect(() => JValue.JArray(NaN)).to.throw;
     });
     it('with JObjects\'s as parsed JSON objects', () => {
-      const jobject = JValue.JObject(
-        Tuple.Pair('string', JValue.JString('a')),
-        Tuple.Pair('boolean', JValue.JBool(false)),
-        Tuple.Pair('null', JValue.JNull(null)),
-      );
-      expect(jobject.string.value).to.be.eql('a');
-      expect(jobject.boolean.value).to.be.eql(false);
-      expect(jobject.null.value).to.be.eql(null);
-      // expect(jobject.toString()).to.be.eql('JArray([JString(a),JBool(false),JNull(null),])');
+      const jobject = JValue.JObject([
+        Tuple.Pair(JValue.JString('string'), JValue.JString('a')),
+        Tuple.Pair(JValue.JString('boolean'), JValue.JBool(false)),
+        Tuple.Pair(JValue.JString('null'), JValue.JNull(null)),
+      ]);
+      expect(jobject.value['string'].value).to.be.eql('a');
+      expect(jobject.value['boolean'].value).to.be.eql(false);
+      expect(jobject.value['null'].value).to.be.eql(null);
       expect(jobject.isJValue).to.be.true;
       expect(jobject.isJObject).to.be.true;
+
       expect(() => {
         jobject.string = 'abc';
       }).to.throw;
@@ -299,6 +300,5 @@ describe('among helper classes', () => {
       ))).to.throw;
       expect(() => JValue.JNull(Tuple.Triple(1, 2, 3))).to.throw;
     });
-
   });
 });
