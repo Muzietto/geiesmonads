@@ -12,7 +12,7 @@ Test page is [here](https://muzietto.github.io/geiesmonads/parsers/Mocha_Parser_
 
 Live examples page is [here](https://muzietto.github.io/geiesmonads/parsers/Console_Parser_Examples.html).
 
-A [JSON parser](https://muzietto.github.io/geiesmonads/parsers/js/json_parsers.js) is under construction, and it is tested [here](https://muzietto.github.io/geiesmonads/parsers/Mocha_JSON_Parser_Tests.html).
+A complete [JSON parser](https://muzietto.github.io/geiesmonads/parsers/js/json_parsers.js) is presented, and it is tested [here](https://muzietto.github.io/geiesmonads/parsers/Mocha_JSON_Parser_Tests.html).
 
 NB - with a big credit due to [Understanding Parser Combinators](https://fsharpforfunandprofit.com/posts/understanding-parser-combinators/) and to [Paco](https://github.com/gabrielelana/paco).
 
@@ -32,7 +32,7 @@ Click on the above links to access the Mocha unit test page (verify whether your
 
 NB: This repo has been tested on FF 41 and Chrome 57.
 
-Define a State monad that manages errors (in a sense like Maybe): 
+Define a State monad that manages errors (in a sense like Maybe):
 if an error/problem occurs during the "do" computation, it is signalled and propagated by `bind`.
  - Step 1) The presence of a None indicates an error has occurred -> `StateMaybe` monad
  - Step 2) The error should propagate carrying a string which describes what occurred -> `StateEither` monad
