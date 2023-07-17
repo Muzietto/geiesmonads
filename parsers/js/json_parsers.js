@@ -1,10 +1,10 @@
 import {
   JValue,
   Tuple,
-} from 'classes';
+} from './classes';
 import {
   Validation,
-} from 'validation';
+} from './validation';
 import {
   parser,
   charParser,

@@ -4,6 +4,7 @@
   "description": "parser combinators in ES6",
   "main": "index.js",
   "scripts": {
+    "build_pacojs": "webpack --config webpack.pacojs.config.js",
     "parsersw": "./node_modules/.bin/babel --plugins=transform-es2015-modules-amd ./js ./examples ./js-spec --out-dir ./dist --source-maps inline -w",
     "parsers": "./node_modules/.bin/babel --plugins=transform-es2015-modules-amd ./js ./examples ./js-spec --out-dir ./dist --source-maps inline"
   },
@@ -39,7 +40,9 @@
     "folktale": "2.0.1",
     "mocha": "^3.4.2",
     "sinon": "^2.0.0",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "webpack": "^5.4.0",
+    "webpack-cli": "^4.2.0"
   },
   "dependencies": {
     "requirejs": "^2.2.0"

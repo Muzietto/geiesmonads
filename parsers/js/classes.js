@@ -1,8 +1,8 @@
-import { Maybe } from 'maybe';
+import { Maybe } from './maybe';
 
 import {
   isPair,
-} from 'util';
+} from './util';
 
 const { toString } = Array.prototype;
 
